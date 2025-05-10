@@ -30,7 +30,7 @@ export const blogsRepository = {
     const blogs = db.blogs.find((d) => d.id === id);
 
     if (!blogs) {
-      throw new Error('Driver not exist');
+      throw new Error('Blog not exist');
     }
 
     blogs.name = dto.name;
