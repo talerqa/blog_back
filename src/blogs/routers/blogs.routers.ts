@@ -26,7 +26,7 @@ blogsRouter.get('/:id', idValidationParamId, inputValidationResultMiddleware, (r
   res.status(HttpStatus.Ok).send(driver);
 });
 
-blogsRouter.post('', idValidationParamId, idValidationNameBlog, idValidationDescriptionBlog, idValidationWebsiteUrlBlog, inputValidationResultMiddleware, (req, res,) => {
+blogsRouter.post('', idValidationNameBlog, idValidationDescriptionBlog, idValidationWebsiteUrlBlog, inputValidationResultMiddleware, (req, res,) => {
   const {description, name, websiteUrl} = req.body
   const newBlog = blogsRepository.createBlog({description, name, websiteUrl})
   res.status(HttpStatus.Created).send(newBlog);
