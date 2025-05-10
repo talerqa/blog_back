@@ -14,6 +14,7 @@ import {
 
 export const blogsRouter = Router({});
 
+
 blogsRouter.get('', (req, res) => {
   const blogs = blogsRepository.findAllBlogs()
   res.status(HttpStatus.Ok).send(blogs);
