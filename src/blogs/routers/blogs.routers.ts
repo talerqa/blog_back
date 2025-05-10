@@ -15,7 +15,7 @@ import {isAuthGuardMiddleware} from "../../core/middlewares/isAuth.guard-middlew
 
 export const blogsRouter = Router({});
 
-blogsRouter.use(isAuthGuardMiddleware);
+
 
 blogsRouter.get('', (req, res) => {
   const blogs = blogsRepository.findAllBlogs()
