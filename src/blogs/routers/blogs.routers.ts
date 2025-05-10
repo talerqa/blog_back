@@ -11,9 +11,11 @@ import {
 import {
   inputValidationResultMiddleware
 } from "../../core/middlewares/validation/input-validtion-result.middleware";
+import {isAuthGuardMiddleware} from "../../core/middlewares/isAuth.guard-middleware";
 
 export const blogsRouter = Router({});
 
+blogsRouter.use(isAuthGuardMiddleware);
 
 blogsRouter.get('', (req, res) => {
   const blogs = blogsRepository.findAllBlogs()
