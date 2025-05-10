@@ -1,5 +1,4 @@
 import {ValidationError, validationResult} from 'express-validator';
-import {NextFunction, Request, Response} from 'express';
 import {HttpStatus} from "../../types/httpCodes";
 
 const formatErrors = (error: ValidationError) => ({
@@ -8,9 +7,9 @@ const formatErrors = (error: ValidationError) => ({
 });
 
 export const inputValidationResultMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
+  req,
+  res,
+  next
 ) => {
   const errors = validationResult(req).formatWith(formatErrors).array();
 

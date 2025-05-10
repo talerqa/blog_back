@@ -1,10 +1,9 @@
-import {NextFunction, Request, Response} from 'express';
 import {HttpStatus} from "../types/httpCodes";
 
 export const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'qwerty';
 
-export const superAdminGuardMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const isAuthGuardMiddleware = (req, res, next) => {
   const auth = req.headers['authorization'] as string; // 'Basic xxxx'
   if (!auth) {
     res.sendStatus(HttpStatus.Unauthorized);
