@@ -22,6 +22,6 @@ export const idValidationWebsiteUrlBlog = body('websiteUrl')
   .exists().withMessage('WebsiteUrl is required')
   .isString().withMessage('WebsiteUrl must be a string')
   .trim()
-  .isLength({min: 1, max: 500}).withMessage('WebsiteUrl must not be empty')
-  .matches('^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$\n').withMessage('WebsiteUrl must be pattern')
+  .isLength({min: 1, max: 100}).withMessage('WebsiteUrl must not be empty')
+  // .matches('^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$\n').withMessage('WebsiteUrl must be pattern')
 
