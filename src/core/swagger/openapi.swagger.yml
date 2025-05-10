@@ -1,0 +1,9 @@
+openapi: 3.0.0
+info:
+  title: Uber API
+  version: 1.0.0
+  description: Uber API documentation
+
+tags:
+  - name: HomeTask01
+    description: API for managing drivers
