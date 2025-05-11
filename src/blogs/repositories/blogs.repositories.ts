@@ -26,7 +26,7 @@ export const blogsRepository = {
     return newBlog;
   },
 
-  updateBlog(id: string, dto: UpdateBlogInputModel): void | null {
+  updateBlog(id: string, dto: UpdateBlogInputModel): Blog | null {
     const blog = db.blogs.find((d) => d.id === id) ?? null;
 
     if (!blog) {
@@ -42,11 +42,7 @@ export const blogsRepository = {
   deleteBlogById(id: string): void | any {
     const index = db.blogs.findIndex((v) => v.id === id);
 
-    if (index === -1) {
-      return undefined
-    }
-
     db.blogs.splice(index, 1);
-    return;
+    return index;
   },
 };

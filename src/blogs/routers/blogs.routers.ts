@@ -51,7 +51,7 @@ blogsRouter.delete('/:id', isAuthGuardMiddleware, idValidationParamId, inputVali
     const id = req.params.id;
     const blog = blogsRepository.deleteBlogById(id)
 
-    if (!blog) {
+    if (blog === -1) {
       res.status(HttpStatus.NotFound).send()
     }
 
