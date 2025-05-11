@@ -2,7 +2,6 @@ import {db, postDb} from "../../core/db/db";
 import {Post} from "../types/post";
 import {CreateBlogInputModel} from "../dto/createPostsInputModel";
 import {UpdatePostInputModel} from "../dto/updatePostsInputModel";
-import {Blog} from "../../blogs/types/blog";
 
 export const postsRepository = {
   findAllPosts(): Post[] {
@@ -52,7 +51,7 @@ export const postsRepository = {
 
   deletePostById(id: string): number {
     const index = postDb.posts.findIndex((v) => v.id === id);
-    db.blogs.splice(index, 1);
+    postDb.posts.splice(index, 1);
     return index;
   },
 };
