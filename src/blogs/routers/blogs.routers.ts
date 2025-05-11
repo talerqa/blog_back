@@ -24,7 +24,7 @@ blogsRouter.get('/:id', idValidationParamId, inputValidationResultMiddleware, (r
   const id = req.params.id
   const blog = blogsRepository.findBlogById(id as string)
   if (!blog) {
-    res.status(HttpStatus.NotFound).send(undefined);
+    res.status(HttpStatus.NotFound).send();
   }
   res.status(HttpStatus.Ok).send(blog);
 });
@@ -41,10 +41,10 @@ blogsRouter.put('/:id', isAuthGuardMiddleware, idValidationParamId, idValidation
   const blog = blogsRepository.updateBlog(id, {description, name, websiteUrl})
 
   if (!blog) {
-    res.status(HttpStatus.NotFound).send(undefined)
+    res.status(HttpStatus.NotFound).send()
   }
 
-  res.status(HttpStatus.NoContent).send(blog)
+  res.status(HttpStatus.NoContent).send()
 });
 
 blogsRouter.delete('/:id', isAuthGuardMiddleware, idValidationParamId, inputValidationResultMiddleware, (req, res, next) => {
@@ -52,10 +52,10 @@ blogsRouter.delete('/:id', isAuthGuardMiddleware, idValidationParamId, inputVali
     const blog = blogsRepository.deleteBlogById(id)
 
     if (!blog) {
-      res.status(HttpStatus.NotFound).send(undefined)
+      res.status(HttpStatus.NotFound).send()
     }
 
-    res.status(HttpStatus.NoContent).send(undefined)
+    res.status(HttpStatus.NoContent).send()
   }
 )
 ;

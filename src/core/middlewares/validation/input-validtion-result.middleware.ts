@@ -22,7 +22,7 @@ export const inputValidationResultMiddleware = (
   );
 
   if (filtered.length) {
-    return res.status(HttpStatus.BadRequest).json({ errorMessages: filtered});
+    return res.status(HttpStatus.BadRequest).json({ errorsMessages: filtered});
   }
 
   next(); // Если ошибок нет, передаём управление дальше
