@@ -26,24 +26,24 @@ export const blogsRepository = {
     return newBlog;
   },
 
-  updateBlog(id: string, dto: UpdateBlogInputModel): void {
-    const blogs = db.blogs.find((d) => d.id === id);
+  updateBlog(id: string, dto: UpdateBlogInputModel): void | null {
+    const blog = db.blogs.find((d) => d.id === id) ?? null;
 
-    if (!blogs) {
-      throw new Error('Blog not exist');
+    if (!blog) {
+      return blog
     }
 
-    blogs.name = dto.name;
-    blogs.description = dto.description;
-    blogs.websiteUrl = dto.websiteUrl;
+    blog.name = dto.name;
+    blog.description = dto.description;
+    blog.websiteUrl = dto.websiteUrl;
     return;
   },
 
-  deleteBlogById(id: string): void {
+  deleteBlogById(id: string): void | null {
     const index = db.blogs.findIndex((v) => v.id === id);
 
     if (index === -1) {
-      throw new Error('Blog not exist');
+      return null
     }
 
     db.blogs.splice(index, 1);
