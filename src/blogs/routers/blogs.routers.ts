@@ -16,12 +16,12 @@ import {isAuthGuardMiddleware} from "../../core/middlewares/isAuth.guard-middlew
 export const blogsRouter = Router({});
 
 
-blogsRouter.get('', (req, res) => {
+blogsRouter.get('', isAuthGuardMiddleware, (req, res) => {
   const blogs = blogsRepository.findAllBlogs()
   res.status(HttpStatus.Ok).send(blogs);
 });
 
-blogsRouter.get('/:id', idValidationParamId, inputValidationResultMiddleware, (req, res) => {
+blogsRouter.get('/:id', isAuthGuardMiddleware, idValidationParamId, inputValidationResultMiddleware, (req, res) => {
   const id = req.params.id
   const driver = blogsRepository.findBlogById(id as string)
   res.status(HttpStatus.Ok).send(driver);

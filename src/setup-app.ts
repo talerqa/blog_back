@@ -8,7 +8,7 @@ import {isAuthGuardMiddleware} from "./core/middlewares/isAuth.guard-middleware"
 export const setupApp = (app: Express) => {
   app.use(express.json());
 
-  app.use(BLOGS_PATH, isAuthGuardMiddleware, blogsRouter)
+  app.use(BLOGS_PATH, blogsRouter)
   app.use(TESTING_PATH, testingRouter);
   setupSwagger(app);
   return app;
