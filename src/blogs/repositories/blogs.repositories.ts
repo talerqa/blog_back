@@ -39,9 +39,8 @@ export const blogsRepository = {
     return blog;
   },
 
-  deleteBlogById(id: string): void | any {
+  deleteBlogById(id: string): number {
     const index = db.blogs.findIndex((v) => v.id === id);
-
     db.blogs.splice(index, 1);
     return index;
   },

@@ -1,0 +1,255 @@
+tags:
+  - name: Videos
+    description: API for managing videos
+
+paths:
+  /testing/all-data:
+    delete:
+      summary: Delete all video
+      tags: [ Videos ]
+      responses:
+        204:
+          description: All data is deleted
+        404:
+          description: Blog not found
+  /videos:
+    get:
+      summary: Returns all videos
+      tags: [ Videos ]
+      responses:
+        200:
+          description: Returns all videos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Blog'
+    post:
+      summary: Add a new video
+      tags: [ Videos ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVideoInputModel'
+      responses:
+        201:
+          description: Returns the newly created video
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Blog'
+        400:
+          description: If the inputModel has incorrect values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+  /videos/{id}:
+    get:
+      summary: Return video by id
+      tags: [ Videos ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: "The unique identifier of the driver"
+          schema:
+            type: integer
+            example: 2
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Blog'
+        404:
+          description: If video for passed id doesn't exist
+    put:
+      summary: Update existing video by id with InputModel
+      tags: [ Videos ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: "The unique identifier of the driver"
+          schema:
+            type: integer
+            example: 2
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateVideoInputModel'
+      responses:
+        204:
+          description: No content
+        400:
+          description: If the inputModel has incorrect values
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        404:
+          description: Not found
+    delete:
+      summary: Delete video specified by id
+      tags: [ Videos ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: "Blog id"
+          schema:
+            type: integer
+            example: 2
+      responses:
+        204:
+          description: No content
+        404:
+          description: Not found
+components:
+  schemas:
+    Video:
+      type: object
+      required:
+        - id
+        - title
+        - author
+        - canBeDownloaded
+        - minAgeRestriction
+        - createdAt
+        - publicationDate
+        - availableResolutions
+      properties:
+        id:
+          type: number
+          description: "The unique identifier for the driver"
+          example: 2
+        title:
+          type: string
+          description: "The full name of title"
+          example: "Title"
+        author:
+          type: string
+          description: "The author's name"
+          example: "Ivan"
+        canBeDownloaded:
+          type: boolean
+          default: true
+          description: "Blog can be downloaded"
+          example: true
+        minAgeRestriction:
+          type: string
+          nullable: true
+          description: "Minimum age restriction"
+          example: null
+        createdAt:
+          type: string
+          format: date-time
+          description: "The date and time when the video was created"
+          example: "2023-03-05T12:00:00Z"
+        publicationDate:
+          type: string
+          format: date-time
+          description: "The date and time when the video was published"
+          example: "2023-03-05T12:00:00Z"
+        availableResolutions:
+          type: array
+          items:
+            type: string
+            enum: [ P144, P240, P360, P480, P720, P1080, P1440, P2160 ]
+          description: "Resolution available video. Choose from the provided options"
+          example: [ "P144", "P360" ]
+    CreateVideoInputModel:
+      type: object
+      required:
+        - title
+        - author
+        - availableResolutions
+      properties:
+        title:
+          type: string
+          description: "The full name of title"
+          example: "Title"
+        author:
+          type: string
+          description: "The author's name"
+          example: "Ivan"
+        availableResolutions:
+          type: array
+          items:
+            type: string
+            enum: [ P144, P240, P360, P480, P720, P1080, P1440, P2160 ]
+          description: "Resolution available video. Choose from the provided options"
+          example: [ "P144", "P360" ]
+    UpdateVideoInputModel:
+      type: object
+      required:
+        - title
+        - author
+        - availableResolutions
+        - canBeDownloaded
+        - minAgeRestriction
+        - publicationDate
+      properties:
+        title:
+          type: string
+          description: "The full name of title"
+          example: "Title"
+        author:
+          type: string
+          description: "The author's name"
+          example: "Ivan"
+        availableResolutions:
+          type: array
+          items:
+            type: string
+            enum: [ P144, P240, P360, P480, P720, P1080, P1440, P2160 ]
+          description: "Resolution available video. Choose from the provided options"
+          example: [ "P144", "P360" ]
+        canBeDownloaded:
+          type: boolean
+          default: true
+          description: "Blog can be downloaded"
+          example: true
+        minAgeRestriction:
+          type: string
+          nullable: true
+          description: "Minimum age restriction"
+          example: null
+        publicationDate:
+          type: string
+          format: date-time
+          description: "The date and time when the video was published"
+          example: "2023-03-05T12:00:00Z"
+    Resolutions:
+      type: array
+      items:
+        type: string
+        enum: [ P144, P240, P360, P480, P720, P1080, P1440, P2160 ]
+      description: "Resolution available video. Choose from the provided options"
+      example: [ "P144", "P360" ]
+    ValidationError:
+      type: object
+      properties:
+        field:
+          type: string
+          nullable: true
+          example: "name"
+        message:
+          type: string
+          nullable: true
+          example: "Invalid name"
+    ValidationErrorResponse:
+      type: object
+      properties:
+        errorMessages:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/ValidationError'
