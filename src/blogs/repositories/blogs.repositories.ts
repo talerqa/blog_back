@@ -39,11 +39,11 @@ export const blogsRepository = {
     return;
   },
 
-  deleteBlogById(id: string): void | null {
+  deleteBlogById(id: string): void | any {
     const index = db.blogs.findIndex((v) => v.id === id);
 
     if (index === -1) {
-      return null
+      return undefined
     }
 
     db.blogs.splice(index, 1);
