@@ -1,6 +1,9 @@
 import express from 'express';
 import {setupApp} from './setup-app';
 import {runDB} from "./db/mongo.db";
+import * as dotenv from 'dotenv'
+
+dotenv.config()
 
 // создание приложения
 export default async function bootstrap() {
@@ -9,15 +12,14 @@ export default async function bootstrap() {
 
 // порт приложения
   const PORT = process.env.PORT || 5001;
-  const uri = 'mongodb://localhost:27017';
-  await runDB(uri);
+
+  await runDB(process.env.MONGODB_URI);
 
 // запуск приложения
   app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}`);
   });
-
   return app;
 };
 
-bootstrap()
+bootstrap();
