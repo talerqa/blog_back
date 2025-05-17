@@ -38,7 +38,7 @@ export let blogCollection: Collection<Blog>;
 export let postCollection: Collection<Post>;
 
 // Подключения к бд
-export async function runDB(url: string): Promise<void> {
+export const runDB = async (url: string): Promise<void> => {
   client = new MongoClient(url);
   const db: Db = client.db('blog');
 
