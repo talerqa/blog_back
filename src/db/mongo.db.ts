@@ -1,4 +1,4 @@
-import {Collection, Db, MongoClient} from 'mongodb';
+import {Collection, Db, MongoClient, ServerApiVersion} from 'mongodb';
 import {Blog} from '../blogs/types/blog';
 import {Post} from "../posts/types/post";
 // import { SETTINGS } from '../core/settings/settings';
@@ -11,8 +11,14 @@ export let blogCollection: Collection<Blog>;
 export let postCollection: Collection<Post>;
 
 // Подключения к бд
-export const runDB = async (url: string): Promise<void> => {
-  client = new MongoClient(url);
+export const runDB = async (): Promise<void> => {
+  client = new MongoClient(process.env.MONGODB_URI ?? '', {
+    serverApi: {
+      version: ServerApiVersion.v1,
+      strict: true,
+      deprecationErrors: true,
+    }
+  });
   const db: Db = client.db('blog');
 
 

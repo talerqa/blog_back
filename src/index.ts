@@ -13,7 +13,7 @@ export  default async function bootstrap() {
 // порт приложения
   const PORT = process.env.PORT || 5001;
 
-  await runDB(process.env.MONGODB_URI ?? '');
+  await runDB();
 
 // запуск приложения
   app.listen(PORT, () => {
