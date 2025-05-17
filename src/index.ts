@@ -6,7 +6,7 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 
 // создание приложения
-export  default async function bootstrap() {
+const bootstrap = async () => {
   const app = express();
   setupApp(app);
 
@@ -19,6 +19,6 @@ export  default async function bootstrap() {
   app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}`);
   });
+  return app;
 };
-
 bootstrap();
