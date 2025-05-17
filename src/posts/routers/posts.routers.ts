@@ -23,7 +23,7 @@ postsRouter.get('', async (req, res) => {
 });
 
 postsRouter.get('/:id', idValidationParamId, inputValidationResultMiddleware, async (req, res) => {
-  const id = req.params.id
+  const id = req.params?.id
   const blog = await postsRepository.findBlogById(id as string)
 
   if (!blog) {
@@ -53,7 +53,7 @@ postsRouter.put('/:id', body('').isLength({
   min: 3,
   max: 100
 }), isAuthGuardMiddleware, idValidationTitlePost, idValidationShortDescriptionPost, idValidationContentPost, idValidationBLogIdPost, inputValidationResultMiddleware, async (req, res,) => {
-  const id = req.params.id;
+  const id = req.params?.id;
   const {title, shortDescription, content, blogId} = req.body
 
   const blog = postsRepository.updatePost(id, {title, shortDescription, content, blogId})
@@ -66,8 +66,8 @@ postsRouter.put('/:id', body('').isLength({
 });
 
 postsRouter.delete('/:id', isAuthGuardMiddleware, idValidationParamId, inputValidationResultMiddleware, async (req, res, next) => {
-    const id = req.params.id;
-    const blog = postsRepository.deletePostById(id)
+    const id = req.params?.id;
+    const blog = await postsRepository.deletePostById(id)
 
     if (blog === -1) {
       res.status(HttpStatus.NotFound).send()

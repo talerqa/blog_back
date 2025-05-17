@@ -4,20 +4,20 @@ import {ObjectId, WithId, WithoutId} from "mongodb";
 import {blogCollection} from "../../db/mongo.db";
 
 export const blogsRepository = {
-  async findAllBlogs(): Promise<WithId<Blog>[]> {
+  async findAllBlogs(): Promise<any> {
     return blogCollection.find().toArray();
   },
 
-  async findBlogById(id: string): Promise<WithId<Blog>> | null {
+  async findBlogById(id: string): Promise<any>{
     return await blogCollection.findOne({_id: new ObjectId(id)}) ?? null;
   },
 
-  async createBlog(dto: WithoutId<Blog>): Promise<WithId<Blog>> {
+  async createBlog(dto: WithoutId<Blog>): Promise<any> {
     const insertResult = await blogCollection.insertOne(dto);
     return {...dto, _id: insertResult.insertedId}
   },
 
-  async updateBlog(id: string, dto: UpdateBlogInputModel): Promise<WithId<Blog>> {
+  async updateBlog(id: string, dto: UpdateBlogInputModel):Promise<any>{
     const blog = await blogCollection.findOne({_id: new ObjectId(id)})
 
     if (!blog) {
@@ -32,7 +32,7 @@ export const blogsRepository = {
     return blog;
   },
 
-  async deleteBlogById(id: string): number {
+  async deleteBlogById(id: string): Promise<any> {
     return blogCollection.deleteOne({_id: new ObjectId(id)});
   },
 };

@@ -3,4 +3,5 @@ export type CreateBlogInputModel = {
   shortDescription: string,
   content: string,
   blogId: string,
+  createdAt: string,
 }

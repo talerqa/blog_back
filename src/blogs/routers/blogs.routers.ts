@@ -23,8 +23,11 @@ blogsRouter.get('', async (req, res) => {
 });
 
 blogsRouter.get('/:id', idValidationParamId, inputValidationResultMiddleware, async (req, res) => {
-  const id = req.params.id
-  const blog = await blogsRepository.findBlogById(id as string)
+  if (req.params?.id) {
+    res.status(HttpStatus.NotFound).send();
+  }
+  const id = req.params?.id
+  const blog = await blogsRepository.findBlogById(id)
   if (!blog) {
     res.status(HttpStatus.NotFound).send();
   }
@@ -47,7 +50,7 @@ blogsRouter.post('', isAuthGuardMiddleware, idValidationNameBlog, idValidationDe
 })
 
 blogsRouter.put('/:id', isAuthGuardMiddleware, idValidationParamId, idValidationNameBlog, idValidationDescriptionBlog, idValidationWebsiteUrlBlog, inputValidationResultMiddleware, async (req, res,) => {
-  const id = req.params.id;
+  const id = req.params?.id;
   const {description, name, websiteUrl, isMembership}: CreateBlogInputModel = req.body
   const blog = await blogsRepository.updateBlog(id, {description, name, websiteUrl, isMembership})
 
@@ -59,7 +62,7 @@ blogsRouter.put('/:id', isAuthGuardMiddleware, idValidationParamId, idValidation
 });
 
 blogsRouter.delete('/:id', isAuthGuardMiddleware, idValidationParamId, inputValidationResultMiddleware, async (req, res, next) => {
-    const id = req.params.id;
+    const id = req.params?.id;
     const blog = await blogsRepository.deleteBlogById(id)
 
     if (blog === -1) {

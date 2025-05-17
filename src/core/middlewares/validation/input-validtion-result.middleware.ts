@@ -1,15 +1,15 @@
 import {ValidationError, validationResult} from 'express-validator';
 import {HttpStatus} from "../../types/httpCodes";
 
-const formatErrors = (error: ValidationError) => ({
-  field: error.path,  // Поле с ошибкой
+const formatErrors = (error: ValidationError | any) => ({
+  field: error?.path,  // Поле с ошибкой
   message: error.msg,  // Сообщение ошибки
 });
 
 export const inputValidationResultMiddleware = (
-  req,
-  res,
-  next
+  req: any,
+  res: any,
+  next: any
 ) => {
   const errors = validationResult(req).formatWith(formatErrors).array()
   const filtered = Object.values(
@@ -22,7 +22,7 @@ export const inputValidationResultMiddleware = (
   );
 
   if (filtered.length) {
-    return res.status(HttpStatus.BadRequest).json({ errorsMessages: filtered});
+    return res.status(HttpStatus.BadRequest).json({errorsMessages: filtered});
   }
 
   next(); // Если ошибок нет, передаём управление дальше

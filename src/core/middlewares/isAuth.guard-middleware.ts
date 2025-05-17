@@ -3,7 +3,7 @@ import {HttpStatus} from "../types/httpCodes";
 export const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'qwerty';
 
-export const isAuthGuardMiddleware = (req, res, next) => {
+export const isAuthGuardMiddleware = (req: any, res: any, next: any) => {
   const auth = req.headers['authorization'] as string; // 'Basic xxxx'
 
   if (auth !== 'Basic YWRtaW46cXdlcnR5') {
