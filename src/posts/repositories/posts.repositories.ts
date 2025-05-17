@@ -1,42 +1,42 @@
-import {db, postDb} from "../../core/db/db";
 import {Post} from "../types/post";
 import {CreateBlogInputModel} from "../dto/createPostsInputModel";
 import {UpdatePostInputModel} from "../dto/updatePostsInputModel";
+import {blogCollection, postCollection} from "../../db/mongo.db";
+import {WithId} from "mongodb";
+import {Blog} from "../../blogs/types/blog";
 
 export const postsRepository = {
-  findAllPosts(): Post[] {
-    return postDb.posts;
+  async findAllPosts(): Post[] {
+    return postCollection.find().toArray();
   },
 
-  findBlogById(id: string): Post | null {
-    return postDb.posts.find((d) => d.id === id) ?? null;
+  async findBlogById(id: string): Post | null {
+    return await postCollection.findOne({_id: new Object(id)}) ?? null;
   },
 
-  createBlog(dto: CreateBlogInputModel): Post | undefined {
-    const {title, shortDescription, content, blogId} = dto
-    const id = new Date().toISOString()
+  async createBlog(dto: CreateBlogInputModel): Promise<WithId<Post>> {
+    const {title, shortDescription, content, blogId, createdAt} = dto
 
-    const blog = db.blogs.find((b) => b.id === blogId)
+    const blog: Promise<WithId<Blog>> = await blogCollection.findOne({_id: new Object(blogId)})
 
     if (!blog) {
       return undefined
     }
 
-    const newBlog: Post = {
-      id,
+    const newBlog: any = {
+      createdAt,
       title,
       shortDescription,
       content,
       blogId,
       blogName: blog.name,
     }
-
-    postDb.posts.push(newBlog);
-    return newBlog;
+    const insertResult = await blogCollection.insertOne(dto);
+    return {...newBlog, _id: insertResult.insertedId}
   },
 
-  updatePost(id: string, dto: UpdatePostInputModel): Post | null {
-    const blog = postDb.posts.find((d) => d.id === id) ?? null;
+  async updatePost(id: string, dto: UpdatePostInputModel): Post | null {
+    const blog = await postCollection.findOne({_id: new Object(id)}) ?? null;
 
     if (!blog) {
       return blog
@@ -49,9 +49,7 @@ export const postsRepository = {
     return blog;
   },
 
-  deletePostById(id: string): number {
-    const index = postDb.posts.findIndex((v) => v.id === id);
-    postDb.posts.splice(index, 1);
-    return index;
+  async deletePostById(id: string): number {
+    return postCollection.deleteOne({_id: new Object(id)});
   },
 };

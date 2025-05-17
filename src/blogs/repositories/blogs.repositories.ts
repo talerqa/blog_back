@@ -1,47 +1,38 @@
 import {Blog} from "../types/blog";
-import {db} from "../../core/db/db";
 import {UpdateBlogInputModel} from "../dto/updateBlogsInputModel";
-import {CreateBlogInputModel} from "../dto/createBlogsInputModel";
+import {ObjectId, WithId, WithoutId} from "mongodb";
+import {blogCollection} from "../../db/mongo.db";
 
 export const blogsRepository = {
-  findAllBlogs(): Blog[] {
-    return db.blogs;
+  async findAllBlogs(): Promise<WithId<Blog>[]> {
+    return blogCollection.find().toArray();
   },
 
-  findBlogById(id: string): Blog | null {
-    return db.blogs.find((d) => d.id === id) ?? null;
+  async findBlogById(id: string): Promise<WithId<Blog>> | null {
+    return await blogCollection.findOne({_id: new ObjectId(id)}) ?? null;
   },
 
-  createBlog(dto: CreateBlogInputModel): Blog {
-    const {description, name, websiteUrl} = dto
-    const id = new Date().toISOString()
-    const newBlog: Blog = {
-      id,
-      description,
-      name,
-      websiteUrl
-    }
-
-    db.blogs.push(newBlog);
-    return newBlog;
+  async createBlog(dto: WithoutId<Blog>): Promise<WithId<Blog>> {
+    const insertResult = await blogCollection.insertOne(dto);
+    return {...dto, _id: insertResult.insertedId}
   },
 
-  updateBlog(id: string, dto: UpdateBlogInputModel): Blog | null {
-    const blog = db.blogs.find((d) => d.id === id) ?? null;
+  async updateBlog(id: string, dto: UpdateBlogInputModel): Promise<WithId<Blog>> {
+    const blog = await blogCollection.findOne({_id: new ObjectId(id)})
 
     if (!blog) {
-      return blog
+      throw new Error('')
+      return
     }
 
     blog.name = dto.name;
     blog.description = dto.description;
     blog.websiteUrl = dto.websiteUrl;
+    blog.isMembership = dto.isMembership;
     return blog;
   },
 
-  deleteBlogById(id: string): number {
-    const index = db.blogs.findIndex((v) => v.id === id);
-    db.blogs.splice(index, 1);
-    return index;
+  async deleteBlogById(id: string): number {
+    return blogCollection.deleteOne({_id: new ObjectId(id)});
   },
 };

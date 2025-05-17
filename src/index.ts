@@ -1,14 +1,21 @@
 import express from 'express';
 import {setupApp} from './setup-app';
+import {runDB} from "./db/mongo.db";
 
 // создание приложения
-const app = express();
-setupApp(app);
+const bootstrap = async () => {
+  const app = express();
+  setupApp(app);
 
 // порт приложения
-const PORT = process.env.PORT || 5001;
+  const PORT = process.env.PORT || 5001;
+  await runDB('mongodb://localhost:27017');
 
 // запуск приложения
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}`);
-});
+  app.listen(PORT, () => {
+    console.log(`Example app listening on port ${PORT}`);
+  });
+  return app;
+};
+
+bootstrap();

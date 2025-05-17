@@ -37,7 +37,7 @@ export const idValidationShortDescriptionPost = body("shortDescription")
   .isLength({min: 1, max: 100})
   .withMessage("shortDescription must not be empty");
 
-export const idValidationContentPost = body("content")
+export const idValidationContentPost = body("content").isNumeric()
   .exists()
   .withMessage("content is required")
   .isString()
