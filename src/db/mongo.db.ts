@@ -15,6 +15,7 @@ export const runDB = async (url: string): Promise<void> => {
   client = new MongoClient(url);
   const db: Db = client.db('blog');
 
+
   //Инициализация коллекций
   blogCollection = db.collection<Blog>(BLOG_COLLECTION_NAME);
   postCollection = db.collection<Post>(POST_COLLECTION_NAME);
