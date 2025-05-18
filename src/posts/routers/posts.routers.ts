@@ -34,7 +34,7 @@ postsRouter.get('/:id', idValidationParamId, inputValidationResultMiddleware, as
 
 postsRouter.post('', isAuthGuardMiddleware, idValidationTitlePost, idValidationShortDescriptionPost, idValidationContentPost, idValidationBLogIdPost, inputValidationResultMiddleware, async (req, res,) => {
   const {title, shortDescription, content, blogId} = req.body
-  const newBlog = postsRepository.createBlog({
+  const newBlog = await postsRepository.createBlog({
     title,
     shortDescription,
     content,
@@ -56,7 +56,7 @@ postsRouter.put('/:id', body('').isLength({
   const id = req.params?.id;
   const {title, shortDescription, content, blogId} = req.body
 
-  const blog = postsRepository.updatePost(id, {title, shortDescription, content, blogId})
+  const blog = await postsRepository.updatePost(id, {title, shortDescription, content, blogId})
 
   if (!blog) {
     res.status(HttpStatus.NotFound).send()
@@ -69,7 +69,7 @@ postsRouter.delete('/:id', isAuthGuardMiddleware, idValidationParamId, inputVali
     const id = req.params?.id;
     const blog = await postsRepository.deletePostById(id)
 
-    if (blog === -1) {
+    if (!blog) {
       res.status(HttpStatus.NotFound).send()
     }
 

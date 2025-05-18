@@ -1,38 +1,67 @@
 import {Blog} from "../types/blog";
 import {UpdateBlogInputModel} from "../dto/updateBlogsInputModel";
-import {ObjectId, WithId, WithoutId} from "mongodb";
+import {ObjectId, WithoutId} from "mongodb";
 import {blogCollection} from "../../db/mongo.db";
 
 export const blogsRepository = {
   async findAllBlogs(): Promise<any> {
-    return blogCollection.find().toArray();
+    const blogs = await blogCollection.find().toArray()
+
+    return blogs.map((blog) => ({
+      id: blog?._id.toString(),
+      name: blog?.name,
+      description: blog?.description,
+      websiteUrl: blog?.websiteUrl,
+      createdAt: blog?.createdAt,
+      isMembership: blog?.isMembership
+    }));
   },
 
-  async findBlogById(id: string): Promise<any>{
-    return await blogCollection.findOne({_id: new ObjectId(id)}) ?? null;
+  async findBlogById(id: string): Promise<any> {
+    const blog = await blogCollection.findOne({_id: new ObjectId(id)});
+
+    if (!blog) {
+      return null
+    }
+
+    return {
+      id: blog?._id.toString(),
+      name: blog?.name,
+      description: blog?.description,
+      websiteUrl: blog?.websiteUrl,
+      createdAt: blog?.createdAt,
+      isMembership: blog?.isMembership
+    };
   },
 
   async createBlog(dto: WithoutId<Blog>): Promise<any> {
     const insertResult = await blogCollection.insertOne(dto);
-    return {...dto, _id: insertResult.insertedId}
+    return {
+      id: insertResult.insertedId.toString(),
+      name: dto?.name,
+      description: dto?.description,
+      websiteUrl: dto?.websiteUrl,
+      createdAt: dto?.createdAt,
+      isMembership: dto?.isMembership
+    };
   },
 
-  async updateBlog(id: string, dto: UpdateBlogInputModel):Promise<any>{
-    const blog = await blogCollection.findOne({_id: new ObjectId(id)})
+  async updateBlog(id: string, dto: UpdateBlogInputModel): Promise<any> {
+    const blog = await blogCollection.updateOne({_id: new ObjectId(id)},
+      {
+        $set: {
+          name: dto.name,
+          description: dto.description,
+          websiteUrl: dto.websiteUrl,
+          isMembership: dto.isMembership
+        }
+      })
 
-    if (!blog) {
-      throw new Error('')
-      return
-    }
-
-    blog.name = dto.name;
-    blog.description = dto.description;
-    blog.websiteUrl = dto.websiteUrl;
-    blog.isMembership = dto.isMembership;
-    return blog;
+    return !(blog.matchedCount < 1)
   },
 
   async deleteBlogById(id: string): Promise<any> {
-    return blogCollection.deleteOne({_id: new ObjectId(id)});
+    const {deletedCount} = await blogCollection.deleteOne({_id: new ObjectId(id)});
+    return !!deletedCount
   },
 };

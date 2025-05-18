@@ -7,7 +7,9 @@ export const idValidationParamId = param("id")
   .withMessage("ID must be a string")
   .trim()
   .isLength({min: 1})
-  .withMessage("ID must not be empty");
+  .withMessage("ID must not be empty")
+  .isMongoId()
+  .withMessage("blogId must be a mongoDb id");
 
 
 export const idValidationBLogIdPost = body("blogId")
@@ -17,7 +19,9 @@ export const idValidationBLogIdPost = body("blogId")
   .withMessage("blogId must be a string")
   .trim()
   .isLength({min: 1})
-  .withMessage("blogId must not be empty");
+  .withMessage("blogId must not be empty")
+  .isMongoId()
+  .withMessage("blogId must be a mongoDb id");
 
 export const idValidationTitlePost = body("title")
   .exists()
