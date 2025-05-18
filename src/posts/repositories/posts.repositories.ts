@@ -75,8 +75,6 @@ export const postsRepository = {
         }
       })
 
-    console.log(blog)
-
     return !(blog.matchedCount < 1)
   },
 

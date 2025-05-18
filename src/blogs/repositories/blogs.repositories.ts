@@ -53,7 +53,6 @@ export const blogsRepository = {
           name: dto.name,
           description: dto.description,
           websiteUrl: dto.websiteUrl,
-          isMembership: dto.isMembership
         }
       })
 

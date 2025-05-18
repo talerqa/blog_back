@@ -48,8 +48,8 @@ blogsRouter.post('', isAuthGuardMiddleware, idValidationNameBlog, idValidationDe
 
 blogsRouter.put('/:id', isAuthGuardMiddleware, idValidationParamId, idValidationNameBlog, idValidationDescriptionBlog, idValidationWebsiteUrlBlog, inputValidationResultMiddleware, async (req, res,) => {
   const id = req.params?.id;
-  const {description, name, websiteUrl, isMembership}: CreateBlogInputModel = req.body
-  const blog = await blogsRepository.updateBlog(id, {description, name, websiteUrl, isMembership})
+  const {description, name, websiteUrl}: CreateBlogInputModel = req.body
+  const blog = await blogsRepository.updateBlog(id, {description, name, websiteUrl})
 
   if (!blog) {
     res.status(HttpStatus.NotFound).send()
