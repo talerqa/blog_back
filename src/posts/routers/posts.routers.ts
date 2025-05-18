@@ -34,7 +34,7 @@ postsRouter.get('/:id', idValidationParamId, inputValidationResultMiddleware, as
 
 postsRouter.post('', isAuthGuardMiddleware, idValidationTitlePost, idValidationShortDescriptionPost, idValidationContentPost, idValidationBLogIdPost, inputValidationResultMiddleware, async (req, res,) => {
   const {title, shortDescription, content, blogId} = req.body
-  const newBlog = await postsRepository.createBlog({
+  const newBlog = await postsRepository.createPost({
     title,
     shortDescription,
     content,

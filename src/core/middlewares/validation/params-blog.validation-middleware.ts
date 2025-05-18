@@ -40,3 +40,4 @@ export const idValidationWebsiteUrlBlog = body("websiteUrl")
   .withMessage("WebsiteUrl must not be empty")
   .isURL()
   .withMessage("WebsiteUrl must be pattern");
+  

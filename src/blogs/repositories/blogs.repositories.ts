@@ -13,7 +13,7 @@ export const blogsRepository = {
       description: blog?.description,
       websiteUrl: blog?.websiteUrl,
       createdAt: blog?.createdAt,
-      isMembership: blog?.isMembership
+      isMembership: blog?.isMembership ?? false
     }));
   },
 
@@ -35,7 +35,7 @@ export const blogsRepository = {
   },
 
   async createBlog(dto: WithoutId<Blog>): Promise<any> {
-    const insertResult = await blogCollection.insertOne(dto);
+    const insertResult = await blogCollection.insertOne({...dto, isMembership: dto?.isMembership ?? false});
     return {
       id: insertResult.insertedId.toString(),
       name: dto?.name,
