@@ -6,6 +6,7 @@ import {ObjectId} from "mongodb";
 export const postsRepository = {
   async findAllPosts(): Promise<any> {
     const posts = await postCollection.find().toArray()
+
     return posts.map((post) => ({
       id: post._id.toString(),
       title: post.title,
@@ -48,24 +49,24 @@ export const postsRepository = {
       return undefined
     }
 
-    const newBlog: any = {
+    const newPost: any = {
       createdAt,
       title,
       shortDescription,
       content,
       blogId,
-      blogName: blog?.name,
+      blogName: blog.name,
     }
-    const insertResult = await postCollection.insertOne(newBlog as any);
+    const insertResult = await postCollection.insertOne(newPost as any);
 
     return {
       id: insertResult.insertedId,
-      title: newBlog?.title,
-      shortDescription: newBlog?.shortDescription,
-      content: newBlog?.content,
-      blogId: newBlog?.blogId,
-      blogName: blog?.name,
-      createdAt: newBlog?.createdAt
+      title: newPost?.title,
+      shortDescription: newPost?.shortDescription,
+      content: newPost?.content,
+      blogId: newPost?.blogId,
+      blogName: newPost?.blogName,
+      createdAt: newPost?.createdAt
     }
   },
 
