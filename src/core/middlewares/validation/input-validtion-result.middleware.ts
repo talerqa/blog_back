@@ -1,17 +1,15 @@
-import {ValidationError, validationResult} from 'express-validator';
-import {HttpStatus} from "../../types/httpCodes";
+import { ValidationError, validationResult } from "express-validator";
+import { HttpStatus } from "../../types/httpCodes";
 
-const formatErrors = (error: ValidationError | any) => ({
-  field: error?.path,  // Поле с ошибкой
-  message: error.msg,  // Сообщение ошибки
+const formatErrors = (error: ValidationError & { path: string }) => ({
+  field: error?.path,
+  message: error.msg
 });
 
-export const inputValidationResultMiddleware = (
-  req: any,
-  res: any,
-  next: any
-) => {
-  const errors = validationResult(req).formatWith(formatErrors).array()
+export const inputValidationResultMiddleware = (req, res, next) => {
+  const errors = validationResult(req)
+    .formatWith(formatErrors)
+    .array();
   const filtered = Object.values(
     errors.reduce((acc, err) => {
       if (!acc[err.field]) {
@@ -22,8 +20,8 @@ export const inputValidationResultMiddleware = (
   );
 
   if (filtered.length) {
-    return res.status(HttpStatus.BadRequest).json({errorsMessages: filtered});
+    return res.status(HttpStatus.BadRequest).json({ errorsMessages: filtered });
   }
 
-  next(); // Если ошибок нет, передаём управление дальше
+  next();
 };
