@@ -1,21 +1,21 @@
 import { Router } from "express";
-import { HttpStatus } from "../../core/types/httpCodes";
+import { HttpStatus } from "../../../core/types/httpCodes";
 import {
   idValidationBLogIdPost,
   idValidationContentPost,
   idValidationParamId,
   idValidationShortDescriptionPost,
   idValidationTitlePost
-} from "../../core/middlewares/validation/params-post.validation-middleware";
-import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validtion-result.middleware";
-import { postsRepository } from "../repositories/posts.repositories";
-import { isAuthGuardMiddleware } from "../../core/middlewares/isAuth.guard-middleware";
+} from "../../../core/middlewares/validation/params-post.validation-middleware";
+import { inputValidationResultMiddleware } from "../../../core/middlewares/validation/input-validtion-result.middleware";
+import { isAuthGuardMiddleware } from "../../../core/middlewares/isAuth.guard-middleware";
 import { body } from "express-validator";
+import { postsService } from "../application/posts.service";
 
 export const postsRouter = Router({});
 
 postsRouter.get("", async (req, res) => {
-  const blogs = await postsRepository.findAllPosts();
+  const blogs = await postsService.findAllPosts();
   res.status(HttpStatus.Ok).send(blogs);
 });
 
@@ -25,7 +25,7 @@ postsRouter.get(
   inputValidationResultMiddleware,
   async (req, res) => {
     const id = req.params?.id;
-    const blog = await postsRepository.findBlogById(id);
+    const blog = await postsService.findBlogById(id);
 
     if (!blog) {
       res.status(HttpStatus.NotFound).send();
@@ -43,14 +43,7 @@ postsRouter.post(
   idValidationBLogIdPost,
   inputValidationResultMiddleware,
   async (req, res) => {
-    const { title, shortDescription, content, blogId } = req.body;
-    const newBlog = await postsRepository.createPost({
-      title,
-      shortDescription,
-      content,
-      blogId,
-      createdAt: new Date().toISOString()
-    });
+    const newBlog = await postsService.createPost(req.body);
 
     if (!newBlog) {
       res.status(HttpStatus.BadRequest).send();
@@ -74,14 +67,7 @@ postsRouter.put(
   inputValidationResultMiddleware,
   async (req, res) => {
     const id = req.params?.id;
-    const { title, shortDescription, content, blogId } = req.body;
-
-    const blog = await postsRepository.updatePost(id, {
-      title,
-      shortDescription,
-      content,
-      blogId
-    });
+    const blog = await postsService.updatePost(id, req.body);
 
     if (!blog) {
       res.status(HttpStatus.NotFound).send();
@@ -98,7 +84,7 @@ postsRouter.delete(
   inputValidationResultMiddleware,
   async (req, res) => {
     const id = req.params?.id;
-    const blog = await postsRepository.deletePostById(id);
+    const blog = await postsService.deletePostById(id);
 
     if (!blog) {
       res.status(HttpStatus.NotFound).send();

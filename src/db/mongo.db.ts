@@ -1,10 +1,9 @@
-import {Collection, Db, MongoClient, ServerApiVersion} from 'mongodb';
-import {Blog} from '../blogs/types/blog';
-import {Post} from "../posts/types/post";
-// import { SETTINGS } from '../core/settings/settings';
+import { Collection, Db, MongoClient, ServerApiVersion } from "mongodb";
+import { Blog } from "../entity/blogs/types/blog";
+import { Post } from "../entity/posts/types/post";
 
-const BLOG_COLLECTION_NAME = 'blog';
-const POST_COLLECTION_NAME = 'post';
+const BLOG_COLLECTION_NAME = "blog";
+const POST_COLLECTION_NAME = "post";
 
 export let client: MongoClient;
 export let blogCollection: Collection<Blog>;
@@ -12,15 +11,14 @@ export let postCollection: Collection<Post>;
 
 // Подключения к бд
 export const runDB = async (): Promise<void> => {
-  client = new MongoClient(process.env.MONGODB_URI ?? '', {
+  client = new MongoClient(process.env.MONGODB_LOCAL ?? "", {
     serverApi: {
       version: ServerApiVersion.v1,
       strict: true,
-      deprecationErrors: true,
+      deprecationErrors: true
     }
   });
-  const db: Db = client.db('blog');
-
+  const db: Db = client.db("blog");
 
   //Инициализация коллекций
   blogCollection = db.collection<Blog>(BLOG_COLLECTION_NAME);
@@ -28,10 +26,10 @@ export const runDB = async (): Promise<void> => {
 
   try {
     await client.connect();
-    await db.command({ping: 1});
-    console.log('✅ Connected to the database');
+    await db.command({ ping: 1 });
+    console.log("✅ Connected to the database");
   } catch (e) {
     await client.close();
     throw new Error(`❌ Database not connected: ${e}`);
   }
-}
+};

@@ -1,6 +1,6 @@
 import { CreateBlogInputModel } from "../dto/createPostsInputModel";
 import { UpdatePostInputModel } from "../dto/updatePostsInputModel";
-import { blogCollection, postCollection } from "../../db/mongo.db";
+import { blogCollection, postCollection } from "../../../db/mongo.db";
 import { ObjectId } from "mongodb";
 import { Post } from "../types/post";
 

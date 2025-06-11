@@ -1,14 +1,37 @@
 import { Blog } from "../types/blog";
 import { UpdateBlogInputModel } from "../dto/updateBlogsInputModel";
 import { ObjectId } from "mongodb";
-import { blogCollection } from "../../db/mongo.db";
+import { blogCollection } from "../../../db/mongo.db";
 import { CreateBlogInputModel } from "../dto/createBlogsInputModel";
+import { BlogResponse } from "../types/blogResponse";
+import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 
 export const blogsRepository = {
-  async findAllBlogs(): Promise<Blog[]> {
-    const blogs = await blogCollection.find().toArray();
+  async findAllBlogs(query: PagingAndSortType): Promise<BlogResponse> {
+    const {
+      searchNameTerm,
+      pageNumber,
+      pageSize,
+      sortBy,
+      sortDirection
+    } = query;
 
-    return blogs.map(blog => {
+    const skip = (pageNumber - 1) * pageSize;
+    const filter: any = {};
+    if (searchNameTerm) {
+      filter.name = { $regex: searchNameTerm, $options: "i" };
+    }
+
+    const blogs = await blogCollection
+      .find(filter)
+      .sort({ [sortBy]: sortDirection })
+      .skip(skip)
+      .limit(pageSize)
+      .toArray();
+
+    const totalCount = await blogCollection.countDocuments(filter);
+
+    const items = blogs.map(blog => {
       return {
         id: blog._id.toString(),
         name: blog.name,
@@ -18,6 +41,14 @@ export const blogsRepository = {
         isMembership: blog.isMembership ?? false
       };
     });
+
+    return {
+      pagesCount: Math.ceil(totalCount / pageSize),
+      page: pageNumber,
+      pageSize: pageSize,
+      totalCount,
+      items
+    };
   },
 
   async findBlogById(id: string): Promise<Blog> | null {
