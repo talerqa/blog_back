@@ -3,6 +3,7 @@ import { HttpStatus } from "../../../core/types/httpCodes";
 import {
   idValidationDescriptionBlog,
   idValidationNameBlog,
+  idValidationParamBlogId,
   idValidationParamId,
   idValidationWebsiteUrlBlog
 } from "../../../core/middlewares/validation/params-blog.validation-middleware";
@@ -101,12 +102,12 @@ blogsRouter.delete(
 );
 
 blogsRouter.get(
-  "/:id/posts",
+  "/:blogId/posts",
   paginationAndSortingValidation(SortFiledBlogs),
-  idValidationParamId,
+  idValidationParamBlogId,
   inputValidationResultMiddleware,
   async (req, res) => {
-    const id = req.params?.id;
+    const id = req.params?.blogId;
     const query = req.body;
     const posts = await blogsService.findAllPostByBlogId(id, query);
     if (!posts) {
@@ -117,16 +118,16 @@ blogsRouter.get(
 );
 
 blogsRouter.post(
-  "/:id/posts",
+  "/:blogId/posts",
   paginationAndSortingValidation(SortFiledBlogs),
   isAuthGuardMiddleware,
-  idValidationParamId,
+  idValidationParamBlogId,
   idValidationTitlePost,
   idValidationShortDescriptionPost,
   idValidationContentPost,
   inputValidationResultMiddleware,
   async (req, res) => {
-    const id = req.params?.id;
+    const id = req.params?.blogId;
     const query = req.body;
     const posts = await blogsService.createPostByBlogId(id, query);
     if (!posts) {

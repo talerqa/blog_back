@@ -115,5 +115,45 @@ export const postsRepository = {
       _id: new ObjectId(id)
     });
     return !!deletedCount;
+  },
+
+  async createPostBlogId(
+    id: any,
+    dto: CreateBlogInputModel
+  ): Promise<Post> | null {
+    const { title, shortDescription, content, blogId, createdAt } = dto;
+
+    const blog = await blogCollection.findOne({
+      _id: new ObjectId(id)
+    });
+
+    if (!blog) {
+      return null;
+    }
+
+    const newPost = {
+      createdAt,
+      title,
+      shortDescription,
+      content,
+      blogId,
+      blogName: blog.name
+    };
+
+    const insertResult = await postCollection.insertOne({
+      _id: undefined,
+      id: "",
+      ...newPost
+    });
+
+    return {
+      id: insertResult.insertedId,
+      title: newPost?.title,
+      shortDescription: newPost?.shortDescription,
+      content: newPost?.content,
+      blogId: newPost?.blogId,
+      blogName: newPost?.blogName,
+      createdAt: newPost?.createdAt
+    };
   }
 };

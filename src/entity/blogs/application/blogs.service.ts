@@ -56,16 +56,16 @@ export const blogsService = {
     id: string,
     body: CreateBlogInputModel
   ): Promise<Post> | null {
-    const { title, shortDescription, content } = body;
+    const { title, shortDescription, blogId, content } = body;
 
     const dto = {
       title,
       shortDescription,
       content,
-      blogId: id,
+      blogId,
       createdAt: new Date().toISOString()
     };
 
-    return postsRepository.createPost(dto);
+    return postsRepository.createPostBlogId(id, dto);
   }
 };

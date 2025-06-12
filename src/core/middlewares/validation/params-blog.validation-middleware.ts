@@ -1,4 +1,4 @@
-import {body, param} from "express-validator";
+import { body, param } from "express-validator";
 
 export const idValidationParamId = param("id")
   .exists()
@@ -6,11 +6,21 @@ export const idValidationParamId = param("id")
   .isString()
   .withMessage("ID must be a string")
   .trim()
-  .isLength({min: 1})
+  .isLength({ min: 1 })
   .withMessage("ID must not be empty")
   .isMongoId()
   .withMessage("blogId must be a mongoDb id");
 
+export const idValidationParamBlogId = param("blogId")
+  .exists()
+  .withMessage("ID is required")
+  .isString()
+  .withMessage("ID must be a string")
+  .trim()
+  .isLength({ min: 1 })
+  .withMessage("ID must not be empty")
+  .isMongoId()
+  .withMessage("blogId must be a mongoDb id");
 
 export const idValidationNameBlog = body("name")
   .exists()
@@ -18,7 +28,7 @@ export const idValidationNameBlog = body("name")
   .isString()
   .withMessage("Name must be a string")
   .trim()
-  .isLength({min: 1, max: 15})
+  .isLength({ min: 1, max: 15 })
   .withMessage("Name must not be empty");
 
 export const idValidationDescriptionBlog = body("description")
@@ -27,7 +37,7 @@ export const idValidationDescriptionBlog = body("description")
   .isString()
   .withMessage("Description must be a string")
   .trim()
-  .isLength({min: 1, max: 500})
+  .isLength({ min: 1, max: 500 })
   .withMessage("Description must not be empty");
 
 export const idValidationWebsiteUrlBlog = body("websiteUrl")
@@ -36,8 +46,7 @@ export const idValidationWebsiteUrlBlog = body("websiteUrl")
   .isString()
   .withMessage("WebsiteUrl must be a string")
   .trim()
-  .isLength({min: 1, max: 100})
+  .isLength({ min: 1, max: 100 })
   .withMessage("WebsiteUrl must not be empty")
   .isURL()
   .withMessage("WebsiteUrl must be pattern");
-  
