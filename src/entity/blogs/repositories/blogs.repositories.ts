@@ -6,6 +6,7 @@ import { CreateBlogInputModel } from "../dto/createBlogsInputModel";
 import { BlogResponse } from "../types/blogResponse";
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 import { PostResponse } from "../types/postResponse";
+import { SortDirection } from "../../../core/types/sortDesc";
 
 export const blogsRepository = {
   async findAllBlogs(query: PagingAndSortType): Promise<BlogResponse> {
@@ -14,7 +15,7 @@ export const blogsRepository = {
       pageNumber = 1,
       pageSize = 10,
       sortBy = "createdAt",
-      sortDirection
+      sortDirection = SortDirection.Desc
     } = query ?? {};
 
     const skip = (pageNumber - 1) * pageSize;
@@ -118,7 +119,7 @@ export const blogsRepository = {
       pageNumber = 1,
       pageSize = 10,
       sortBy = "createdAt",
-      sortDirection
+      sortDirection = SortDirection.Desc
     } = query ?? {};
 
     const skip = (pageNumber - 1) * pageSize;

@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb";
 import { Post } from "../types/post";
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 import { PostResponse } from "../../blogs/types/postResponse";
+import { SortDirection } from "../../../core/types/sortDesc";
 
 export const postsRepository = {
   async findAllPosts(query: PagingAndSortType): Promise<PostResponse> {
@@ -12,7 +13,7 @@ export const postsRepository = {
       pageNumber = 1,
       pageSize = 10,
       sortBy = "createdAt",
-      sortDirection
+      sortDirection = SortDirection.Desc
     } = query ?? {};
 
     const skip = (pageNumber - 1) * pageSize;
