@@ -56,7 +56,7 @@ export const blogsService = {
     id: string,
     body: CreateBlogInputModel
   ): Promise<Post> | null {
-    const { title, shortDescription, blogId, content } = body;
+    const { title, shortDescription, content } = body;
 
     const dto = {
       title,

@@ -127,7 +127,7 @@ export const postsRepository = {
     dto: CreateBlogInputModel
   ): Promise<Post> | null {
     const { title, shortDescription, content, blogId, createdAt } = dto;
-    console.log(dto);
+
     const blog = await blogCollection.findOne({ _id: new ObjectId(id) });
 
     if (!blog) {
@@ -150,7 +150,7 @@ export const postsRepository = {
     });
 
     return {
-      id: insertResult.insertedId,
+      id: insertResult.insertedId.toString(),
       title: newPost?.title,
       shortDescription: newPost?.shortDescription,
       content: newPost?.content,

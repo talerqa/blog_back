@@ -141,17 +141,17 @@ export const blogsRepository = {
       return null;
     }
 
-    const items = postsById.map(post => ({
-      id: post._id.toString(),
-      title: post.title,
-      shortDescription: post.shortDescription,
-      content: post.content,
-      blogId: post.blogId,
-      blogName: post.blogName,
-      createdAt: post.createdAt
+    const items = postsById?.map(post => ({
+      id: post?._id.toString(),
+      title: post?.title,
+      shortDescription: post?.shortDescription,
+      content: post?.content,
+      blogId: post?.blogId,
+      blogName: post?.blogName,
+      createdAt: post?.createdAt
     }));
 
-    const totalCount = await postCollection.countDocuments();
+    const totalCount = await postCollection.countDocuments({ blogId: id });
 
     return {
       pagesCount: Math.ceil(+totalCount / +pageSize),
