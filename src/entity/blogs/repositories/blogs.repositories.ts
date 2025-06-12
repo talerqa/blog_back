@@ -119,6 +119,12 @@ export const blogsRepository = {
 
     const skip = (pageNumber - 1) * pageSize;
 
+    const blog = await blogCollection.findOne({ _id: new ObjectId(id) });
+
+    if (!blog) {
+      return null;
+    }
+
     const postsById = await postCollection
       .find({ blogId: id })
       .sort({ [sortBy]: sortDirection })

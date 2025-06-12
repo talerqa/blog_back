@@ -129,6 +129,7 @@ blogsRouter.post(
   async (req, res) => {
     const id = req.params?.blogId;
     const query = req.body;
+
     const posts = await blogsService.createPostByBlogId(id, query);
     if (!posts) {
       res.status(HttpStatus.NotFound).send();

@@ -123,9 +123,7 @@ export const postsRepository = {
   ): Promise<Post> | null {
     const { title, shortDescription, content, blogId, createdAt } = dto;
 
-    const blog = await blogCollection.findOne({
-      _id: new ObjectId(id)
-    });
+    const blog = await blogCollection.findOne({ _id: new ObjectId(id) });
 
     if (!blog) {
       return null;
@@ -151,7 +149,7 @@ export const postsRepository = {
       title: newPost?.title,
       shortDescription: newPost?.shortDescription,
       content: newPost?.content,
-      blogId: newPost?.blogId,
+      blogId: id,
       blogName: newPost?.blogName,
       createdAt: newPost?.createdAt
     };
