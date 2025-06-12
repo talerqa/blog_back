@@ -157,7 +157,7 @@ export const blogsRepository = {
       pagesCount: Math.ceil(+totalCount / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: +totalCount,
+      totalCount: totalCount,
       items
     };
   }

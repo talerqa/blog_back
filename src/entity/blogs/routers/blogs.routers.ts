@@ -11,7 +11,10 @@ import { inputValidationResultMiddleware } from "../../../core/middlewares/valid
 import { isAuthGuardMiddleware } from "../../../core/middlewares/isAuth.guard-middleware";
 import { blogsService } from "../application/blogs.service";
 import { paginationAndSortingValidation } from "../../../core/middlewares/isQueryParams.validation-middleware";
-import { SortFiledBlogs } from "../../../core/types/sortFiledBlogs";
+import {
+  SortFiledBlogs,
+  SortFiledPost
+} from "../../../core/types/sortFiledBlogs";
 import {
   idValidationContentPost,
   idValidationShortDescriptionPost,
@@ -103,13 +106,14 @@ blogsRouter.delete(
 
 blogsRouter.get(
   "/:blogId/posts",
-  paginationAndSortingValidation(SortFiledBlogs),
+  paginationAndSortingValidation(SortFiledPost),
   idValidationParamBlogId,
   inputValidationResultMiddleware,
   async (req, res) => {
     const id = req.params?.blogId;
     const query = req.query;
     const posts = await blogsService.findAllPostByBlogId(id, query as any);
+
     if (!posts) {
       res.status(HttpStatus.NotFound).send();
     }
@@ -119,7 +123,6 @@ blogsRouter.get(
 
 blogsRouter.post(
   "/:blogId/posts",
-  paginationAndSortingValidation(SortFiledBlogs),
   isAuthGuardMiddleware,
   idValidationParamBlogId,
   idValidationTitlePost,

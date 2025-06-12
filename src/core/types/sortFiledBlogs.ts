@@ -5,3 +5,12 @@ export enum SortFiledBlogs {
   WebsiteUrl = "websiteUrl",
   isMembership = "isMembership"
 }
+
+export enum SortFiledPost {
+  title = "title",
+  shortDescription = "shortDescription",
+  content = "content",
+  blogId = "blogId",
+  blogName = "blogName",
+  createdAt = "createdAt"
+}
