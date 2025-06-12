@@ -13,7 +13,7 @@ export const blogsRepository = {
       searchNameTerm,
       pageNumber = 1,
       pageSize = 10,
-      sortBy,
+      sortBy = "createdAt",
       sortDirection
     } = query ?? {};
 
@@ -114,8 +114,12 @@ export const blogsRepository = {
     id: string,
     query: PagingAndSortType
   ): Promise<PostResponse> | null {
-    const { pageNumber = 1, pageSize = 10, sortBy, sortDirection } =
-      query ?? {};
+    const {
+      pageNumber = 1,
+      pageSize = 10,
+      sortBy = "createdAt",
+      sortDirection
+    } = query ?? {};
 
     const skip = (pageNumber - 1) * pageSize;
 

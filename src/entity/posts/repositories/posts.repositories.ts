@@ -8,8 +8,12 @@ import { PostResponse } from "../../blogs/types/postResponse";
 
 export const postsRepository = {
   async findAllPosts(query: PagingAndSortType): Promise<PostResponse> {
-    const { pageNumber = 1, pageSize = 10, sortBy, sortDirection } =
-      query ?? {};
+    const {
+      pageNumber = 1,
+      pageSize = 10,
+      sortBy = "createdAt",
+      sortDirection
+    } = query ?? {};
 
     const skip = (pageNumber - 1) * pageSize;
     const posts = await postCollection
