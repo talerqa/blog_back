@@ -11,13 +11,20 @@ import { inputValidationResultMiddleware } from "../../../core/middlewares/valid
 import { isAuthGuardMiddleware } from "../../../core/middlewares/isAuth.guard-middleware";
 import { body } from "express-validator";
 import { postsService } from "../application/posts.service";
+import { paginationAndSortingValidation } from "../../../core/middlewares/isQueryParams.validation-middleware";
+import { SortFiledBlogs } from "../../../core/types/sortFiledBlogs";
 
 export const postsRouter = Router({});
 
-postsRouter.get("", async (req, res) => {
-  const blogs = await postsService.findAllPosts();
-  res.status(HttpStatus.Ok).send(blogs);
-});
+postsRouter.get(
+  "",
+  paginationAndSortingValidation(SortFiledBlogs),
+  async (req, res) => {
+    const query = req.body;
+    const blogs = await postsService.findAllPosts(query);
+    res.status(HttpStatus.Ok).send(blogs);
+  }
+);
 
 postsRouter.get(
   "/:id",

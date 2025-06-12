@@ -4,6 +4,9 @@ import { CreateBlogInputModel } from "../dto/createBlogsInputModel";
 import { UpdateBlogInputModel } from "../dto/updateBlogsInputModel";
 import { BlogResponse } from "../types/blogResponse";
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
+import { PostResponse } from "../types/postResponse";
+import { Post } from "../../posts/types/post";
+import { postsRepository } from "../../posts/repositories/posts.repositories";
 
 export const blogsService = {
   async findAllBlogs(query: PagingAndSortType): Promise<BlogResponse> {
@@ -40,5 +43,29 @@ export const blogsService = {
 
   async deleteBlogById(id: string): Promise<boolean> {
     return blogsRepository.deleteBlogById(id);
+  },
+
+  async findAllPostByBlogId(
+    id: string,
+    query: PagingAndSortType
+  ): Promise<PostResponse> {
+    return blogsRepository.findPostsByBlogId(id, query);
+  },
+
+  async createPostByBlogId(
+    id: string,
+    body: CreateBlogInputModel
+  ): Promise<Post> | null {
+    const { title, shortDescription, content } = body;
+
+    const dto = {
+      title,
+      shortDescription,
+      content,
+      blogId: id,
+      createdAt: new Date().toISOString()
+    };
+
+    return postsRepository.createPost(dto);
   }
 };

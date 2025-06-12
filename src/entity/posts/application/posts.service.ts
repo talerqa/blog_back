@@ -2,10 +2,11 @@ import { postsRepository } from "../repositories/posts.repositories";
 import { Post } from "../types/post";
 import { CreateBlogInputModel } from "../dto/createPostsInputModel";
 import { UpdatePostInputModel } from "../dto/updatePostsInputModel";
+import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 
 export const postsService = {
-  async findAllPosts(): Promise<Post[]> {
-    return postsRepository.findAllPosts();
+  async findAllPosts(query: PagingAndSortType): Promise<Post[]> {
+    return postsRepository.findAllPosts(query);
   },
 
   async findBlogById(id: string): Promise<Post | null> {

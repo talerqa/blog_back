@@ -1,24 +1,26 @@
 import { Blog } from "../types/blog";
 import { UpdateBlogInputModel } from "../dto/updateBlogsInputModel";
 import { ObjectId } from "mongodb";
-import { blogCollection } from "../../../db/mongo.db";
+import { blogCollection, postCollection } from "../../../db/mongo.db";
 import { CreateBlogInputModel } from "../dto/createBlogsInputModel";
 import { BlogResponse } from "../types/blogResponse";
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
+import { PostResponse } from "../types/postResponse";
 
 export const blogsRepository = {
   async findAllBlogs(query: PagingAndSortType): Promise<BlogResponse> {
     const {
       searchNameTerm,
-      pageNumber,
-      pageSize,
+      pageNumber = 1,
+      pageSize = 10,
       sortBy,
       sortDirection
-    } = query;
+    } = query ?? {};
 
     const skip = (pageNumber - 1) * pageSize;
     const filter: any = {};
-    if (searchNameTerm) {
+
+    if (!!searchNameTerm) {
       filter.name = { $regex: searchNameTerm, $options: "i" };
     }
 
@@ -46,7 +48,7 @@ export const blogsRepository = {
       pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
       pageSize: pageSize,
-      totalCount,
+      totalCount: totalCount,
       items
     };
   },
@@ -106,5 +108,41 @@ export const blogsRepository = {
       _id: new ObjectId(id)
     });
     return !!deletedCount;
+  },
+
+  async findPostsByBlogId(
+    id: string,
+    query: PagingAndSortType
+  ): Promise<PostResponse> {
+    const { pageNumber = 1, pageSize = 10, sortBy, sortDirection } =
+      query ?? {};
+
+    const skip = (pageNumber - 1) * pageSize;
+
+    const postsById = await postCollection
+      .find({ _id: new ObjectId(id) })
+      .sort({ [sortBy]: sortDirection })
+      .skip(skip)
+      .limit(pageSize)
+      .toArray();
+
+    const items = postsById.map(post => ({
+      id: post._id.toString(),
+      title: post.title,
+      shortDescription: post.shortDescription,
+      content: post.content,
+      blogId: post.blogId,
+      blogName: post.blogName,
+      createdAt: post.createdAt
+    }));
+
+    const totalCount = await postCollection.countDocuments();
+    return {
+      pagesCount: Math.ceil(totalCount / pageSize),
+      page: pageNumber,
+      pageSize: pageSize,
+      totalCount: totalCount,
+      items
+    };
   }
 };

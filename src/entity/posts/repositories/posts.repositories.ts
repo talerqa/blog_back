@@ -3,12 +3,24 @@ import { UpdatePostInputModel } from "../dto/updatePostsInputModel";
 import { blogCollection, postCollection } from "../../../db/mongo.db";
 import { ObjectId } from "mongodb";
 import { Post } from "../types/post";
+import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
+import { PostResponse } from "../../blogs/types/postResponse";
 
 export const postsRepository = {
-  async findAllPosts(): Promise<Post[]> {
-    const posts = await postCollection.find().toArray();
+  async findAllPosts(query: PagingAndSortType): Promise<PostResponse> {
+    const { pageNumber = 1, pageSize = 10, sortBy, sortDirection } =
+      query ?? {};
 
-    return posts.map(post => ({
+    const skip = (pageNumber - 1) * pageSize;
+    const posts = await postCollection
+      .find()
+      .sort({ [sortBy]: sortDirection })
+      .skip(skip)
+      .limit(pageSize)
+      .toArray();
+    const totalCount = await postCollection.countDocuments();
+
+    const items = posts.map(post => ({
       id: post._id.toString(),
       title: post.title,
       shortDescription: post.shortDescription,
@@ -17,6 +29,14 @@ export const postsRepository = {
       blogName: post.blogName,
       createdAt: post.createdAt
     }));
+
+    return {
+      pagesCount: Math.ceil(totalCount / pageSize),
+      page: pageNumber,
+      pageSize: pageSize,
+      totalCount: totalCount,
+      items
+    };
   },
 
   async findBlogById(id: string): Promise<Post> | null {

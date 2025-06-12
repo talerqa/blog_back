@@ -18,7 +18,7 @@ blogsRouter.get(
   "",
   paginationAndSortingValidation(SortFiledBlogs),
   async (req, res) => {
-    const query = req.query;
+    const query = req.body;
 
     const blogs = await blogsService.findAllBlogs(query);
     res.status(HttpStatus.Ok).send(blogs);
@@ -92,5 +92,37 @@ blogsRouter.delete(
     }
 
     res.status(HttpStatus.NoContent).send();
+  }
+);
+
+blogsRouter.get(
+  "/:id/posts",
+  paginationAndSortingValidation(SortFiledBlogs),
+  idValidationParamId,
+  inputValidationResultMiddleware,
+  async (req, res) => {
+    const id = req.params?.id;
+    const query = req.body;
+    const posts = await blogsService.findAllPostByBlogId(id, query);
+    if (!posts) {
+      res.status(HttpStatus.NotFound).send();
+    }
+    res.status(HttpStatus.Ok).send(posts);
+  }
+);
+
+blogsRouter.post(
+  "/:id/posts",
+  paginationAndSortingValidation(SortFiledBlogs),
+  idValidationParamId,
+  inputValidationResultMiddleware,
+  async (req, res) => {
+    const id = req.params?.id;
+    const query = req.body;
+    const posts = await blogsService.createPostByBlogId(id, query);
+    if (!posts) {
+      res.status(HttpStatus.NotFound).send();
+    }
+    res.status(HttpStatus.Ok).send(posts);
   }
 );
