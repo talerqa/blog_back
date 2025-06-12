@@ -48,7 +48,7 @@ export const blogsService = {
   async findAllPostByBlogId(
     id: string,
     query: PagingAndSortType
-  ): Promise<PostResponse> {
+  ): Promise<PostResponse> | null {
     return blogsRepository.findPostsByBlogId(id, query);
   },
 

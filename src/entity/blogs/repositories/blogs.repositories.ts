@@ -113,18 +113,22 @@ export const blogsRepository = {
   async findPostsByBlogId(
     id: string,
     query: PagingAndSortType
-  ): Promise<PostResponse> {
+  ): Promise<PostResponse> | null {
     const { pageNumber = 1, pageSize = 10, sortBy, sortDirection } =
       query ?? {};
 
     const skip = (pageNumber - 1) * pageSize;
 
     const postsById = await postCollection
-      .find({ _id: new ObjectId(id) })
+      .find({ blogId: id })
       .sort({ [sortBy]: sortDirection })
       .skip(skip)
       .limit(pageSize)
       .toArray();
+
+    if (!postsById) {
+      return null;
+    }
 
     const items = postsById.map(post => ({
       id: post._id.toString(),
@@ -137,6 +141,7 @@ export const blogsRepository = {
     }));
 
     const totalCount = await postCollection.countDocuments();
+
     return {
       pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
