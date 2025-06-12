@@ -128,9 +128,9 @@ blogsRouter.post(
   inputValidationResultMiddleware,
   async (req, res) => {
     const id = req.params?.blogId;
-    const query = req.query;
-
-    const posts = await blogsService.createPostByBlogId(id, query);
+    const body = req.body;
+    console.log(id);
+    const posts = await blogsService.createPostByBlogId(id, body as any);
     if (!posts) {
       res.status(HttpStatus.NotFound).send();
     }

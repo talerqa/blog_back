@@ -6,7 +6,7 @@ import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 
 export const postsService = {
   async findAllPosts(query: PagingAndSortType): Promise<Post[]> {
-    return postsRepository.findAllPosts(query);
+    return postsRepository.findAllPosts(query as any);
   },
 
   async findBlogById(id: string): Promise<Post | null> {

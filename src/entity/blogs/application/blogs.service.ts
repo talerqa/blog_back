@@ -62,7 +62,7 @@ export const blogsService = {
       title,
       shortDescription,
       content,
-      blogId,
+      blogId: id,
       createdAt: new Date().toISOString()
     };
 
