@@ -24,7 +24,7 @@ blogsRouter.get(
   "",
   paginationAndSortingValidation(SortFiledBlogs),
   async (req, res) => {
-    const query = req.body;
+    const query = req.query;
 
     const blogs = await blogsService.findAllBlogs(query);
     res.status(HttpStatus.Ok).send(blogs);
@@ -108,8 +108,8 @@ blogsRouter.get(
   inputValidationResultMiddleware,
   async (req, res) => {
     const id = req.params?.blogId;
-    const query = req.body;
-    const posts = await blogsService.findAllPostByBlogId(id, query);
+    const query = req.query;
+    const posts = await blogsService.findAllPostByBlogId(id, query as any);
     if (!posts) {
       res.status(HttpStatus.NotFound).send();
     }
@@ -128,7 +128,7 @@ blogsRouter.post(
   inputValidationResultMiddleware,
   async (req, res) => {
     const id = req.params?.blogId;
-    const query = req.body;
+    const query = req.query;
 
     const posts = await blogsService.createPostByBlogId(id, query);
     if (!posts) {

@@ -20,7 +20,7 @@ postsRouter.get(
   "",
   paginationAndSortingValidation(SortFiledBlogs),
   async (req, res) => {
-    const query = req.body;
+    const query = req.query;
     const blogs = await postsService.findAllPosts(query);
     res.status(HttpStatus.Ok).send(blogs);
   }

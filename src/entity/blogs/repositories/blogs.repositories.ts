@@ -18,7 +18,7 @@ export const blogsRepository = {
       sortDirection = SortDirection.Desc
     } = query ?? {};
 
-    const skip = (pageNumber - 1) * pageSize;
+    const skip = (+pageNumber - 1) * +pageSize;
     const filter: any = {};
 
     if (!!searchNameTerm) {
@@ -29,7 +29,7 @@ export const blogsRepository = {
       .find(filter)
       .sort({ [sortBy]: sortDirection })
       .skip(skip)
-      .limit(pageSize)
+      .limit(+pageSize)
       .toArray();
 
     const totalCount = await blogCollection.countDocuments(filter);
@@ -46,9 +46,9 @@ export const blogsRepository = {
     });
 
     return {
-      pagesCount: Math.ceil(totalCount / pageSize),
-      page: pageNumber,
-      pageSize: pageSize,
+      pagesCount: Math.ceil(totalCount / +pageSize),
+      page: +pageNumber,
+      pageSize: +pageSize,
       totalCount: totalCount,
       items
     };
@@ -122,7 +122,7 @@ export const blogsRepository = {
       sortDirection = SortDirection.Desc
     } = query ?? {};
 
-    const skip = (pageNumber - 1) * pageSize;
+    const skip = (+pageNumber - 1) * +pageSize;
 
     const blog = await blogCollection.findOne({ _id: new ObjectId(id) });
 
@@ -134,7 +134,7 @@ export const blogsRepository = {
       .find({ blogId: id })
       .sort({ [sortBy]: sortDirection })
       .skip(skip)
-      .limit(pageSize)
+      .limit(+pageSize)
       .toArray();
 
     if (!postsById) {
@@ -154,10 +154,10 @@ export const blogsRepository = {
     const totalCount = await postCollection.countDocuments();
 
     return {
-      pagesCount: Math.ceil(totalCount / pageSize),
-      page: pageNumber,
-      pageSize: pageSize,
-      totalCount: totalCount,
+      pagesCount: Math.ceil(+totalCount / +pageSize),
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: +totalCount,
       items
     };
   }

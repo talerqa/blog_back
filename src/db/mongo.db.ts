@@ -11,8 +11,8 @@ export let postCollection: Collection<Post>;
 
 // Подключения к бд
 export const runDB = async (): Promise<void> => {
-  //client = new MongoClient(process.env.MONGODB_LOCAL ?? "", {
-  client = new MongoClient(process.env.MONGODB_URI ?? "", {
+  client = new MongoClient(process.env.MONGODB_LOCAL ?? "", {
+    //client = new MongoClient(process.env.MONGODB_URI ?? "", {
     serverApi: {
       version: ServerApiVersion.v1,
       strict: true,

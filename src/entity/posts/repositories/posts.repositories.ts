@@ -16,12 +16,12 @@ export const postsRepository = {
       sortDirection = SortDirection.Desc
     } = query ?? {};
 
-    const skip = (pageNumber - 1) * pageSize;
+    const skip = (+pageNumber - 1) * +pageSize;
     const posts = await postCollection
       .find()
       .sort({ [sortBy]: sortDirection })
       .skip(skip)
-      .limit(pageSize)
+      .limit(+pageSize)
       .toArray();
     const totalCount = await postCollection.countDocuments();
 
@@ -36,10 +36,10 @@ export const postsRepository = {
     }));
 
     return {
-      pagesCount: Math.ceil(totalCount / pageSize),
-      page: pageNumber,
-      pageSize: pageSize,
-      totalCount: totalCount,
+      pagesCount: Math.ceil(+totalCount / +pageSize),
+      page: +pageNumber,
+      pageSize: +pageSize,
+      totalCount: +totalCount,
       items
     };
   },
