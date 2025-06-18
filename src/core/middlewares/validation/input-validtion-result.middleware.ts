@@ -2,9 +2,8 @@ import { ValidationError, validationResult } from "express-validator";
 import { HttpStatus } from "../../types/httpCodes";
 import { NextFunction, Request, Response } from "express";
 
-const formatErrors = (error: ValidationError) => ({
-  // field: error?.path, работало
-  field: error?.type,
+const formatErrors = (error: ValidationError | any) => ({
+  field: error?.path,
   message: error.msg
 });
 
@@ -27,7 +26,6 @@ export const inputValidationResultMiddleware = (
 
   if (filtered.length) {
     res.status(HttpStatus.BadRequest).json({ errorsMessages: filtered });
-
     return;
   }
 
