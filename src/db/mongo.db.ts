@@ -9,10 +9,21 @@ export let client: MongoClient;
 export let blogCollection: Collection<Blog>;
 export let postCollection: Collection<Post>;
 
+export async function stopDb() {
+  if (!client) {
+    throw new Error(`❌ Database not connected`);
+  }
+  await client.close();
+}
+
 // Подключения к бд
 export const runDB = async (): Promise<void> => {
+  // LOCAL
   // client = new MongoClient(process.env.MONGODB_LOCAL ?? "", {
-  client = new MongoClient(process.env.MONGODB_URI ?? "", {
+  // TEST
+  client = new MongoClient("mongodb://localhost:27017", {
+    // INCUB
+    // client = new MongoClient(process.env.MONGODB_URI ?? "", {
     serverApi: {
       version: ServerApiVersion.v1,
       strict: true,
@@ -30,7 +41,6 @@ export const runDB = async (): Promise<void> => {
     await db.command({ ping: 1 });
     console.log("✅ Connected to the database");
   } catch (e) {
-    await client.close();
-    throw new Error(`❌ Database not connected: ${e}`);
+    await stopDb();
   }
 };

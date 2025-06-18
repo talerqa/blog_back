@@ -3,17 +3,18 @@ import { Post } from "../types/post";
 import { CreateBlogInputModel } from "../dto/createPostsInputModel";
 import { UpdatePostInputModel } from "../dto/updatePostsInputModel";
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
+import { PostResponse } from "../../blogs/types/postResponse";
 
 export const postsService = {
-  async findAllPosts(query: PagingAndSortType): Promise<Post[]> {
-    return postsRepository.findAllPosts(query as any);
+  async findAllPosts(query: PagingAndSortType): Promise<PostResponse> {
+    return postsRepository.findAllPosts(query);
   },
 
   async findBlogById(id: string): Promise<Post | null> {
     return postsRepository.findBlogById(id);
   },
 
-  async createPost(body: CreateBlogInputModel): Promise<Post> | null {
+  async createPost(body: CreateBlogInputModel): Promise<Post | null> {
     const { title, shortDescription, content, blogId } = body;
 
     const dto = {
@@ -27,10 +28,7 @@ export const postsService = {
     return postsRepository.createPost(dto);
   },
 
-  async updatePost(
-    id: string,
-    body: UpdatePostInputModel
-  ): Promise<Post> | null {
+  async updatePost(id: string, body: UpdatePostInputModel): Promise<boolean> {
     const { title, shortDescription, content, blogId } = body;
 
     const dto = {

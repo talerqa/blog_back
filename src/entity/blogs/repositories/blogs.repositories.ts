@@ -54,7 +54,7 @@ export const blogsRepository = {
     };
   },
 
-  async findBlogById(id: string): Promise<Blog> | null {
+  async findBlogById(id: string): Promise<Blog | null> {
     const blog = await blogCollection.findOne({ _id: new ObjectId(id) });
 
     if (!blog) {
@@ -114,7 +114,7 @@ export const blogsRepository = {
   async findPostsByBlogId(
     id: string,
     query: PagingAndSortType
-  ): Promise<PostResponse> | null {
+  ): Promise<PostResponse | null> {
     const {
       pageNumber = 1,
       pageSize = 10,

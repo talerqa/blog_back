@@ -44,7 +44,7 @@ export const postsRepository = {
     };
   },
 
-  async findBlogById(id: string): Promise<Post> | null {
+  async findBlogById(id: string): Promise<Post | null> {
     const post = await postCollection.findOne({ _id: new ObjectId(id) });
 
     if (!post) {
@@ -62,7 +62,7 @@ export const postsRepository = {
     };
   },
 
-  async createPost(dto: CreateBlogInputModel): Promise<Post> | null {
+  async createPost(dto: CreateBlogInputModel): Promise<Post | null> {
     const { title, shortDescription, content, blogId, createdAt } = dto;
 
     const blog = await blogCollection.findOne({
@@ -89,7 +89,7 @@ export const postsRepository = {
     });
 
     return {
-      id: insertResult.insertedId,
+      id: insertResult.insertedId.toString(),
       title: newPost?.title,
       shortDescription: newPost?.shortDescription,
       content: newPost?.content,
@@ -125,7 +125,7 @@ export const postsRepository = {
   async createPostBlogId(
     id: any,
     dto: CreateBlogInputModel
-  ): Promise<Post> | null {
+  ): Promise<Post | null> {
     const { title, shortDescription, content, blogId, createdAt } = dto;
 
     const blog = await blogCollection.findOne({ _id: new ObjectId(id) });

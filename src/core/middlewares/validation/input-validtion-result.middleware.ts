@@ -1,12 +1,18 @@
 import { ValidationError, validationResult } from "express-validator";
 import { HttpStatus } from "../../types/httpCodes";
+import { NextFunction, Request, Response } from "express";
 
-const formatErrors = (error: ValidationError & { path: string }) => ({
-  field: error?.path,
+const formatErrors = (error: ValidationError) => ({
+  // field: error?.path, работало
+  field: error?.type,
   message: error.msg
 });
 
-export const inputValidationResultMiddleware = (req, res, next) => {
+export const inputValidationResultMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   const errors = validationResult(req)
     .formatWith(formatErrors)
     .array();
@@ -20,7 +26,9 @@ export const inputValidationResultMiddleware = (req, res, next) => {
   );
 
   if (filtered.length) {
-    return res.status(HttpStatus.BadRequest).json({ errorsMessages: filtered });
+    res.status(HttpStatus.BadRequest).json({ errorsMessages: filtered });
+
+    return;
   }
 
   next();

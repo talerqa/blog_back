@@ -13,7 +13,7 @@ export const blogsService = {
     return blogsRepository.findAllBlogs(query);
   },
 
-  async findBlogById(id: string): Promise<Blog> | null {
+  async findBlogById(id: string): Promise<Blog | null> {
     return blogsRepository.findBlogById(id);
   },
 
@@ -30,7 +30,7 @@ export const blogsService = {
   },
 
   async updateBlog(id: string, body: UpdateBlogInputModel): Promise<boolean> {
-    const { description, name, websiteUrl }: CreateBlogInputModel = body;
+    const { description, name, websiteUrl }: UpdateBlogInputModel = body;
 
     const dto: UpdateBlogInputModel = {
       description,
@@ -48,20 +48,20 @@ export const blogsService = {
   async findAllPostByBlogId(
     id: string,
     query: PagingAndSortType
-  ): Promise<PostResponse> | null {
+  ): Promise<PostResponse | null> {
     return blogsRepository.findPostsByBlogId(id, query);
   },
 
   async createPostByBlogId(
     id: string,
     body: CreateBlogInputModel
-  ): Promise<Post> | null {
-    const { title, shortDescription, content } = body;
+  ): Promise<Post | null> {
+    const { title, shortDescription, content }: CreateBlogInputModel = body;
 
     const dto = {
-      title,
-      shortDescription,
-      content,
+      title: title as string,
+      shortDescription: shortDescription as string,
+      content: content as string,
       blogId: id,
       createdAt: new Date().toISOString()
     };

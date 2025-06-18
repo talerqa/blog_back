@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import { HttpStatus } from "../../../core/types/httpCodes";
 import {
   idValidationBLogIdPost,
@@ -13,15 +13,18 @@ import { body } from "express-validator";
 import { postsService } from "../application/posts.service";
 import { paginationAndSortingValidation } from "../../../core/middlewares/isQueryParams.validation-middleware";
 import { SortFiledBlogs } from "../../../core/types/sortFiledBlogs";
+import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 
 export const postsRouter = Router({});
 
 postsRouter.get(
   "",
   paginationAndSortingValidation(SortFiledBlogs),
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const query = req.query;
-    const blogs = await postsService.findAllPosts(query);
+    const blogs = await postsService.findAllPosts(
+      (query as unknown) as PagingAndSortType
+    );
     res.status(HttpStatus.Ok).send(blogs);
   }
 );
@@ -30,8 +33,8 @@ postsRouter.get(
   "/:id",
   idValidationParamId,
   inputValidationResultMiddleware,
-  async (req, res) => {
-    const id = req.params?.id;
+  async (req: Request, res: Response) => {
+    const id = req.params?.id as string;
     const blog = await postsService.findBlogById(id);
 
     if (!blog) {
@@ -49,7 +52,7 @@ postsRouter.post(
   idValidationContentPost,
   idValidationBLogIdPost,
   inputValidationResultMiddleware,
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     const newBlog = await postsService.createPost(req.body);
 
     if (!newBlog) {
@@ -72,8 +75,8 @@ postsRouter.put(
   idValidationContentPost,
   idValidationBLogIdPost,
   inputValidationResultMiddleware,
-  async (req, res) => {
-    const id = req.params?.id;
+  async (req: Request, res: Response) => {
+    const id = req.params?.id as string;
     const blog = await postsService.updatePost(id, req.body);
 
     if (!blog) {
@@ -89,8 +92,8 @@ postsRouter.delete(
   isAuthGuardMiddleware,
   idValidationParamId,
   inputValidationResultMiddleware,
-  async (req, res) => {
-    const id = req.params?.id;
+  async (req: Request, res: Response) => {
+    const id = req.params?.id as string;
     const blog = await postsService.deletePostById(id);
 
     if (!blog) {

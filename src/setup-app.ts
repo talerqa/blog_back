@@ -2,7 +2,7 @@ import express, { Express } from "express";
 import { blogsRouter } from "./entity/blogs/routers/blogs.routers";
 import { BLOGS_PATH, POSTS_PATH, TESTING_PATH } from "./core/paths/paths";
 import { setupSwagger } from "./core/swagger/setup-swagger";
-import { testingRouter } from "./__test__/routers/test.routers";
+import { testingRouter } from "./__test__/utils/routers/test.routers";
 import { postsRouter } from "./entity/posts/routers/posts.routers";
 
 export const setupApp = (app: Express) => {
