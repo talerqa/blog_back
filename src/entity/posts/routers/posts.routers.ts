@@ -1,5 +1,4 @@
-import { Request, Response, Router } from "express";
-import { HttpStatus } from "../../../core/types/httpCodes";
+import { Router } from "express";
 import {
   idValidationBLogIdPost,
   idValidationContentPost,
@@ -10,38 +9,27 @@ import {
 import { inputValidationResultMiddleware } from "../../../core/middlewares/validation/input-validtion-result.middleware";
 import { isAuthGuardMiddleware } from "../../../core/middlewares/isAuth.guard-middleware";
 import { body } from "express-validator";
-import { postsService } from "../application/posts.service";
 import { paginationAndSortingValidation } from "../../../core/middlewares/isQueryParams.validation-middleware";
 import { SortFiledBlogs } from "../../../core/types/sortFiledBlogs";
-import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
+import { getAllPostsHandler } from "./handlers/getAllPosts.handler";
+import { getPostByIdHandler } from "./handlers/getPostById.handler";
+import { createPostHandler } from "./handlers/createPost.handler";
+import { updatePostHandler } from "./handlers/updatePost.handler";
+import { deletePostHandler } from "./handlers/deletePost.handler";
 
 export const postsRouter = Router({});
 
 postsRouter.get(
   "",
   paginationAndSortingValidation(SortFiledBlogs),
-  async (req: Request, res: Response) => {
-    const query = req.query;
-    const blogs = await postsService.findAllPosts(
-      (query as unknown) as PagingAndSortType
-    );
-    res.status(HttpStatus.Ok).send(blogs);
-  }
+  getAllPostsHandler
 );
 
 postsRouter.get(
   "/:id",
   idValidationParamId,
   inputValidationResultMiddleware,
-  async (req: Request, res: Response) => {
-    const id = req.params?.id as string;
-    const blog = await postsService.findBlogById(id);
-
-    if (!blog) {
-      res.status(HttpStatus.NotFound).send();
-    }
-    res.status(HttpStatus.Ok).send(blog);
-  }
+  getPostByIdHandler
 );
 
 postsRouter.post(
@@ -52,15 +40,7 @@ postsRouter.post(
   idValidationContentPost,
   idValidationBLogIdPost,
   inputValidationResultMiddleware,
-  async (req: Request, res: Response) => {
-    const newBlog = await postsService.createPost(req.body);
-
-    if (!newBlog) {
-      res.status(HttpStatus.BadRequest).send();
-    }
-
-    res.status(HttpStatus.Created).send(newBlog);
-  }
+  createPostHandler
 );
 
 postsRouter.put(
@@ -75,16 +55,7 @@ postsRouter.put(
   idValidationContentPost,
   idValidationBLogIdPost,
   inputValidationResultMiddleware,
-  async (req: Request, res: Response) => {
-    const id = req.params?.id as string;
-    const blog = await postsService.updatePost(id, req.body);
-
-    if (!blog) {
-      res.status(HttpStatus.NotFound).send();
-    }
-
-    res.status(HttpStatus.NoContent).send();
-  }
+  updatePostHandler
 );
 
 postsRouter.delete(
@@ -92,14 +63,5 @@ postsRouter.delete(
   isAuthGuardMiddleware,
   idValidationParamId,
   inputValidationResultMiddleware,
-  async (req: Request, res: Response) => {
-    const id = req.params?.id as string;
-    const blog = await postsService.deletePostById(id);
-
-    if (!blog) {
-      res.status(HttpStatus.NotFound).send();
-    }
-
-    res.status(HttpStatus.NoContent).send();
-  }
+  deletePostHandler
 );

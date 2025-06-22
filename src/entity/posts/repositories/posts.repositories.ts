@@ -6,13 +6,16 @@ import { Post } from "../types/post";
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 import { PostResponse } from "../../blogs/types/postResponse";
 import { SortDirection } from "../../../core/types/sortDesc";
+import { IMetaDataBlog } from "../../blogs/types/IMetaDataBlog";
+import { mapToPostPaging } from "../../../core/utils/mappers/mapToPostPaging";
+import { SortFiledPost } from "../../../core/types/sortFiledBlogs";
 
 export const postsRepository = {
   async findAllPosts(query: PagingAndSortType): Promise<PostResponse> {
     const {
       pageNumber = 1,
       pageSize = 10,
-      sortBy = "createdAt",
+      sortBy = SortFiledPost.createdAt,
       sortDirection = SortDirection.Desc
     } = query ?? {};
 
@@ -25,23 +28,14 @@ export const postsRepository = {
       .toArray();
     const totalCount = await postCollection.countDocuments();
 
-    const items = posts.map(post => ({
-      id: post._id.toString(),
-      title: post.title,
-      shortDescription: post.shortDescription,
-      content: post.content,
-      blogId: post.blogId,
-      blogName: post.blogName,
-      createdAt: post.createdAt
-    }));
-
-    return {
+    const metaData: IMetaDataBlog = {
       pagesCount: Math.ceil(+totalCount / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: +totalCount,
-      items
+      totalCount: +totalCount
     };
+
+    return mapToPostPaging(posts, metaData);
   },
 
   async findBlogById(id: string): Promise<Post | null> {
@@ -52,13 +46,13 @@ export const postsRepository = {
     }
 
     return {
-      id: post?._id.toString(),
-      title: post?.title,
-      shortDescription: post?.shortDescription,
-      content: post?.content,
-      blogId: post?.blogId,
-      blogName: post?.blogName,
-      createdAt: post?.createdAt
+      id: post._id.toString(),
+      title: post.title,
+      shortDescription: post.shortDescription,
+      content: post.content,
+      blogId: post.blogId,
+      blogName: post.blogName,
+      createdAt: post.createdAt
     };
   },
 
@@ -90,12 +84,12 @@ export const postsRepository = {
 
     return {
       id: insertResult.insertedId.toString(),
-      title: newPost?.title,
-      shortDescription: newPost?.shortDescription,
-      content: newPost?.content,
-      blogId: newPost?.blogId,
-      blogName: newPost?.blogName,
-      createdAt: newPost?.createdAt
+      title: newPost.title,
+      shortDescription: newPost.shortDescription,
+      content: newPost.content,
+      blogId: newPost.blogId,
+      blogName: newPost.blogName,
+      createdAt: newPost.createdAt
     };
   },
 
@@ -123,7 +117,7 @@ export const postsRepository = {
   },
 
   async createPostBlogId(
-    id: any,
+    id: string,
     dto: CreateBlogInputModel
   ): Promise<Post | null> {
     const { title, shortDescription, content, blogId, createdAt } = dto;
@@ -151,12 +145,12 @@ export const postsRepository = {
 
     return {
       id: insertResult.insertedId.toString(),
-      title: newPost?.title,
-      shortDescription: newPost?.shortDescription,
-      content: newPost?.content,
+      title: newPost.title,
+      shortDescription: newPost.shortDescription,
+      content: newPost.content,
       blogId: id,
-      blogName: newPost?.blogName,
-      createdAt: newPost?.createdAt
+      blogName: newPost.blogName,
+      createdAt: newPost.createdAt
     };
   }
 };
