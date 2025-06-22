@@ -17,7 +17,7 @@ export const blogsService = {
     return blogsRepository.findBlogById(id);
   },
 
-  async createBlog(dto: CreateBlogInputModel): Promise<Blog> {
+  async createBlog(dto: CreateBlogInputModel): Promise<Blog | null> {
     const body: CreateBlogInputModel = {
       description: dto.description,
       name: dto.name,

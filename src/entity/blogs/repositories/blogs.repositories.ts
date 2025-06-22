@@ -7,6 +7,10 @@ import { BlogResponse } from "../types/blogResponse";
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 import { PostResponse } from "../types/postResponse";
 import { SortDirection } from "../../../core/types/sortDesc";
+import { SortFiledBlogs } from "../../../core/types/sortFiledBlogs";
+import { IMetaDataBlog } from "../types/IMetaDataBlog";
+import { mapToBlogPaging } from "../../../core/utils/mappers/mapToBlogPaging";
+import { mapToPostPaging } from "../../../core/utils/mappers/mapToPostPaging";
 
 export const blogsRepository = {
   async findAllBlogs(query: PagingAndSortType): Promise<BlogResponse> {
@@ -14,7 +18,7 @@ export const blogsRepository = {
       searchNameTerm,
       pageNumber = 1,
       pageSize = 10,
-      sortBy = "createdAt",
+      sortBy = SortFiledBlogs.CreatedAt,
       sortDirection = SortDirection.Desc
     } = query ?? {};
 
@@ -33,25 +37,14 @@ export const blogsRepository = {
       .toArray();
 
     const totalCount = await blogCollection.countDocuments(filter);
-
-    const items = blogs.map(blog => {
-      return {
-        id: blog._id.toString(),
-        name: blog.name,
-        description: blog.description,
-        websiteUrl: blog.websiteUrl,
-        createdAt: blog.createdAt,
-        isMembership: blog.isMembership ?? false
-      };
-    });
-
-    return {
+    const metaData: IMetaDataBlog = {
       pagesCount: Math.ceil(totalCount / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: totalCount,
-      items
+      totalCount: totalCount
     };
+
+    return mapToBlogPaging(blogs, metaData);
   },
 
   async findBlogById(id: string): Promise<Blog | null> {
@@ -62,22 +55,22 @@ export const blogsRepository = {
     }
 
     return {
-      id: blog?._id.toString(),
-      name: blog?.name,
-      description: blog?.description,
-      websiteUrl: blog?.websiteUrl,
-      createdAt: blog?.createdAt,
-      isMembership: blog?.isMembership
+      id: blog._id.toString(),
+      name: blog.name,
+      description: blog.description,
+      websiteUrl: blog.websiteUrl,
+      createdAt: blog.createdAt,
+      isMembership: blog.isMembership
     };
   },
 
-  async createBlog(dto: CreateBlogInputModel): Promise<Blog> {
+  async createBlog(dto: CreateBlogInputModel): Promise<Blog | null> {
     const insertResult = await blogCollection.insertOne({
       _id: undefined,
       id: "",
       ...dto,
       isMembership: dto?.isMembership ?? false
-    });
+    } as Blog);
 
     return {
       id: insertResult.insertedId.toString(),
@@ -112,26 +105,26 @@ export const blogsRepository = {
   },
 
   async findPostsByBlogId(
-    id: string,
+    blogId: string,
     query: PagingAndSortType
   ): Promise<PostResponse | null> {
     const {
       pageNumber = 1,
       pageSize = 10,
-      sortBy = "createdAt",
+      sortBy = SortFiledBlogs.CreatedAt,
       sortDirection = SortDirection.Desc
     } = query ?? {};
 
     const skip = (+pageNumber - 1) * +pageSize;
 
-    const blog = await blogCollection.findOne({ _id: new ObjectId(id) });
+    const blog = await blogCollection.findOne({ _id: new ObjectId(blogId) });
 
     if (!blog) {
       return null;
     }
 
     const postsById = await postCollection
-      .find({ blogId: id })
+      .find({ blogId })
       .sort({ [sortBy]: sortDirection })
       .skip(skip)
       .limit(+pageSize)
@@ -141,24 +134,15 @@ export const blogsRepository = {
       return null;
     }
 
-    const items = postsById?.map(post => ({
-      id: post?._id.toString(),
-      title: post?.title,
-      shortDescription: post?.shortDescription,
-      content: post?.content,
-      blogId: post?.blogId,
-      blogName: post?.blogName,
-      createdAt: post?.createdAt
-    }));
+    const totalCount = await postCollection.countDocuments({ blogId });
 
-    const totalCount = await postCollection.countDocuments({ blogId: id });
-
-    return {
+    const metaData: IMetaDataBlog = {
       pagesCount: Math.ceil(+totalCount / +pageSize),
       page: +pageNumber,
       pageSize: +pageSize,
-      totalCount: totalCount,
-      items
+      totalCount
     };
+
+    return mapToPostPaging(postsById, metaData);
   }
 };
