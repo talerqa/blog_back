@@ -6,5 +6,5 @@ export type PagingAndSortType = {
   pageSize: number;
   sortBy: SortFiledBlogs;
   sortDirection: SortDirection;
-  searchNameTerm: string;
+  searchNameTerm?: string;
 };

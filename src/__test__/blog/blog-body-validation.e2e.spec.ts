@@ -7,8 +7,13 @@ import { getBlogDto } from "../utils/blog/getBlogDto";
 import { generateBasicAuthToken } from "../utils/generate-admin-auth-token";
 import { runDB, stopDb } from "../../db/mongo.db";
 import { clearDb } from "../utils/clearDb";
+import { BLOGS_PATH } from "../../core/paths/paths";
+import { HttpStatus } from "../../core/types/httpCodes";
+import { blogsService } from "../../entity/blogs/application/blogs.service";
+import { SortFiledBlogs } from "../../core/types/sortFiledBlogs";
+import { SortDirection } from "../../core/types/sortDesc";
 
-describe("Driver API body validation check", () => {
+describe("Driver API BLOG TEST", () => {
   const app = express();
   setupApp(app);
 
@@ -24,200 +29,442 @@ describe("Driver API body validation check", () => {
   afterAll(async () => {
     await stopDb();
   });
-  it(`❌ should not create driver when incorrect body passed; POST /api/drivers'`, async () => {
-    const a = 10;
 
-    expect(a).toEqual(10);
+  it(`should create blog  POST /api/blogs'`, async () => {
+    const blogData: any = {
+      name: correctBlogAttributes.name,
+      description: correctBlogAttributes.description,
+      websiteUrl: correctBlogAttributes.websiteUrl
+    };
+    // @ts-ignore
+    await request(app)
+      .post(BLOGS_PATH)
+      .send(blogData)
+      .expect(HttpStatus.Unauthorized);
+    // @ts-ignore
+    await request(app)
+      .post(BLOGS_PATH)
+      .set("Authorization", generateBasicAuthToken())
+      .send({
+        data: {
+          ...blogData,
+          name: "   ", // empty string
+          description: "    ", // empty string
+          websiteUrl: "invalid email" // incorrect email
+        }
+      })
+      .expect(HttpStatus.BadRequest);
+
+    // @ts-ignore
+    const response = await request(app)
+      .post(BLOGS_PATH)
+      .set("Authorization", generateBasicAuthToken())
+      .send(blogData)
+      .expect(HttpStatus.Created);
+
+    const createdBlog = response.body;
+    expect(createdBlog.name).toBe(blogData.name);
+    expect(createdBlog.description).toBe(blogData.description);
+    expect(createdBlog.websiteUrl).toBe(blogData.websiteUrl);
+    expect(new Date(createdBlog.createdAt).toString()).not.toBe("Invalid Date");
+
+    const respAllBlogs = await blogsService.findAllBlogs({
+      pageNumber: 1,
+      pageSize: 10,
+      sortBy: SortFiledBlogs.CreatedAt,
+      sortDirection: SortDirection.Desc
+    });
+
+    expect(respAllBlogs.items).toHaveLength(1);
+  });
+  it(`❌ should not create blog  POST /api/blogs'`, async () => {
+    const blogData: any = {
+      name: correctBlogAttributes.name,
+      description: correctBlogAttributes.description,
+      websiteUrl: correctBlogAttributes.websiteUrl
+    };
+    // @ts-ignore
+    const res = await request(app)
+      .post(BLOGS_PATH)
+      .set("Authorization", generateBasicAuthToken())
+      .send({
+        data: {
+          ...blogData,
+          name: "   ", // empty string
+          description: "    ", // empty string
+          websiteUrl: "invalid email" // incorrect email
+        }
+      })
+      .expect(HttpStatus.BadRequest);
+
+    expect(res.body.errorsMessages).toHaveLength(3);
+  });
+  it("❌ should not update blog when incorrect data ; PUT /blog/:id", async () => {
+    const blogData = {
+      name: correctBlogAttributes.name,
+      description: correctBlogAttributes.description,
+      websiteUrl: correctBlogAttributes.websiteUrl
+    };
+    // @ts-ignore
+    const response = await request(app)
+      .post(BLOGS_PATH)
+      .set("Authorization", generateBasicAuthToken())
+      .send(blogData)
+      .expect(HttpStatus.Created);
+
+    const createdBlog = response.body;
+
+    const createdBlogId = createdBlog.id;
+
+    const correctTestDriverData: any = {
+      data: {
+        name: "update Name",
+        description: "update Descr",
+        websiteUrl: "https://samurai.com"
+      }
+    };
+    // @ts-ignore
+    const invalidDataSet1 = await request(app)
+      .put(`${BLOGS_PATH}/${createdBlogId}`)
+      .set("Authorization", generateBasicAuthToken())
+      .send({
+        data: {
+          ...correctTestDriverData.data,
+          name: " ",
+          description: "",
+          websiteUrl: "invalid websiteUrl"
+        }
+      })
+      .expect(HttpStatus.BadRequest);
+    expect(invalidDataSet1.body.errorsMessages).toHaveLength(3);
+  });
+  it("update blog when correct data ; PUT /blog/:id", async () => {
+    const blogData = {
+      name: correctBlogAttributes.name,
+      description: correctBlogAttributes.description,
+      websiteUrl: correctBlogAttributes.websiteUrl
+    };
+    // @ts-ignore
+    const response = await request(app)
+      .post(BLOGS_PATH)
+      .set("Authorization", generateBasicAuthToken())
+      .send(blogData)
+      .expect(HttpStatus.Created);
+
+    const createdBlogId = response?.body?.id;
+    const correctTestDriverData = {
+      name: "update Name",
+      description: "update Descr",
+      websiteUrl: "https://www.samurai.com"
+    };
+    // // @ts-ignore
+    await request(app)
+      .put(`${BLOGS_PATH}/${createdBlogId}`)
+      .set("Authorization", generateBasicAuthToken())
+      .send({
+        ...correctTestDriverData
+      })
+      .expect(HttpStatus.NoContent);
+
+    // // @ts-ignore
+    const respAllBlogs = await request(app)
+      .get(`${BLOGS_PATH}/${createdBlogId}`)
+      .set("Authorization", generateBasicAuthToken())
+      .expect(HttpStatus.Ok);
+
+    expect(respAllBlogs?.body.name).toBe(correctTestDriverData.name);
+    expect(respAllBlogs?.body.description).toBe(
+      correctTestDriverData.description
+    );
+    expect(respAllBlogs?.body.websiteUrl).toBe(
+      correctTestDriverData.websiteUrl
+    );
+  });
+  it("delete blog when correct data ; DELETE /blog/:id", async () => {
+    const blogData = {
+      name: correctBlogAttributes.name,
+      description: correctBlogAttributes.description,
+      websiteUrl: correctBlogAttributes.websiteUrl
+    };
+    // @ts-ignore
+    const response = await request(app)
+      .post(BLOGS_PATH)
+      .set("Authorization", generateBasicAuthToken())
+      .send(blogData)
+      .expect(HttpStatus.Created);
+
+    const createdBlogId = response?.body?.id;
+    // @ts-ignore
+    await request(app)
+      .delete(`${BLOGS_PATH}/${createdBlogId}`)
+      .set("Authorization", generateBasicAuthToken())
+      .expect(HttpStatus.NoContent);
+
+    // @ts-ignore
+    await request(app)
+      .get(`${BLOGS_PATH}/${createdBlogId}`)
+      .set("Authorization", generateBasicAuthToken())
+      .expect(HttpStatus.NotFound);
   });
 
-  // it(`❌ should not create driver when incorrect body passed; POST /api/drivers'`, async () => {
-  //   const correctTestDriverData: DriverCreateInput = {
-  //     data: {
-  //       type: ResourceType.Drivers,
-  //       attributes: correctTestDriverAttributes,
-  //     },
-  //   };
+  it(`should create post by blogId  POST "/:blogId/posts'`, async () => {
+    const blogData = {
+      name: correctBlogAttributes.name,
+      description: correctBlogAttributes.description,
+      websiteUrl: correctBlogAttributes.websiteUrl
+    };
+    // @ts-ignore
+    const response = await request(app)
+      .post(BLOGS_PATH)
+      .set("Authorization", generateBasicAuthToken())
+      .send(blogData)
+      .expect(HttpStatus.Created);
+
+    const blogId = response?.body?.id;
+
+    const dto = {
+      title: "title",
+      shortDescription: "shortDescription",
+      content: "content"
+    };
+    // @ts-ignore
+    const res = await request(app)
+      .post(`${BLOGS_PATH}/${blogId}/posts`)
+      .set("Authorization", generateBasicAuthToken())
+      .send({
+        id: blogId,
+        ...dto
+      })
+      .expect(HttpStatus.Created);
+
+    expect(res.body.blogName).toBe(response?.body.name);
+  });
+});
+
+describe("Driver API POST TEST", () => {
+  // const app = express();
+  // setupApp(app);
   //
+  // const correctBlogAttributes = getBlogDto();
+  //
+  // const adminToken = generateBasicAuthToken();
+  //
+  // beforeAll(async () => {
+  //   await runDB();
+  //   await clearDb(app);
+  // });
+  //
+  // afterAll(async () => {
+  //   await stopDb();
+  // });
+  //
+  // it(`should create blog  POST /api/blogs'`, async () => {
+  //   const blogData: any = {
+  //     name: correctBlogAttributes.name,
+  //     description: correctBlogAttributes.description,
+  //     websiteUrl: correctBlogAttributes.websiteUrl
+  //   };
+  //   // @ts-ignore
   //   await request(app)
-  //     .post(DRIVERS_PATH)
-  //     .send(correctTestDriverData)
+  //     .post(BLOGS_PATH)
+  //     .send(blogData)
   //     .expect(HttpStatus.Unauthorized);
-  //
-  //   const invalidDataSet1 = await request(app)
-  //     .post(DRIVERS_PATH)
-  //     .set('Authorization', generateBasicAuthToken())
+  //   // @ts-ignore
+  //   await request(app)
+  //     .post(BLOGS_PATH)
+  //     .set("Authorization", generateBasicAuthToken())
   //     .send({
   //       data: {
-  //         ...correctTestDriverData.data,
-  //         attributes: {
-  //           name: '   ', // empty string
-  //           phoneNumber: '    ', // empty string
-  //           email: 'invalid email', // incorrect email
-  //           vehicleMake: '', // empty string
-  //           vehicleModel: 'A6',
-  //           vehicleYear: 2020,
-  //           vehicleLicensePlate: 'XYZ-456',
-  //           vehicleDescription: null,
-  //           vehicleFeatures: [],
-  //         },
-  //       },
+  //         ...blogData,
+  //         name: "   ", // empty string
+  //         description: "    ", // empty string
+  //         websiteUrl: "invalid email" // incorrect email
+  //       }
   //     })
   //     .expect(HttpStatus.BadRequest);
   //
-  //   expect(invalidDataSet1.body.errors).toHaveLength(4);
+  //   // @ts-ignore
+  //   const response = await request(app)
+  //     .post(BLOGS_PATH)
+  //     .set("Authorization", generateBasicAuthToken())
+  //     .send(blogData)
+  //     .expect(HttpStatus.Created);
   //
-  //   const invalidDataSet2 = await request(app)
-  //     .post(DRIVERS_PATH)
-  //     .set('Authorization', generateBasicAuthToken())
-  //     .send({
-  //       data: {
-  //         ...correctTestDriverData.data,
-  //         attributes: {
-  //           name: 'Feodor',
-  //           phoneNumber: '', // empty string
-  //           email: 'feodor@example.com',
-  //           vehicleModel: '', // empty string
-  //           vehicleLicensePlate: '', // empty string
-  //           vehicleMake: '', // empty string
-  //           vehicleYear: 2020,
-  //           vehicleDescription: null,
-  //           vehicleFeatures: [],
-  //         },
-  //       },
-  //     })
-  //     .expect(HttpStatus.BadRequest);
+  //   const createdBlog = response.body;
+  //   expect(createdBlog.name).toBe(blogData.name);
+  //   expect(createdBlog.description).toBe(blogData.description);
+  //   expect(createdBlog.websiteUrl).toBe(blogData.websiteUrl);
+  //   expect(new Date(createdBlog.createdAt).toString()).not.toBe("Invalid Date");
   //
-  //   expect(invalidDataSet2.body.errors).toHaveLength(4);
-  //
-  //   const invalidDataSet3 = await request(app)
-  //     .post(DRIVERS_PATH)
-  //     .set('Authorization', generateBasicAuthToken())
-  //     .send({
-  //       data: {
-  //         ...correctTestDriverData.data,
-  //         attributes: {
-  //           name: 'Feodor',
-  //           email: 'feodor@example.com',
-  //           phoneNumber: '', // empty string
-  //           vehicleModel: '', // empty string
-  //           vehicleLicensePlate: '', // empty string
-  //           vehicleMake: '', // empty string
-  //           vehicleYear: 2020,
-  //           vehicleDescription: null,
-  //           vehicleFeatures: [],
-  //         },
-  //       },
-  //     })
-  //     .expect(HttpStatus.BadRequest);
-  //
-  //   expect(invalidDataSet3.body.errors).toHaveLength(4);
-  //
-  //   // check что никто не создался
-  //   const driverListResponse = await request(app)
-  //     .get(DRIVERS_PATH)
-  //     .set('Authorization', adminToken);
-  //   expect(driverListResponse.body.data).toHaveLength(0);
-  // });
-  //
-  // it('❌ should not update driver when incorrect data passed; PUT /api/drivers/:id', async () =>
-  // {
-  //   const createdDriver = await createDriver(app, correctTestDriverAttributes);
-  //   const createdDriverId = createdDriver.data.id;
-  //
-  //   const correctTestDriverData: DriverUpdateInput = {
-  //     data: {
-  //       type: ResourceType.Drivers,
-  //       id: createdDriverId,
-  //       attributes: correctTestDriverAttributes,
-  //     },
-  //   };
-  //
-  //   const invalidDataSet1 = await request(app)
-  //     .put(`${DRIVERS_PATH}/${createdDriverId}`)
-  //     .set('Authorization', generateBasicAuthToken())
-  //     .send({
-  //       data: {
-  //         ...correctTestDriverData.data,
-  //         attributes: {
-  //           name: '   ',
-  //           phoneNumber: '    ',
-  //           email: 'invalid email',
-  //           vehicleMake: '',
-  //           vehicleModel: 'A6',
-  //           vehicleYear: 2020,
-  //           vehicleLicensePlate: 'XYZ-456',
-  //           vehicleDescription: null,
-  //           vehicleFeatures: [],
-  //         },
-  //       },
-  //     })
-  //     .expect(HttpStatus.BadRequest);
-  //
-  //   expect(invalidDataSet1.body.errors).toHaveLength(4);
-  //
-  //   const invalidDataSet2 = await request(app)
-  //     .put(`${DRIVERS_PATH}/${createdDriverId}`)
-  //     .set('Authorization', generateBasicAuthToken())
-  //     .send({
-  //       data: {
-  //         ...correctTestDriverData.data,
-  //         attributes: {
-  //           name: 'Ted',
-  //           email: 'ted@example.com',
-  //           vehicleMake: 'Audi',
-  //           vehicleYear: 2020,
-  //           vehicleDescription: null,
-  //           vehicleFeatures: [],
-  //           phoneNumber: '', // empty string
-  //           vehicleModel: '', // empty string
-  //           vehicleLicensePlate: '', // empty string
-  //         },
-  //       },
-  //     })
-  //     .expect(HttpStatus.BadRequest);
-  //
-  //   expect(invalidDataSet2.body.errors).toHaveLength(3);
-  //
-  //   const invalidDataSet3 = await request(app)
-  //     .put(`${DRIVERS_PATH}/${createdDriverId}`)
-  //     .set('Authorization', generateBasicAuthToken())
-  //     .send({
-  //       data: {
-  //         ...correctTestDriverData.data,
-  //         attributes: {
-  //           name: 'A', //too short
-  //           phoneNumber: '987-654-3210',
-  //           email: 'feodor@example.com',
-  //           vehicleMake: 'Audi',
-  //           vehicleModel: 'A6',
-  //           vehicleYear: 2020,
-  //           vehicleLicensePlate: 'XYZ-456',
-  //           vehicleDescription: null,
-  //           vehicleFeatures: [],
-  //         },
-  //       },
-  //     })
-  //     .expect(HttpStatus.BadRequest);
-  //
-  //   expect(invalidDataSet3.body.errors).toHaveLength(1);
-  //
-  //   const driverResponse = await getDriverById(app, createdDriverId);
-  //
-  //   expect(driverResponse).toEqual({
-  //     ...createdDriver,
+  //   const respAllBlogs = await blogsService.findAllBlogs({
+  //     pageNumber: 1,
+  //     pageSize: 10,
+  //     sortBy: SortFiledBlogs.CreatedAt,
+  //     sortDirection: SortDirection.Desc
   //   });
+  //
+  //   expect(respAllBlogs.items).toHaveLength(1);
+  // });
+  // it(`❌ should not create blog  POST /api/blogs'`, async () => {
+  //   const blogData: any = {
+  //     name: correctBlogAttributes.name,
+  //     description: correctBlogAttributes.description,
+  //     websiteUrl: correctBlogAttributes.websiteUrl
+  //   };
+  //   // @ts-ignore
+  //   const res = await request(app)
+  //     .post(BLOGS_PATH)
+  //     .set("Authorization", generateBasicAuthToken())
+  //     .send({
+  //       data: {
+  //         ...blogData,
+  //         name: "   ", // empty string
+  //         description: "    ", // empty string
+  //         websiteUrl: "invalid email" // incorrect email
+  //       }
+  //     })
+  //     .expect(HttpStatus.BadRequest);
+  //
+  //   expect(res.body.errorsMessages).toHaveLength(3);
+  // });
+  // it("❌ should not update blog when incorrect data ; PUT /blog/:id", async () => {
+  //   const blogData = {
+  //     name: correctBlogAttributes.name,
+  //     description: correctBlogAttributes.description,
+  //     websiteUrl: correctBlogAttributes.websiteUrl
+  //   };
+  //   // @ts-ignore
+  //   const response = await request(app)
+  //     .post(BLOGS_PATH)
+  //     .set("Authorization", generateBasicAuthToken())
+  //     .send(blogData)
+  //     .expect(HttpStatus.Created);
+  //
+  //   const createdBlog = response.body;
+  //
+  //   const createdBlogId = createdBlog.id;
+  //
+  //   const correctTestDriverData: any = {
+  //     data: {
+  //       name: "update Name",
+  //       description: "update Descr",
+  //       websiteUrl: "https://samurai.com"
+  //     }
+  //   };
+  //   // @ts-ignore
+  //   const invalidDataSet1 = await request(app)
+  //     .put(`${BLOGS_PATH}/${createdBlogId}`)
+  //     .set("Authorization", generateBasicAuthToken())
+  //     .send({
+  //       data: {
+  //         ...correctTestDriverData.data,
+  //         name: " ",
+  //         description: "",
+  //         websiteUrl: "invalid websiteUrl"
+  //       }
+  //     })
+  //     .expect(HttpStatus.BadRequest);
+  //   expect(invalidDataSet1.body.errorsMessages).toHaveLength(3);
+  // });
+  // it("update blog when correct data ; PUT /blog/:id", async () => {
+  //   const blogData = {
+  //     name: correctBlogAttributes.name,
+  //     description: correctBlogAttributes.description,
+  //     websiteUrl: correctBlogAttributes.websiteUrl
+  //   };
+  //   // @ts-ignore
+  //   const response = await request(app)
+  //     .post(BLOGS_PATH)
+  //     .set("Authorization", generateBasicAuthToken())
+  //     .send(blogData)
+  //     .expect(HttpStatus.Created);
+  //
+  //   const createdBlogId = response?.body?.id;
+  //   const correctTestDriverData = {
+  //     name: "update Name",
+  //     description: "update Descr",
+  //     websiteUrl: "https://www.samurai.com"
+  //   };
+  //   // // @ts-ignore
+  //   await request(app)
+  //     .put(`${BLOGS_PATH}/${createdBlogId}`)
+  //     .set("Authorization", generateBasicAuthToken())
+  //     .send({
+  //       ...correctTestDriverData
+  //     })
+  //     .expect(HttpStatus.NoContent);
+  //
+  //   // // @ts-ignore
+  //   const respAllBlogs = await request(app)
+  //     .get(`${BLOGS_PATH}/${createdBlogId}`)
+  //     .set("Authorization", generateBasicAuthToken())
+  //     .expect(HttpStatus.Ok);
+  //
+  //   expect(respAllBlogs?.body.name).toBe(correctTestDriverData.name);
+  //   expect(respAllBlogs?.body.description).toBe(
+  //     correctTestDriverData.description
+  //   );
+  //   expect(respAllBlogs?.body.websiteUrl).toBe(
+  //     correctTestDriverData.websiteUrl
+  //   );
+  // });
+  // it("delete blog when correct data ; DELETE /blog/:id", async () => {
+  //   const blogData = {
+  //     name: correctBlogAttributes.name,
+  //     description: correctBlogAttributes.description,
+  //     websiteUrl: correctBlogAttributes.websiteUrl
+  //   };
+  //   // @ts-ignore
+  //   const response = await request(app)
+  //     .post(BLOGS_PATH)
+  //     .set("Authorization", generateBasicAuthToken())
+  //     .send(blogData)
+  //     .expect(HttpStatus.Created);
+  //
+  //   const createdBlogId = response?.body?.id;
+  //   // @ts-ignore
+  //   await request(app)
+  //     .delete(`${BLOGS_PATH}/${createdBlogId}`)
+  //     .set("Authorization", generateBasicAuthToken())
+  //     .expect(HttpStatus.NoContent);
+  //
+  //   // @ts-ignore
+  //   await request(app)
+  //     .get(`${BLOGS_PATH}/${createdBlogId}`)
+  //     .set("Authorization", generateBasicAuthToken())
+  //     .expect(HttpStatus.NotFound);
   // });
   //
-  // it('❌ should not update driver when incorrect features passed; PUT /api/drivers/:id', async ()
-  // => { const createdDriver = await createDriver(app, correctTestDriverAttributes); const
-  // createdDriverId = createdDriver.data.id;  const correctTestDriverData: DriverUpdateInput = {
-  // data: { type: ResourceType.Drivers, id: createdDriverId, attributes:
-  // correctTestDriverAttributes, }, };  await request(app)
-  // .put(`${DRIVERS_PATH}/${createdDriverId}`) .set('Authorization', generateBasicAuthToken())
-  // .send({ data: { ...correctTestDriverData.data, attributes: { name: 'Ted', phoneNumber:
-  // '987-654-3210', email: 'ted@example.com', vehicleMake: 'Audi', vehicleModel: 'A6',
-  // vehicleYear: 2020, vehicleLicensePlate: 'XYZ-456', vehicleDescription: null, vehicleFeatures:
-  // [ VehicleFeature.ChildSeat, 'invalid-feature' as VehicleFeature, VehicleFeature.WiFi, ], }, },
-  // }) .expect(HttpStatus.BadRequest);  const driverResponse = await getDriverById(app,
-  // createdDriverId);  expect(driverResponse).toEqual({ ...createdDriver, }); });
+  // it(`should create post by blogId  POST "/:blogId/posts'`, async () => {
+  //   const blogData = {
+  //     name: correctBlogAttributes.name,
+  //     description: correctBlogAttributes.description,
+  //     websiteUrl: correctBlogAttributes.websiteUrl
+  //   };
+  //   // @ts-ignore
+  //   const response = await request(app)
+  //     .post(BLOGS_PATH)
+  //     .set("Authorization", generateBasicAuthToken())
+  //     .send(blogData)
+  //     .expect(HttpStatus.Created);
+  //
+  //   const blogId = response?.body?.id;
+  //
+  //   const dto = {
+  //     title: "title",
+  //     shortDescription: "shortDescription",
+  //     content: "content"
+  //   };
+  //   // @ts-ignore
+  //   const res = await request(app)
+  //     .post(`${BLOGS_PATH}/${blogId}/posts`)
+  //     .set("Authorization", generateBasicAuthToken())
+  //     .send({
+  //       id: blogId,
+  //       ...dto
+  //     })
+  //     .expect(HttpStatus.Created);
+  //
+  //   expect(res.body.blogName).toBe(response?.body.name);
+  // });
 });
