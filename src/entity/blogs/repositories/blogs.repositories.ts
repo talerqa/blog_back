@@ -11,37 +11,34 @@ import { SortFiledBlogs } from "../../../core/types/sortFiledBlogs";
 import { IMetaDataBlog } from "../types/IMetaDataBlog";
 import { mapToBlogPaging } from "../../../core/utils/mappers/mapToBlogPaging";
 import { mapToPostPaging } from "../../../core/utils/mappers/mapToPostPaging";
+import { queryBlogRepo } from "./queryRepo";
+import { mutationBlogRepo } from "./mutationRepo";
 
 export const blogsRepository = {
   async findAllBlogs(query: PagingAndSortType): Promise<BlogResponse> {
     const {
-      searchNameTerm,
-      pageNumber = 1,
-      pageSize = 10,
-      sortBy = SortFiledBlogs.CreatedAt,
-      sortDirection = SortDirection.Desc
-    } = query ?? {};
-
-    const skip = (+pageNumber - 1) * +pageSize;
-    const filter: any = {};
-
-    if (!!searchNameTerm) {
-      filter.name = { $regex: searchNameTerm, $options: "i" };
-    }
+      pageSize,
+      pageNumber,
+      sortDirection,
+      sortBy,
+      filter,
+      skip
+    } = await queryBlogRepo.getAllBlogs(query);
 
     const blogs = await blogCollection
       .find(filter)
       .sort({ [sortBy]: sortDirection })
       .skip(skip)
-      .limit(+pageSize)
+      .limit(pageSize)
       .toArray();
 
     const totalCount = await blogCollection.countDocuments(filter);
+
     const metaData: IMetaDataBlog = {
-      pagesCount: Math.ceil(totalCount / +pageSize),
-      page: +pageNumber,
-      pageSize: +pageSize,
-      totalCount: totalCount
+      pagesCount: Math.ceil(totalCount / pageSize),
+      page: pageNumber,
+      pageSize,
+      totalCount
     };
 
     return mapToBlogPaging(blogs, metaData);
@@ -54,32 +51,25 @@ export const blogsRepository = {
       return null;
     }
 
-    return {
-      id: blog._id.toString(),
-      name: blog.name,
-      description: blog.description,
-      websiteUrl: blog.websiteUrl,
-      createdAt: blog.createdAt,
-      isMembership: blog.isMembership
-    };
+    return queryBlogRepo.getBlogById(blog);
   },
 
   async createBlog(dto: CreateBlogInputModel): Promise<Blog | null> {
-    const insertResult = await blogCollection.insertOne({
-      _id: undefined,
-      id: "",
-      ...dto,
-      isMembership: dto?.isMembership ?? false
-    } as Blog);
+    const { name, description, createdAt, isMembership, websiteUrl } = dto;
+    const insertResult = await blogCollection.insertOne({ ...dto } as Blog);
 
-    return {
-      id: insertResult.insertedId.toString(),
-      name: dto.name,
-      description: dto.description,
-      websiteUrl: dto.websiteUrl,
-      createdAt: dto.createdAt,
-      isMembership: dto.isMembership
-    };
+    const id = insertResult.insertedId.toString();
+
+    const blog = mutationBlogRepo.createBlog({
+      id,
+      name,
+      description,
+      createdAt,
+      isMembership,
+      websiteUrl
+    });
+
+    return blog;
   },
 
   async updateBlog(id: string, dto: UpdateBlogInputModel): Promise<boolean> {
