@@ -6,7 +6,7 @@ import { blogsRepository } from "../../repositories/blogs.repositories";
 export const getAllBlogsHandler = async (req: Request, res: Response) => {
   const query = req.query;
 
-  const blogs = blogsRepository.findAllBlogs(
+  const blogs = await blogsRepository.findAllBlogs(
     (query as unknown) as PagingAndSortType
   );
   res.status(HttpStatus.Ok).send(blogs);

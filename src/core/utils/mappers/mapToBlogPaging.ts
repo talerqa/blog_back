@@ -17,9 +17,11 @@ export const mapToBlogPaging = (
       isMembership: blog.isMembership ?? false
     };
   });
-
   return {
     items,
-    ...metaData
+    page: metaData.page,
+    pagesCount: metaData.pagesCount,
+    pageSize: metaData.pageSize,
+    totalCount: metaData.totalCount
   };
 };
