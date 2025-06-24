@@ -19,7 +19,12 @@ export const findPostsByBlogId = async (
   } = query ?? {};
 
   const skip = (+pageNumber - 1) * +pageSize;
-  await findBlogById(blogId);
+
+  const blog = await findBlogById(blogId);
+
+  if (!blog) {
+    return null;
+  }
 
   const postsById = await postCollection
     .find({ blogId })
