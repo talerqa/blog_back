@@ -1,8 +1,8 @@
-import { SortFiledBlogs } from "../../../core/types/sortFiledBlogs";
-import { SortDirection } from "../../../core/types/sortDesc";
-import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
+import { SortFiledBlogs } from "../../../../core/types/sortFiledBlogs";
+import { SortDirection } from "../../../../core/types/sortDesc";
+import { PagingAndSortType } from "../../../../core/types/pagingAndSortType";
 import { WithId } from "mongodb";
-import { Blog } from "../types/blog";
+import { Blog } from "../../types/blog";
 
 export const queryBlogRepo = {
   getAllBlogs: async function(

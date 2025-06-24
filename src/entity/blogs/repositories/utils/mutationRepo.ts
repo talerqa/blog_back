@@ -1,4 +1,4 @@
-import { Blog } from "../types/blog";
+import { Blog } from "../../types/blog";
 
 export const mutationBlogRepo = {
   createBlog: async function(body: {

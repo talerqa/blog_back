@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { blogsService } from "../../application/blogs.service";
 import { HttpStatus } from "../../../../core/types/httpCodes";
 import { PagingAndSortType } from "../../../../core/types/pagingAndSortType";
+import { findPostsByBlogId } from "../../repositories/findPostsByBlogIdQueryRepo";
 
 export const getAllPostsByBlogIdHandler = async (
   req: Request,
@@ -9,7 +9,7 @@ export const getAllPostsByBlogIdHandler = async (
 ) => {
   const id = req.params?.blogId as string;
   const query = req.query;
-  const posts = await blogsService.findAllPostByBlogId(
+  const posts = await findPostsByBlogId(
     id,
     (query as unknown) as PagingAndSortType
   );

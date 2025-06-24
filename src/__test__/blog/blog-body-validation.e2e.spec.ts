@@ -9,9 +9,9 @@ import { runDB, stopDb } from "../../db/mongo.db";
 import { clearDb } from "../utils/clearDb";
 import { BLOGS_PATH } from "../../core/paths/paths";
 import { HttpStatus } from "../../core/types/httpCodes";
-import { blogsService } from "../../entity/blogs/application/blogs.service";
 import { SortFiledBlogs } from "../../core/types/sortFiledBlogs";
 import { SortDirection } from "../../core/types/sortDesc";
+import { findAllBlogsQueryRepo } from "../../entity/blogs/repositories/findAllBlogsQueryRepo";
 
 describe("Driver API BLOG TEST", () => {
   const app = express();
@@ -68,7 +68,7 @@ describe("Driver API BLOG TEST", () => {
     expect(createdBlog.websiteUrl).toBe(blogData.websiteUrl);
     expect(new Date(createdBlog.createdAt).toString()).not.toBe("Invalid Date");
 
-    const respAllBlogs = await blogsService.findAllBlogs({
+    const respAllBlogs = await findAllBlogsQueryRepo({
       pageNumber: 1,
       pageSize: 10,
       sortBy: SortFiledBlogs.CreatedAt,
