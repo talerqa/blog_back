@@ -3,7 +3,10 @@ export enum SortFiledBlogs {
   Name = "name",
   Description = "description",
   WebsiteUrl = "websiteUrl",
-  isMembership = "isMembership"
+  isMembership = "isMembership",
+  ///
+  login = "login",
+  email = "email"
 }
 
 export enum SortFiledPost {

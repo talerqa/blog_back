@@ -1,13 +1,16 @@
 import { Collection, Db, MongoClient, ServerApiVersion } from "mongodb";
 import { Blog } from "../entity/blogs/types/blog";
 import { Post } from "../entity/posts/types/post";
+import { User } from "../entity/user/types/user";
 
 const BLOG_COLLECTION_NAME = "blog";
 const POST_COLLECTION_NAME = "post";
+const USER_COLLECTION_NAME = "user";
 
 export let client: MongoClient;
 export let blogCollection: Collection<Blog>;
 export let postCollection: Collection<Post>;
+export let userCollection: Collection<User>;
 
 export async function stopDb() {
   if (!client) {
@@ -35,6 +38,7 @@ export const runDB = async (): Promise<void> => {
   //Инициализация коллекций
   blogCollection = db.collection<Blog>(BLOG_COLLECTION_NAME);
   postCollection = db.collection<Post>(POST_COLLECTION_NAME);
+  userCollection = db.collection<User>(USER_COLLECTION_NAME);
 
   try {
     await client.connect();

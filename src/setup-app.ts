@@ -1,9 +1,17 @@
 import express, { Express } from "express";
 import { blogsRouter } from "./entity/blogs/routers/blogs.routers";
-import { BLOGS_PATH, POSTS_PATH, TESTING_PATH } from "./core/paths/paths";
+import {
+  AUTH_PATH,
+  BLOGS_PATH,
+  POSTS_PATH,
+  TESTING_PATH,
+  USER_PATH
+} from "./core/paths/paths";
 import { setupSwagger } from "./core/swagger/setup-swagger";
 import { testingRouter } from "./__test__/utils/routers/test.routers";
 import { postsRouter } from "./entity/posts/routers/posts.routers";
+import { userRouter } from "./entity/user/routers/user.routers";
+import { authRouter } from "./entity/auth/routers/authRouter";
 
 export const setupApp = (app: Express) => {
   app.use(express.json());
@@ -11,6 +19,8 @@ export const setupApp = (app: Express) => {
   app.use(BLOGS_PATH, blogsRouter);
   app.use(POSTS_PATH, postsRouter);
   app.use(TESTING_PATH, testingRouter);
+  app.use(USER_PATH, userRouter);
+  app.use(AUTH_PATH, authRouter);
   setupSwagger(app);
   return app;
 };

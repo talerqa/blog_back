@@ -296,7 +296,7 @@ describe("Driver API POST TEST", () => {
   //   expect(createdBlog.websiteUrl).toBe(blogData.websiteUrl);
   //   expect(new Date(createdBlog.createdAt).toString()).not.toBe("Invalid Date");
   //
-  //   const respAllBlogs = await blogsService.findAllBlogs({
+  //   const respAllBlogs = await userService.findAllBlogs({
   //     pageNumber: 1,
   //     pageSize: 10,
   //     sortBy: SortFiledBlogs.CreatedAt,
