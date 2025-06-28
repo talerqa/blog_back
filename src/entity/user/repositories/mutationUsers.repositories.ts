@@ -34,11 +34,12 @@ export const mutationUsersRepositories = {
     if (!user) {
       return null;
     }
+    const createdAt = new Date().toISOString();
 
     return {
       id: user._id.toString(),
       email: user.email,
-      createdAt: user.createdAt,
+      createdAt,
       login: user.login
     };
   },
