@@ -24,9 +24,9 @@ userRouter.get(
 userRouter.post(
   "",
   isAuthGuardMiddleware,
-  idValidationUserLogin,
-  idValidationUserEmail,
-  idValidationUserPassword,
+  // idValidationUserLogin,
+  // idValidationUserEmail,
+  // idValidationUserPassword,
   inputValidationResultMiddleware,
   createUserHandler
 );
