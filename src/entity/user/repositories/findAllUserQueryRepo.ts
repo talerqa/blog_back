@@ -18,7 +18,7 @@ export const findAllUserQueryRepo = async (
   } = await queryUserRepo.getAllUsers(query);
 
   const users = await userCollection
-    .find({ $and: [filter] })
+    .find({ $or: [filter] })
     .sort({ [sortBy]: sortDirection })
     .skip(skip)
     .limit(pageSize)
