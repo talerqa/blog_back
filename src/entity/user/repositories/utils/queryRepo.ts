@@ -13,7 +13,7 @@ export const queryUserRepo = {
     pageSize: number;
     skip: number;
     sortBy: SortFiledBlogs;
-    filter: any;
+    filter: Partial<Record<SortFiledBlogs, {}>>;
   }> {
     const {
       searchLoginTerm,
@@ -28,16 +28,14 @@ export const queryUserRepo = {
     const size = +pageSize;
     const skip = (pageNum - 1) * size;
 
-    const filter = {
-      $and: []
-    };
+    const filter: any = {};
 
     if (!!searchLoginTerm) {
-      filter.$and.push({ login: { $regex: searchLoginTerm, $options: "i" } });
+      filter.login = { $regex: searchLoginTerm, $options: "i" };
     }
 
     if (!!searchEmailTerm) {
-      filter.$and.push({ email: { $regex: searchEmailTerm, $options: "i" } });
+      filter.email = { $regex: searchEmailTerm, $options: "i" };
     }
 
     return {

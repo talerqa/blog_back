@@ -6,8 +6,8 @@ export const idValidationUserEmail = body("email")
   .isString()
   .withMessage("email must be a string")
   .trim()
-  .isLength({ min: 1 })
-  .isEmail();
+  .matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
+  .withMessage("login wil be pattern");
 
 export const idValidationUserLogin = body("login")
   .exists()
@@ -15,8 +15,12 @@ export const idValidationUserLogin = body("login")
   .isString()
   .withMessage("login must be a string")
   .trim()
-  .isLength({ min: 1 })
-  .withMessage("login must not be empty");
+  .isLength({ min: 3 })
+  .withMessage("login must not be empty")
+  .isLength({ max: 10 })
+  .withMessage("password must max 10 lenght")
+  .matches("^[a-zA-Z0-9_-]*$")
+  .withMessage("login wil be pattern");
 
 export const idValidationUserPassword = body("password")
   .exists()
