@@ -30,8 +30,12 @@ export const mutationUsersRepositories = {
         ]
       };
     }
+    const createdAt = new Date().toISOString();
 
-    const insertResult = await userCollection.insertOne({ ...dto } as User);
+    const insertResult = await userCollection.insertOne({
+      ...dto,
+      createdAt
+    } as User);
     const id = insertResult.insertedId;
 
     const user = await userCollection.findOne({ _id: id });
@@ -39,7 +43,6 @@ export const mutationUsersRepositories = {
     if (!user) {
       return null;
     }
-    const createdAt = new Date().toISOString();
 
     return {
       id: user._id.toString(),

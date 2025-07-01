@@ -1,7 +1,7 @@
 import { IMetaDataBlog } from "../../../entity/blogs/types/IMetaDataBlog";
 import { WithId } from "mongodb";
 import { User } from "../../../entity/user/types/user";
-import { UserResponse } from "../../../entity/user/types/postResponse";
+import { UserResponse } from "../../../entity/user/types/userResponse";
 
 export const mapToUserPaging = (
   users: WithId<User>[],
