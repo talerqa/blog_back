@@ -16,10 +16,7 @@ export const mutationUsersRepositories = {
 
     if (wrongLogin) {
       return {
-        errorsMessages: [
-          { message: "login should be unique", field: "login" },
-          { message: "password should be unique", field: "password" }
-        ]
+        errorsMessages: [{ message: "login should be unique", field: "login" }]
       };
     }
 
@@ -29,8 +26,7 @@ export const mutationUsersRepositories = {
           {
             message: "email should be unique",
             field: "email"
-          },
-          { message: "password should be unique", field: "password" }
+          }
         ]
       };
     }
