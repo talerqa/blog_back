@@ -28,15 +28,17 @@ export const queryUserRepo = {
     const size = +pageSize;
     const skip = (pageNum - 1) * size;
 
-    const filter: any = [];
+    const filters: any = [];
 
     if (!!searchLoginTerm) {
-      filter.push({ login: { $regex: searchLoginTerm, $options: "i" } });
+      filters.push({ login: { $regex: searchLoginTerm, $options: "i" } });
     }
 
     if (!!searchEmailTerm) {
-      filter.push({ email: { $regex: searchEmailTerm, $options: "i" } });
+      filters.push({ email: { $regex: searchEmailTerm, $options: "i" } });
     }
+
+    const filter = filters.length ? { $or: filters } : {};
 
     return {
       searchLoginTerm,
