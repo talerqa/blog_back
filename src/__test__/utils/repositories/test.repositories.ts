@@ -1,9 +1,14 @@
-import { blogCollection, postCollection } from "../../../db/mongo.db";
+import {
+  blogCollection,
+  postCollection,
+  userCollection
+} from "../../../db/mongo.db";
 
 export const testRepository = {
   async deleteBlogsAndPost(): Promise<void> {
     await postCollection.deleteMany();
     await blogCollection.deleteMany();
+    await userCollection.deleteMany();
     return;
   }
 };

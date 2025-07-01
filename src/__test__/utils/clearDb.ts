@@ -5,6 +5,7 @@ import { HttpStatus } from "../../core/types/httpCodes";
 import { Express } from "express";
 
 export async function clearDb(app: Express) {
+  // @ts-ignore
   await request(app)
     .delete(`${TESTING_PATH}/all-data`)
     .expect(HttpStatus.NoContent);
