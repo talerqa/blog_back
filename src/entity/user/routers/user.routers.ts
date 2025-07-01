@@ -9,7 +9,8 @@ import { createUserHandler } from "./handlers/createUser.handler";
 import { deleteUserHandler } from "./handlers/deleteUser.handler";
 import {
   idValidationUserEmail,
-  idValidationUserLogin
+  idValidationUserLogin,
+  idValidationUserPassword
 } from "../../../core/middlewares/validation/params-user.validation-middleware";
 
 export const userRouter = Router({});
@@ -25,7 +26,7 @@ userRouter.post(
   isAuthGuardMiddleware,
   idValidationUserLogin,
   idValidationUserEmail,
-  // idValidationUserPassword,
+  idValidationUserPassword,
   inputValidationResultMiddleware,
   createUserHandler
 );

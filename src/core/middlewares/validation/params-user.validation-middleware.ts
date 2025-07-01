@@ -24,5 +24,7 @@ export const idValidationUserPassword = body("password")
   .isString()
   .withMessage("password must be a string")
   .trim()
-  .isLength({ min: 1 })
-  .withMessage("password must not be empty");
+  .isLength({ min: 6 })
+  .withMessage("password must be min 6 lenght")
+  .isLength({ max: 20 })
+  .withMessage("password must max 20 lenght");
