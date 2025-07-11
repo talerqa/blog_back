@@ -13,7 +13,7 @@ export const queryUserRepo = {
     pageSize: number;
     skip: number;
     sortBy: SortFiledBlogs;
-    filter: Partial<Record<SortFiledBlogs, {}>>;
+    filter: Partial<Record<SortFiledBlogs, {}>> | any;
   }> {
     const {
       searchLoginTerm,

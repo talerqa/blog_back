@@ -1,8 +1,7 @@
-import { authRepository } from "../repositories/auth.repository";
-import { generatePassword } from "../../../core/utils/generatePassword";
+import { userService } from "../../user/application/user.service";
 
 export const authService = {
-  async login(loginOrEmail: string, password: string): Promise<boolean> {
-    return authRepository.login(loginOrEmail, password);
+  async login(loginOrEmail: string, password: string): Promise<boolean | null> {
+    return userService.login(loginOrEmail, password);
   }
 };

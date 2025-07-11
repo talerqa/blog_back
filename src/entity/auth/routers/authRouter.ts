@@ -10,7 +10,6 @@ export const authRouter = Router({});
 
 authRouter.post(
   "",
-  // isAuthGuardMiddleware,
   idValidationLoginOrEmail,
   idValidationPassword,
   inputValidationResultMiddleware,

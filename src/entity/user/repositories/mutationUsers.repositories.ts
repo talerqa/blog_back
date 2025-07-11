@@ -15,20 +15,11 @@ export const mutationUsersRepositories = {
     });
 
     if (wrongLogin) {
-      return {
-        errorsMessages: [{ message: "login should be unique", field: "login" }]
-      };
+      throw new Error("wrongLogin");
     }
 
     if (wrongEmail) {
-      return {
-        errorsMessages: [
-          {
-            message: "email should be unique",
-            field: "email"
-          }
-        ]
-      };
+      throw new Error("wrongEmail");
     }
     const createdAt = new Date().toISOString();
 

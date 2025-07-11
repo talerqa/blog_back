@@ -7,4 +7,6 @@ export type PagingAndSortType = {
   sortBy: SortFiledBlogs;
   sortDirection: SortDirection;
   searchNameTerm?: string;
+  searchLoginTerm?: string;
+  searchEmailTerm?: string;
 };
