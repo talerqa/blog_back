@@ -15,7 +15,7 @@ export const userService = {
       return null;
     }
 
-    const isMatch = comparePassword(password, user.password as string);
+    const isMatch = await comparePassword(password, user.password as string);
 
     if (!isMatch) {
       return null;
