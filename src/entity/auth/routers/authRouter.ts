@@ -5,13 +5,16 @@ import {
   idValidationPassword
 } from "../../../core/middlewares/validation/params-auth.validation-middleware";
 import { loginHandler } from "./handlers/login.handler";
+import { authGuard } from "./handlers/authGuard";
 
 export const authRouter = Router({});
 
 authRouter.post(
-  "",
+  "/login",
   idValidationLoginOrEmail,
   idValidationPassword,
   inputValidationResultMiddleware,
   loginHandler
 );
+
+authRouter.get("/me", authGuard);

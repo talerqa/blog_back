@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/types/httpCodes";
-import { authService } from "../../application/auth.service";
+import { authService } from "../../service/auth.service";
 
 export const loginHandler = async (req: Request, res: Response) => {
   const { loginOrEmail, password } = req.body;
@@ -11,5 +11,5 @@ export const loginHandler = async (req: Request, res: Response) => {
     res.status(HttpStatus.Unauthorized).send();
   }
 
-  res.status(HttpStatus.NoContent).send();
+  res.status(HttpStatus.Ok).send({ accessToken: user });
 };

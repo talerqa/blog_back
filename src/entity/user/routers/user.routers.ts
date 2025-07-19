@@ -12,6 +12,7 @@ import {
   idValidationUserLogin,
   idValidationUserPassword
 } from "../../../core/middlewares/validation/params-user.validation-middleware";
+import { getUserHandler } from "./handlers/getUser.handler";
 
 export const userRouter = Router({});
 
@@ -37,4 +38,11 @@ userRouter.delete(
   idValidationParamId,
   inputValidationResultMiddleware,
   deleteUserHandler
+);
+
+userRouter.get(
+  "/:id",
+  idValidationParamId,
+  inputValidationResultMiddleware,
+  getUserHandler
 );

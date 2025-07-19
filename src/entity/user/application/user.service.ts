@@ -4,6 +4,7 @@ import { User } from "../types/user";
 import { generatePassword } from "../../../core/utils/generatePassword";
 import { userCollection } from "../../../db/mongo.db";
 import { comparePassword } from "../../../core/utils/comparePassword";
+import jwt from "jsonwebtoken";
 
 export const userService = {
   async login(loginOrEmail: string, password: string): Promise<boolean | null> {
@@ -21,7 +22,15 @@ export const userService = {
       return null;
     }
 
-    return true;
+    const token = jwt.sign(
+      {
+        userId: user?._id.toString()
+      },
+      process.env.SECRET_KEY,
+      { expiresIn: "1h" }
+    );
+
+    return token;
   },
 
   async createUser(dto: CreateUserInputModel): Promise<User | null> {
