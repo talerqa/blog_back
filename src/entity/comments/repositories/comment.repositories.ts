@@ -58,7 +58,7 @@ export const commentRepository = {
     return {
       id: comment._id.toString(),
       content: comment.content,
-      commentatorInfo: comment.content,
+      commentatorInfo: comment.commentatorInfo,
       createdAt: comment.createdAt
     };
   },
@@ -126,6 +126,10 @@ export const commentRepository = {
   //
   async deleteCommentById(id: string, userId: string): Promise<boolean> {
     const comment = await commentCollection.findOne({ _id: new ObjectId(id) });
+
+    if (!comment) {
+      return null;
+    }
 
     if (comment?.commentatorInfo.userId !== userId) {
       throw new Error("notUserComment");

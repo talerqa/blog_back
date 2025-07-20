@@ -12,12 +12,12 @@ export const authGuard = async (req: Request, res: Response, next) => {
   const token = auth?.split(" ")[1];
   const authType = auth?.split(" ")[0];
 
-  if (authType !== "Bearer") {
+  if (authType !== "Bearer" || !token) {
     res.status(HttpStatus.Unauthorized).send();
   }
 
   const isVerify = await jwt.verify(token, process.env.SECRET_KEY);
-
+  console.log(isVerify);
   if (!isVerify) {
     res.status(HttpStatus.Unauthorized).send();
   }
