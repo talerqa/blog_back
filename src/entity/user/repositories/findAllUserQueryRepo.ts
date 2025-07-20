@@ -1,7 +1,7 @@
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 import { queryUserRepo } from "./utils/queryRepo";
 import { userCollection } from "../../../db/mongo.db";
-import { IMetaDataBlog } from "../types/IMetaDataBlog";
+import { IMetaData } from "../types/IMetaData";
 import { UserResponse } from "../types/userResponse";
 import { mapToUserPaging } from "../../../core/utils/mappers/mapToUserPaging";
 
@@ -26,7 +26,7 @@ export const findAllUserQueryRepo = async (
 
   const totalCount = await userCollection.countDocuments(filter);
 
-  const metaData: IMetaDataBlog = {
+  const metaData: IMetaData = {
     pagesCount: Math.ceil(totalCount / pageSize),
     page: pageNumber,
     pageSize,

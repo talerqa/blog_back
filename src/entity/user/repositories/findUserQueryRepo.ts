@@ -7,7 +7,6 @@ export const findUserQueryRepo = async (
 ): Promise<User | null> => {
   const user = await userCollection.findOne({ _id: new ObjectId(userId) });
 
-  console.log(user);
   if (!user) {
     return null;
   }

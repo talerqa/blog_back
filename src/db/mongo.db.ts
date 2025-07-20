@@ -2,15 +2,18 @@ import { Collection, Db, MongoClient, ServerApiVersion } from "mongodb";
 import { Blog } from "../entity/blogs/types/blog";
 import { Post } from "../entity/posts/types/post";
 import { User } from "../entity/user/types/user";
+import { Comment } from "../entity/comments/types/comment";
 
 const BLOG_COLLECTION_NAME = "blog";
 const POST_COLLECTION_NAME = "post";
 const USER_COLLECTION_NAME = "user";
+const COMMENT_COLLECTION_NAME = "comment";
 
 export let client: MongoClient;
 export let blogCollection: Collection<Blog>;
 export let postCollection: Collection<Post>;
 export let userCollection: Collection<User>;
+export let commentCollection: Collection<Comment>;
 
 export async function stopDb() {
   if (!client) {
@@ -39,6 +42,7 @@ export const runDB = async (): Promise<void> => {
   blogCollection = db.collection<Blog>(BLOG_COLLECTION_NAME);
   postCollection = db.collection<Post>(POST_COLLECTION_NAME);
   userCollection = db.collection<User>(USER_COLLECTION_NAME);
+  commentCollection = db.collection<Comment>(COMMENT_COLLECTION_NAME);
 
   try {
     await client.connect();

@@ -38,7 +38,7 @@ export const postsRepository = {
     return mapToPostPaging(posts, metaData);
   },
 
-  async findBlogById(id: string): Promise<Post | null> {
+  async findPostById(id: string): Promise<Post | null> {
     const post = await postCollection.findOne({ _id: new ObjectId(id) });
 
     if (!post) {

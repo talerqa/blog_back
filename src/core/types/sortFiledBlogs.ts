@@ -17,3 +17,7 @@ export enum SortFiledPost {
   blogName = "blogName",
   createdAt = "createdAt"
 }
+
+export enum SortFiledComment {
+  createdAt = "createdAt"
+}

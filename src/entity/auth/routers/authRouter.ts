@@ -6,6 +6,7 @@ import {
 } from "../../../core/middlewares/validation/params-auth.validation-middleware";
 import { loginHandler } from "./handlers/login.handler";
 import { authGuard } from "./handlers/authGuard";
+import { meHandler } from "./handlers/me.handler";
 
 export const authRouter = Router({});
 
@@ -17,4 +18,4 @@ authRouter.post(
   loginHandler
 );
 
-authRouter.get("/me", authGuard);
+authRouter.get("/me", authGuard, meHandler);

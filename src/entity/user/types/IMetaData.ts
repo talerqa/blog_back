@@ -1,4 +1,4 @@
-export type IMetaDataBlog = {
+export type IMetaData = {
   pagesCount: number;
   page: number;
   pageSize: number;

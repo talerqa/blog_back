@@ -10,8 +10,8 @@ export const postsService = {
     return postsRepository.findAllPosts(query);
   },
 
-  async findBlogById(id: string): Promise<Post | null> {
-    return postsRepository.findBlogById(id);
+  async findPostById(id: string): Promise<Post | null> {
+    return postsRepository.findPostById(id);
   },
 
   async createPost(body: CreateBlogInputModel): Promise<Post | null> {

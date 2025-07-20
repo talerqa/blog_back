@@ -1,8 +1,10 @@
 import { Router } from "express";
 import {
   idValidationBLogIdPost,
+  idValidationContentComment,
   idValidationContentPost,
   idValidationParamId,
+  idValidationPostId,
   idValidationShortDescriptionPost,
   idValidationTitlePost
 } from "../../../core/middlewares/validation/params-post.validation-middleware";
@@ -16,6 +18,9 @@ import { getPostByIdHandler } from "./handlers/getPostById.handler";
 import { createPostHandler } from "./handlers/createPost.handler";
 import { updatePostHandler } from "./handlers/updatePost.handler";
 import { deletePostHandler } from "./handlers/deletePost.handler";
+import { authGuard } from "../../auth/routers/handlers/authGuard";
+import { createCommentPostHandler } from "./handlers/createCommentPost.handler";
+import { getCommentByPostIdHandler } from "./handlers/getCommentByPostId.handler";
 
 export const postsRouter = Router({});
 
@@ -64,4 +69,21 @@ postsRouter.delete(
   idValidationParamId,
   inputValidationResultMiddleware,
   deletePostHandler
+);
+
+postsRouter.post(
+  "/:postId/comments",
+  authGuard,
+  idValidationPostId,
+  idValidationContentComment,
+  inputValidationResultMiddleware,
+  createCommentPostHandler
+);
+
+postsRouter.get(
+  "/:postId/comments",
+  authGuard,
+  idValidationPostId,
+  inputValidationResultMiddleware,
+  getCommentByPostIdHandler
 );
