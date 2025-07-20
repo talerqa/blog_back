@@ -27,14 +27,14 @@ export const runDB = async (): Promise<void> => {
   // LOCAL
   //client = new MongoClient(process.env.MONGODB_LOCAL ?? "", {
   // TEST
-  client = new MongoClient("mongodb://localhost:27017", {
-    // INCUB
-    // client = new MongoClient(process.env.MONGODB_URI ?? "", {
-    //   serverApi: {
-    //     version: ServerApiVersion.v1,
-    //     strict: true,
-    //     deprecationErrors: true
-    //   }
+  // client = new MongoClient("mongodb://localhost:27017", {
+  // INCUB
+  client = new MongoClient(process.env.MONGODB_URI ?? "", {
+    serverApi: {
+      version: ServerApiVersion.v1,
+      strict: true,
+      deprecationErrors: true
+    }
   });
   const db: Db = client.db("blog");
 
