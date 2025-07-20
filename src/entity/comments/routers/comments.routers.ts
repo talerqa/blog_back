@@ -14,7 +14,6 @@ export const commentsRouter = Router({});
 
 commentsRouter.get(
   "/:id",
-  authGuard,
   idValidationParamId,
   inputValidationResultMiddleware,
   getCommentByIdHandler

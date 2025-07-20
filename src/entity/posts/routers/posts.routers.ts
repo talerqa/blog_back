@@ -82,7 +82,6 @@ postsRouter.post(
 
 postsRouter.get(
   "/:postId/comments",
-  authGuard,
   idValidationPostId,
   inputValidationResultMiddleware,
   getCommentByPostIdHandler
