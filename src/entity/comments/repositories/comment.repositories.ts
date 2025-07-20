@@ -104,6 +104,10 @@ export const commentRepository = {
   ): Promise<boolean> {
     const comment = await commentCollection.findOne({ _id: new ObjectId(id) });
 
+    if (!comment) {
+      return null;
+    }
+
     if (comment?.commentatorInfo.userId !== userId) {
       throw new Error("notUserComment");
     }
