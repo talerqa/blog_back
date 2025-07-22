@@ -36,7 +36,7 @@ export const commentRepository = {
       .skip(skip)
       .limit(+pageSize)
       .toArray();
-    const totalCount = await commentCollection.countDocuments();
+    const totalCount = await commentCollection.countDocuments({ postId });
 
     const metaData: IMetaData = {
       pagesCount: Math.ceil(+totalCount / +pageSize),
