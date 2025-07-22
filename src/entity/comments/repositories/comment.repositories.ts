@@ -23,7 +23,7 @@ export const commentRepository = {
       sortDirection = SortDirection.Desc
     } = query ?? {};
 
-    const post = postCollection.findOne({ _id: new ObjectId(postId) });
+    const post = await postCollection.findOne({ _id: new ObjectId(postId) });
 
     if (!post) {
       return null;
