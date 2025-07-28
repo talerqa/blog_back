@@ -11,7 +11,9 @@ export const registrationConfirmationHandler = async (
   const user = await authService.registrationConfirmation(code);
 
   if (!user) {
-    res.status(HttpStatus.BadRequest).send();
+    res.status(HttpStatus.BadRequest).json({
+      errorsMessages: [{ message: "code", field: "code" }]
+    });
   }
 
   res.status(HttpStatus.NoContent).send();

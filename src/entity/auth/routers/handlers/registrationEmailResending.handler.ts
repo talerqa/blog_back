@@ -11,7 +11,9 @@ export const registrationEmailResendingHandler = async (
   const user = await authService.resending(email);
 
   if (!user) {
-    res.status(HttpStatus.BadRequest).send();
+    res.status(HttpStatus.BadRequest).json({
+      errorsMessages: [{ message: "losdfsd fds sdf sd", field: "email" }]
+    });
   }
 
   res.status(HttpStatus.NoContent).send();

@@ -11,7 +11,8 @@ import { registrationHandler } from "./handlers/registration.handler";
 import {
   idValidationCode,
   idValidationUserEmail,
-  idValidationUserLogin
+  idValidationUserLogin,
+  idValidationUserPassword
 } from "../../../core/middlewares/validation/params-user.validation-middleware";
 import { registrationEmailResendingHandler } from "./handlers/registrationEmailResending.handler";
 import { registrationConfirmationHandler } from "./handlers/registrationConfirmation.handler";
@@ -36,7 +37,7 @@ authRouter.post(
 authRouter.post(
   "/registration",
   idValidationUserLogin,
-  idValidationPassword,
+  idValidationUserPassword,
   inputValidationResultMiddleware,
   registrationHandler
 );
