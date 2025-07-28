@@ -36,12 +36,10 @@ export const userService = {
   async createUser(dto: CreateUserInputModel): Promise<User | null> {
     const { email, password, login } = dto;
 
-    const pass = await generatePassword(password);
-
     const body: CreateUserInputModel = {
       email,
       login,
-      password: pass
+      password
     };
 
     return mutationUsersRepositories.createUser(body);

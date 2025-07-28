@@ -32,3 +32,10 @@ export const idValidationUserPassword = body("password")
   .withMessage("password must be min 6 lenght")
   .isLength({ max: 20 })
   .withMessage("password must max 20 lenght");
+
+export const idValidationCode = body("code")
+  .exists()
+  .withMessage("code is required")
+  .isString()
+  .withMessage("code must be a string")
+  .trim();

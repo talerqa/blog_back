@@ -27,7 +27,7 @@ export const runDB = async (): Promise<void> => {
   // LOCAL
   //client = new MongoClient(process.env.MONGODB_LOCAL ?? "", {
   // TEST
-  // client = new MongoClient("mongodb://localhost:27017", {
+  //client = new MongoClient("mongodb://localhost:27017", {
   // INCUB
   client = new MongoClient(process.env.MONGODB_URI ?? "", {
     serverApi: {
