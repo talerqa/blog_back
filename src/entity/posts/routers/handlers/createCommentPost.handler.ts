@@ -9,7 +9,7 @@ export const createCommentPostHandler = async (req: Request, res: Response) => {
     const postId = req?.params?.postId as string;
     const { content } = req?.body;
 
-    const dto: any = {
+    const dto = {
       userId,
       postId,
       content

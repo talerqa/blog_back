@@ -87,7 +87,7 @@ export const commentRepository = {
     };
 
     const insertResult = await commentCollection.insertOne({
-      ...(newComment as any)
+      ...newComment
     });
 
     return {
