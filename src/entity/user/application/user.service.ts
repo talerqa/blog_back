@@ -3,8 +3,7 @@ import { CreateUserInputModel } from "../dto/createUserInputModel";
 import { User } from "../types/user";
 import { userCollection } from "../../../db/mongo.db";
 import { comparePassword } from "../../../core/utils/comparePassword";
-import jwt, { PrivateKey, Secret } from "jsonwebtoken";
-
+import jwt from "jsonwebtoken";
 
 export const userService = {
   async login(loginOrEmail: string, password: string): Promise<boolean | null> {
@@ -26,7 +25,7 @@ export const userService = {
       {
         userId: user?._id.toString()
       },
-      process.env.SECRET_KEY as Secret | PrivateKey,
+      process.env.SECRET_KEY,
       { expiresIn: "1h" }
     );
 
