@@ -3,6 +3,7 @@ import { userCollection } from "../../../db/mongo.db";
 import { CreateUserInputModel } from "../dto/createUserInputModel";
 import { User } from "../types/user";
 import { generatePassword } from "../../../core/utils/generatePassword";
+import { randomUUID } from "node:crypto";
 
 export const mutationUsersRepositories = {
   async existUserOrEmail(login: string, email: string): Promise<boolean> {
@@ -47,7 +48,12 @@ export const mutationUsersRepositories = {
     const insertResult = await userCollection.insertOne({
       ...dto,
       password: passwordHash,
-      createdAt
+      createdAt,
+      emailConfirmation: {
+        confirmationCode: randomUUID(),
+        expirationDate: null,
+        isConfirmed: null
+      }
     } as User);
     const id = insertResult.insertedId;
 
