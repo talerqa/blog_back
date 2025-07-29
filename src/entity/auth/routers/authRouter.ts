@@ -37,6 +37,7 @@ authRouter.post(
 authRouter.post(
   "/registration",
   idValidationUserLogin,
+  idValidationUserEmail,
   idValidationUserPassword,
   inputValidationResultMiddleware,
   registrationHandler

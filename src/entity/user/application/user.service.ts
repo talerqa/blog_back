@@ -5,6 +5,7 @@ import { userCollection } from "../../../db/mongo.db";
 import { comparePassword } from "../../../core/utils/comparePassword";
 import jwt, { PrivateKey, Secret } from "jsonwebtoken";
 
+
 export const userService = {
   async login(loginOrEmail: string, password: string): Promise<boolean | null> {
     const user = await userCollection.findOne({

@@ -6,13 +6,39 @@ export const registrationEmailResendingHandler = async (
   req: Request,
   res: Response
 ) => {
-  const { email } = req.body;
+  try {
+    const { email } = req.body;
 
-  const user = await authService.resending(email);
+    const user = await authService.resending(email);
 
-  if (!user) {
-    res.status(HttpStatus.BadRequest).send();
+    if (!user) {
+      res.status(HttpStatus.BadRequest).send();
+    }
+
+    res.status(HttpStatus.NoContent).send();
+  } catch (e) {
+    const err = e as Error;
+
+    if (err.message === "wrongEmail") {
+      res.status(HttpStatus.BadRequest).json({
+        errorsMessages: [
+          {
+            message: "email not exitst be unique",
+            field: "email"
+          }
+        ]
+      });
+    }
+
+    if ((err.message = "codeAlredyAprove")) {
+      res.status(HttpStatus.BadRequest).json({
+        errorsMessages: [
+          {
+            message: "email alredy aprove",
+            field: "email"
+          }
+        ]
+      });
+    }
   }
-
-  res.status(HttpStatus.NoContent).send();
 };

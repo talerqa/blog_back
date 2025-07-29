@@ -31,7 +31,9 @@ export const authService = {
     email: string
   ): Promise<any | null> {
     const user = await mutationUsersRepositories.existUserOrEmail(login, email);
-    if (!user) return null; /// throw New Erorr?
+    if (!user) {
+      return null;
+    } /// throw New Erorr?
 
     const passwordHash = await generatePassword(pass);
 
@@ -69,11 +71,16 @@ export const authService = {
   },
 
   async resending(email: any) {
-    const wrongEmail = await userCollection.findOne({
+    const wrongEmail: any = await userCollection.findOne({
       email
     });
 
-    if (!wrongEmail) return null;
+    if (!wrongEmail) {
+      throw new Error("wrongEmail");
+    }
+    if (wrongEmail?.emailConfirmation?.isConfirmed) {
+      throw new Error("codeAlredyAprove");
+    }
 
     return await nodemailerService
       .sendEmail(
@@ -95,6 +102,18 @@ export const authService = {
         }
       }
     );
+
+    if (newUser.matchedCount < 1) {
+      throw new Error("codeError");
+    }
+
+    const email: any = await userCollection.findOne({
+      "emailConfirmation.confirmationCode": code
+    });
+    console.log(email?.emailConfirmation?.isConfirmed);
+    if (email?.emailConfirmation?.isConfirmed) {
+      throw new Error("codeAlredyAprove");
+    }
 
     return !(newUser.matchedCount < 1);
   }

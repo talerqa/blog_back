@@ -20,7 +20,7 @@ export const authGuard = async (req: Request, res: Response, next: any) => {
       token as string,
       process.env.SECRET_KEY as Secret
     );
-    console.log(isVerify);
+
     if (!isVerify) {
       res.status(HttpStatus.Unauthorized).send();
     }
