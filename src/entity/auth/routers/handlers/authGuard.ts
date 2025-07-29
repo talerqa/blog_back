@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/types/httpCodes";
 import { findUserQueryRepo } from "../../../user/repositories/findUserQueryRepo";
-import jwt from "jsonwebtoken";
+import jwt, { Secret } from "jsonwebtoken";
 
-export const authGuard = async (req: Request, res: Response, next) => {
+export const authGuard = async (req: Request, res: Response, next: any) => {
   try {
     const auth = req.headers["authorization"];
     if (!auth) {
@@ -16,14 +16,17 @@ export const authGuard = async (req: Request, res: Response, next) => {
       res.status(HttpStatus.Unauthorized).send();
     }
 
-    const isVerify = jwt.verify(token, process.env.SECRET_KEY);
+    const isVerify = jwt.verify(
+      token as string,
+      process.env.SECRET_KEY as Secret
+    );
     console.log(isVerify);
     if (!isVerify) {
       res.status(HttpStatus.Unauthorized).send();
     }
-    const { userId } = isVerify;
+    const { userId } = isVerify as any;
 
-    const user = await findUserQueryRepo(userId);
+    const user = await findUserQueryRepo(userId as string);
 
     if (!user) {
       res.status(HttpStatus.Unauthorized).send();

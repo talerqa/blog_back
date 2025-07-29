@@ -4,7 +4,6 @@ import { findUserQueryRepo } from "../../user/repositories/findUserQueryRepo";
 import { commentCollection, postCollection } from "../../../db/mongo.db";
 import { ObjectId } from "mongodb";
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
-import { CommentResponse } from "../types/commentResponse";
 import { SortFiledComment } from "../../../core/types/sortFiledBlogs";
 import { SortDirection } from "../../../core/types/sortDesc";
 import { IMetaData } from "../../user/types/IMetaData";
@@ -15,7 +14,7 @@ export const commentRepository = {
   async findCommentsByPostId(
     query: PagingAndSortType,
     postId: string
-  ): Promise<CommentResponse> | null {
+  ): Promise<any> {
     const {
       pageNumber = 1,
       pageSize = 10,
@@ -48,7 +47,7 @@ export const commentRepository = {
     return mapToCommentsPaging(posts, metaData);
   },
 
-  async findCommentById(id: string): Promise<Comment> | null {
+  async findCommentById(id: string): Promise<Comment | any> {
     const comment = await commentCollection.findOne({ _id: new ObjectId(id) });
 
     if (!comment) {
@@ -103,7 +102,7 @@ export const commentRepository = {
     id: string,
     userId: string,
     dto: UpdateCommentInputModel
-  ): Promise<null | boolean> {
+  ): Promise<boolean | null> {
     const comment = await commentCollection.findOne({ _id: new ObjectId(id) });
 
     if (!comment) {

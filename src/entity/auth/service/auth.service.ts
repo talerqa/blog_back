@@ -68,7 +68,7 @@ export const authService = {
     return newUser;
   },
 
-  async resending(email) {
+  async resending(email: any) {
     const wrongEmail = await userCollection.findOne({
       email
     });

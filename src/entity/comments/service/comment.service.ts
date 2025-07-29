@@ -13,7 +13,7 @@ export const commentService = {
   async findCommentsByPostId(
     query: PagingAndSortType,
     postId: string
-  ): Promise<CommentResponse> | null {
+  ): Promise<CommentResponse | null> {
     return commentRepository.findCommentsByPostId(query, postId);
   },
 
@@ -38,7 +38,7 @@ export const commentService = {
     id: string,
     userId: string,
     body: UpdateCommentInputModel
-  ): Promise<boolean> {
+  ): Promise<boolean | null> {
     const { content } = body;
 
     const dto = {
@@ -48,7 +48,7 @@ export const commentService = {
     return commentRepository.updateComment(id, userId, dto);
   },
 
-  async deleteCommentById(id: string, userId: string): Promise<boolean> {
+  async deleteCommentById(id: string, userId: string): Promise<boolean | null> {
     return commentRepository.deleteCommentById(id, userId);
   }
 };
