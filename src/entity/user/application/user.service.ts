@@ -1,7 +1,6 @@
 import { mutationUsersRepositories } from "../repositories/mutationUsers.repositories";
 import { CreateUserInputModel } from "../dto/createUserInputModel";
 import { User } from "../types/user";
-import { generatePassword } from "../../../core/utils/generatePassword";
 import { userCollection } from "../../../db/mongo.db";
 import { comparePassword } from "../../../core/utils/comparePassword";
 import jwt from "jsonwebtoken";
@@ -30,7 +29,7 @@ export const userService = {
       { expiresIn: "1h" }
     );
 
-    return token;
+    return token as any;
   },
 
   async createUser(dto: CreateUserInputModel): Promise<User | null> {

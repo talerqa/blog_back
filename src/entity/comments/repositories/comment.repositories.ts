@@ -63,7 +63,9 @@ export const commentRepository = {
     };
   },
 
-  async createComment(dto: CreateCommentInputModel): Promise<Comment | null> {
+  async createComment(
+    dto: CreateCommentInputModel
+  ): Promise<Comment | null | any> {
     const { postId, content, userId, createdAt } = dto;
 
     const user = await findUserQueryRepo(userId);
@@ -75,7 +77,7 @@ export const commentRepository = {
       throw new Error("postDontExist");
     }
 
-    const newComment = {
+    const newComment: any = {
       commentatorInfo: {
         userId: userId,
         userLogin: user?.login
@@ -86,7 +88,7 @@ export const commentRepository = {
     };
 
     const insertResult = await commentCollection.insertOne({
-      ...newComment
+      ...(newComment as any)
     });
 
     return {
@@ -101,7 +103,7 @@ export const commentRepository = {
     id: string,
     userId: string,
     dto: UpdateCommentInputModel
-  ): Promise<boolean> {
+  ): Promise<null | boolean> {
     const comment = await commentCollection.findOne({ _id: new ObjectId(id) });
 
     if (!comment) {
@@ -124,7 +126,7 @@ export const commentRepository = {
     return !(commentUpdate.matchedCount < 1);
   },
   //
-  async deleteCommentById(id: string, userId: string): Promise<boolean> {
+  async deleteCommentById(id: string, userId: string): Promise<boolean | null> {
     const comment = await commentCollection.findOne({ _id: new ObjectId(id) });
 
     if (!comment) {
