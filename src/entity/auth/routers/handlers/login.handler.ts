@@ -3,13 +3,17 @@ import { HttpStatus } from "../../../../core/types/httpCodes";
 import { authService } from "../../service/auth.service";
 
 export const loginHandler = async (req: Request, res: Response) => {
-  const { loginOrEmail, password } = req.body;
+  try {
+    const { loginOrEmail, password } = req.body;
 
-  const user = await authService.login(loginOrEmail, password);
+    const user = await authService.login(loginOrEmail, password);
 
-  if (!user) {
-    res.status(HttpStatus.Unauthorized).send();
+    if (!user) {
+      return res.status(HttpStatus.Unauthorized).send();
+    }
+
+    res.status(HttpStatus.Ok).send({ accessToken: user });
+  } catch (e) {
+    console.log(e);
   }
-
-  res.status(HttpStatus.Ok).send({ accessToken: user });
 };
