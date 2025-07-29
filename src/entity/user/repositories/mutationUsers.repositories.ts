@@ -27,12 +27,20 @@ export const mutationUsersRepositories = {
   async createUser(dto: CreateUserInputModel): Promise<User | null> {
     const { login, email, password } = dto;
 
-    const isExist = await mutationUsersRepositories.existUserOrEmail(
-      login,
+    const wrongLogin = await userCollection.findOne({
+      login
+    });
+    const wrongEmail = await userCollection.findOne({
       email
-    );
+    });
 
-    if (!isExist) return null;
+    if (wrongLogin) {
+      throw new Error("wrongLogin");
+    }
+
+    if (wrongEmail) {
+      throw new Error("wrongEmail");
+    }
 
     const createdAt = new Date().toISOString();
     const passwordHash = await generatePassword(password);

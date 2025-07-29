@@ -29,7 +29,7 @@ export const userService = {
       { expiresIn: "1h" }
     );
 
-    return token as any;
+    return token;
   },
 
   async createUser(dto: CreateUserInputModel): Promise<User | null> {

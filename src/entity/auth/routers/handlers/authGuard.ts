@@ -23,7 +23,6 @@ export const authGuard = async (req: Request, res: Response, next: any) => {
     const { userId } = isVerify as any;
 
     const user = await findUserQueryRepo(userId as string);
-    console.log(user);
     if (!user) {
       res.status(HttpStatus.Unauthorized).send();
     }
