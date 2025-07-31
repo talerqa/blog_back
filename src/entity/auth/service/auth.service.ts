@@ -80,7 +80,7 @@ export const authService = {
       throw new Error("codeAlredyAprove");
     }
 
-    return await nodemailerService
+    return nodemailerService
       .sendEmail(
         //отправить сообщение на почту юзера с кодом подтверждения
         email,
