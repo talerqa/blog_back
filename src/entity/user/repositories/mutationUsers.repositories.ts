@@ -6,7 +6,7 @@ import { generatePassword } from "../../../core/utils/generatePassword";
 import { randomUUID } from "node:crypto";
 
 export const mutationUsersRepositories = {
-  async existUserOrEmail(login: string, email: string): Promise<boolean> {
+  async existUserOrEmail(login: string, email: string): Promise<boolean | any> {
     const userByLogin = await userCollection.findOne({ login });
     if (userByLogin) {
       throw new Error("wrongLogin");
@@ -47,7 +47,7 @@ export const mutationUsersRepositories = {
         expirationDate: null,
         isConfirmed: null
       }
-    } as User);
+    } as User | any);
     const id = insertResult.insertedId;
 
     const user = await userCollection.findOne({ _id: id });

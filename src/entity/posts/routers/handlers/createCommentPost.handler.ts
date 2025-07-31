@@ -15,7 +15,7 @@ export const createCommentPostHandler = async (req: Request, res: Response) => {
       content
     };
 
-    const comment = await commentService.createComment(dto);
+    const comment = await commentService.createComment(dto as any);
 
     if (!comment) {
       res.status(HttpStatus.BadRequest).send(comment);

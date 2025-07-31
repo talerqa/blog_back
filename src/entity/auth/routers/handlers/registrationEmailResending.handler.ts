@@ -10,7 +10,7 @@ export const registrationEmailResendingHandler = async (
     const { email } = req.body;
 
     const user = await authService.resending(email);
-    console.log(user);
+
     if (!user) {
       res.status(HttpStatus.BadRequest).send();
     }

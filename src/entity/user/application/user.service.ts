@@ -3,10 +3,10 @@ import { CreateUserInputModel } from "../dto/createUserInputModel";
 import { User } from "../types/user";
 import { userCollection } from "../../../db/mongo.db";
 import { comparePassword } from "../../../core/utils/comparePassword";
-import jwt from "jsonwebtoken";
+import jwt, { PrivateKey, Secret } from "jsonwebtoken";
 
 export const userService = {
-  async login(loginOrEmail: string, password: string): Promise<boolean | null> {
+  async login(loginOrEmail: string, password: string): Promise<string | any> {
     const user = await userCollection.findOne({
       $or: [{ login: loginOrEmail }, { email: loginOrEmail }]
     });
@@ -25,11 +25,11 @@ export const userService = {
       {
         userId: user?._id.toString()
       },
-      process.env.SECRET_KEY,
+      process.env.SECRET_KEY as Secret | PrivateKey,
       { expiresIn: "1h" }
     );
 
-    return token;
+    return token as any;
   },
 
   async createUser(dto: CreateUserInputModel): Promise<User | null> {

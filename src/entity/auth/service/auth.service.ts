@@ -71,6 +71,7 @@ export const authService = {
     const wrongEmail: any = await userCollection.findOne({
       email
     });
+
     if (!wrongEmail) {
       throw new Error("wrongEmail");
     }
@@ -99,15 +100,15 @@ export const authService = {
       throw new Error("codeError");
     }
 
-    const wrongEmail: any = await userCollection.findOne({
+    const correctEmail: any = await userCollection.findOne({
       "emailConfirmation.confirmationCode": code
     });
 
-    if (wrongEmail?.emailConfirmation?.isConfirmed) {
+    if (correctEmail?.emailConfirmation?.isConfirmed) {
       throw new Error("codeAlredyAprove");
     }
 
-    if (!wrongEmail) {
+    if (!correctEmail) {
       throw new Error("codeError");
     }
 
