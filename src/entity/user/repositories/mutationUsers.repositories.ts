@@ -7,22 +7,15 @@ import { randomUUID } from "node:crypto";
 
 export const mutationUsersRepositories = {
   async existUserOrEmail(login: string, email: string): Promise<boolean> {
-    const wrongLogin = await userCollection.findOne({
-      login
-    });
-    const wrongEmail = await userCollection.findOne({
-      email
-    });
-
-    if (wrongLogin) {
+    const userByLogin = await userCollection.findOne({ login });
+    if (userByLogin) {
       throw new Error("wrongLogin");
     }
 
-    if (wrongEmail) {
+    const userByEmail = await userCollection.findOne({ email });
+    if (userByEmail) {
       throw new Error("wrongEmail");
     }
-
-    return true;
   },
 
   async createUser(dto: CreateUserInputModel): Promise<User | null> {

@@ -10,7 +10,7 @@ export const registrationEmailResendingHandler = async (
     const { email } = req.body;
 
     const user = await authService.resending(email);
-
+    console.log(user);
     if (!user) {
       res.status(HttpStatus.BadRequest).send();
     }
@@ -30,7 +30,7 @@ export const registrationEmailResendingHandler = async (
       });
     }
 
-    if ((err.message = "codeAlredyAprove")) {
+    if (err.message === "codeAlredyAprove") {
       res.status(HttpStatus.BadRequest).json({
         errorsMessages: [
           {
