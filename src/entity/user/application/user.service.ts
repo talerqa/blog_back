@@ -25,7 +25,7 @@ export const userService = {
       {
         userId: user?._id.toString()
       },
-      "token",
+      process.env.SECRET_KEY,
       { expiresIn: "1h" }
     );
 

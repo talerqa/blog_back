@@ -75,11 +75,12 @@ export const authService = {
       email
     });
 
-    if (!wrongEmail) {
-      throw new Error("wrongEmail");
-    }
     if (wrongEmail?.emailConfirmation?.isConfirmed) {
       throw new Error("codeAlredyAprove");
+    }
+
+    if (!wrongEmail) {
+      throw new Error("wrongEmail");
     }
 
     return await nodemailerService
@@ -94,6 +95,18 @@ export const authService = {
       });
   },
   async registrationConfirmation(code: string) {
+    const wrongEmail: any = await userCollection.findOne({
+      "emailConfirmation.confirmationCode": code
+    });
+
+    if (wrongEmail?.emailConfirmation?.isConfirmed) {
+      throw new Error("codeAlredyAprove");
+    }
+
+    if (!wrongEmail) {
+      throw new Error("codeError");
+    }
+
     const newUser = await userCollection.updateOne(
       { "emailConfirmation.confirmationCode": code },
       {
@@ -102,17 +115,20 @@ export const authService = {
         }
       }
     );
+    console.log(newUser);
 
-    if (newUser.matchedCount < 1) {
-      throw new Error("codeError");
-    }
+    // if (newUser.matchedCount < 1) {
+    //   throw new Error("codeError");
+    // }
 
     const email: any = await userCollection.findOne({
       "emailConfirmation.confirmationCode": code
     });
-    console.log(email?.emailConfirmation?.isConfirmed);
-    if (email?.emailConfirmation?.isConfirmed) {
-      throw new Error("codeAlredyAprove");
+
+    const now = new Date();
+
+    if (email?.emailConfirmation?.expirationDate < now) {
+      throw new Error("expiredDate");
     }
 
     return !(newUser.matchedCount < 1);
