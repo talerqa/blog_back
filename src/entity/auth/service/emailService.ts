@@ -5,7 +5,7 @@ export const nodemailerService = {
     email: string,
     code: string,
     template: (code: string) => string
-  ): Promise<boolean> {
+  ): boolean {
     let transporter = nodemailer.createTransport({
       host: "smtp.yandex.ru",
       port: 465,
@@ -16,7 +16,7 @@ export const nodemailerService = {
       }
     });
 
-    let info = transporter.sendMail({
+    let info = await transporter.sendMail({
       from: "<tare-aleksei@yandex.ru>",
       to: email,
       subject: "Your code is here",

@@ -45,7 +45,7 @@ export const mutationUsersRepositories = {
       emailConfirmation: {
         confirmationCode: randomUUID(),
         expirationDate: null,
-        isConfirmed: null
+        isConfirmed: true
       }
     } as User | any);
     const id = insertResult.insertedId;
