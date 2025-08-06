@@ -7,17 +7,18 @@ export const nodemailerService = {
     template: string
   ): Promise<boolean> {
     let transporter = nodemailer.createTransport({
-      host: "smtp.yandex.ru",
-      port: 587,
-      secure: false,
+      //  host: "smtp.yandex.ru",
+      service: "Mail.ru",
+      // port: 587,
+      // secure: false,
       auth: {
-        user: process.env.EMAIL_YANDEX,
-        pass: process.env.PASS_YANDEX
+        user: process.env.EMAIL,
+        pass: process.env.PASS
       }
     });
 
-    let info = await transporter.sendMail({
-      from: `<${process.env.EMAIL_YANDEX}>`,
+    let info = transporter.sendMail({
+      from: `<${process.env.EMAIL}>`,
       to: email,
       subject: "Your code is here",
       html: template // html body

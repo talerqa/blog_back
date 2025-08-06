@@ -68,15 +68,8 @@ export const mutationUsersRepositories = {
     const insertResult = await userCollection.insertOne({
       ...dto
     } as User);
-    const id = insertResult.insertedId;
-
-    const user = await userCollection.findOne({ _id: id });
-
-    if (!user) {
-      return null;
-    }
-
-    return user;
+    const id = insertResult.insertedId.toString();
+    return userCollection.findOne({ _id: new ObjectId(id) });
   },
 
   async deleteUserById(id: string): Promise<boolean> {
@@ -84,5 +77,25 @@ export const mutationUsersRepositories = {
       _id: new ObjectId(id)
     });
     return !!deletedCount;
+  },
+  async findUserByEmail(email: string): Promise<any> {
+    return userCollection.findOne({
+      email
+    });
+  },
+  async findUserByCodeConfirm(code: string): Promise<any> {
+    return userCollection.findOne({
+      "emailConfirmation.confirmationCode": code
+    });
+  },
+  async updateConfirmCodeUser(code: string): Promise<any> {
+    return userCollection.updateOne(
+      { "emailConfirmation.confirmationCode": code },
+      {
+        $set: {
+          "emailConfirmation.isConfirmed": true
+        }
+      }
+    );
   }
 };
