@@ -16,7 +16,7 @@ export const registrationEmailResendingHandler = async (
       return;
     }
 
-    res.status(HttpStatus.NoContent).send();
+    return res.status(HttpStatus.NoContent).send();
   } catch (e) {
     const err = e as Error;
 
