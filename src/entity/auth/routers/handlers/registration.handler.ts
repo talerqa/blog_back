@@ -10,6 +10,7 @@ export const registrationHandler = async (req: Request, res: Response) => {
 
     if (!user) {
       res.status(HttpStatus.BadRequest).send();
+      return;
     }
 
     res.status(HttpStatus.NoContent).send();
