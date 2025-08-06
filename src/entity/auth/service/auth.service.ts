@@ -97,6 +97,7 @@ export const authService = {
 
     try {
       nodemailerService.sendEmail(email, code, template);
+      console.log(`Sending email to ${email} with code: ${code}`);
     } catch (e) {
       console.error("Send email error", e); //залогировать ошибку при отправке сообщения
     }

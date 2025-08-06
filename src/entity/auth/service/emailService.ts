@@ -8,9 +8,9 @@ export const nodemailerService = {
   ): Promise<boolean> {
     let transporter = nodemailer.createTransport({
       //  host: "smtp.yandex.ru",
-      service: "Mail.ru",
+      service: "smtp.ethereal.email",
       // port: 587,
-      // secure: false,
+      // secure: true,
       auth: {
         user: process.env.EMAIL,
         pass: process.env.PASS
