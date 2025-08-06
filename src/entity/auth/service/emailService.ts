@@ -9,8 +9,8 @@ export const nodemailerService = {
     let transporter = nodemailer.createTransport({
       //  host: "smtp.yandex.ru",
       service: "smtp.ethereal.email",
-      // port: 587,
-      // secure: true,
+      port: 587,
+      secure: true,
       auth: {
         user: process.env.EMAIL,
         pass: process.env.PASS
