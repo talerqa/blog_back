@@ -33,7 +33,7 @@ export const authService = {
     await mutationUsersRepositories.existUserOrEmail(login, email);
 
     const passwordHash = await generatePassword(pass);
-
+    const confirmationCode = randomUUID();
     const newUser: any = {
       login,
       email,
@@ -41,7 +41,7 @@ export const authService = {
       createdAt: new Date(),
       emailConfirmation: {
         // доп поля необходимые для подтверждения
-        confirmationCode: randomUUID(),
+        confirmationCode,
         expirationDate: add(new Date(), {
           hours: 1,
           minutes: 30
@@ -49,17 +49,19 @@ export const authService = {
         isConfirmed: false
       }
     };
-    await mutationUsersRepositories.createUserWithEmailConfirm(newUser); // сохранить
-    // юзера в базе данных
+    await mutationUsersRepositories.createUserWithEmailConfirm(newUser);
 
-    //отправку сообщения лучше обернуть в try-catch, чтобы при ошибке(например отвалиться
-    // отправка) приложение не падало
+    const template = `<h1>Thank for your registration</h1>
+               <p>To finish registration please follow the link below:<br>
+                  <a href='https://somesite.com/confirm-email?code=${newUser.emailConfirmation.confirmationCode}'>complete registration</a>
+              </p>`;
+
     try {
       nodemailerService.sendEmail(
         //отправить сообщение на почту юзера с кодом подтверждения
         newUser.email,
         newUser.emailConfirmation.confirmationCode,
-        emailExamples.registrationEmail
+        template
       );
     } catch (e) {
       console.error("Send email error", e); //залогировать ошибку при отправке сообщения
@@ -76,7 +78,7 @@ export const authService = {
       throw new Error("wrongEmail");
     }
 
-    if (findEmail?.emailConfirmation?.isConfirmed) {
+    if (findEmail?.emailConfirmation.isConfirmed) {
       throw new Error("codeAlredyAprove");
     }
 
@@ -85,14 +87,15 @@ export const authService = {
     if (findEmail?.emailConfirmation?.expirationDate < now) {
       throw new Error("expiredDate");
     }
+    const code = randomUUID();
+
+    const template = `<h1>Thank for your registration</h1>
+               <p>To finish registration please follow the link below:<br>
+                  <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
+              </p>`;
 
     try {
-      nodemailerService.sendEmail(
-        //отправить сообщение на почту юзера с кодом подтверждения
-        email,
-        randomUUID(),
-        emailExamples.registrationEmail
-      );
+      nodemailerService.sendEmail(email, code, template);
     } catch (e) {
       console.error("Send email error", e); //залогировать ошибку при отправке сообщения
     }
@@ -116,13 +119,13 @@ export const authService = {
       throw new Error("codeError");
     }
 
-    if (correctEmail?.emailConfirmation?.isConfirmed) {
+    if (correctEmail.emailConfirmation.isConfirmed) {
       throw new Error("codeAlredyAprove");
     }
 
     const now = new Date();
 
-    if (correctEmail?.emailConfirmation?.expirationDate < now) {
+    if (correctEmail.emailConfirmation.expirationDate < now) {
       throw new Error("expiredDate");
     }
 

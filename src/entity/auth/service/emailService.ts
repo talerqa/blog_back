@@ -4,23 +4,23 @@ export const nodemailerService = {
   async sendEmail(
     email: string,
     code: string,
-    template: (code: string) => string
+    template: string
   ): Promise<boolean> {
     let transporter = nodemailer.createTransport({
       host: "smtp.yandex.ru",
       port: 587,
       secure: false,
       auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASS
+        user: process.env.EMAIL_YANDEX,
+        pass: process.env.PASS_YANDEX
       }
     });
 
-    let info = transporter.sendMail({
-      from: `<${process.env.EMAIL}>`,
+    let info = await transporter.sendMail({
+      from: `<${process.env.EMAIL_YANDEX}>`,
       to: email,
       subject: "Your code is here",
-      html: template(code) // html body
+      html: template // html body
     });
 
     return !!info;

@@ -19,22 +19,22 @@ export const registrationEmailResendingHandler = async (
   } catch (e) {
     const err = e as Error;
 
-    if (err.message === "wrongEmail") {
+    if (err.message === "codeAlredyAprove") {
       res.status(HttpStatus.BadRequest).json({
         errorsMessages: [
           {
-            message: "email not exitst be unique",
+            message: "email alredy aprove",
             field: "email"
           }
         ]
       });
     }
 
-    if (err.message === "codeAlredyAprove") {
+    if (err.message === "wrongEmail") {
       res.status(HttpStatus.BadRequest).json({
         errorsMessages: [
           {
-            message: "email alredy aprove",
+            message: "email not exitst be unique",
             field: "email"
           }
         ]
