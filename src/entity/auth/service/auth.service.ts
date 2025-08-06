@@ -82,11 +82,11 @@ export const authService = {
       throw new Error("wrongEmail");
     }
 
-    const now = new Date();
-
-    if (findEmail?.emailConfirmation.expirationDate < now) {
-      throw new Error("wrongEmail");
-    }
+    // const now = new Date();
+    //
+    // if (findEmail?.emailConfirmation.expirationDate < now) {
+    //   throw new Error("wrongEmail");
+    // }
     const code = randomUUID();
 
     const template = `<h1>Thank for your registration</h1>
