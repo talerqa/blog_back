@@ -78,7 +78,7 @@ export const authService = {
       throw new Error("wrongEmail");
     }
 
-    if (findEmail?.emailConfirmation.isConfirmed) {
+    if (findEmail?.emailConfirmation?.isConfirmed) {
       throw new Error("wrongEmail");
     }
 

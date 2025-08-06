@@ -29,6 +29,7 @@ export const registrationEmailResendingHandler = async (
           }
         ]
       });
+      return;
     }
   }
 };
