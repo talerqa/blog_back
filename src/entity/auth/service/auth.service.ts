@@ -58,7 +58,7 @@ export const authService = {
               </p>`;
 
     try {
-      nodemailerService.sendEmail(
+      await nodemailerService.sendEmail(
         //отправить сообщение на почту юзера с кодом подтверждения
         newUser.email,
         newUser.emailConfirmation.confirmationCode,
@@ -96,7 +96,7 @@ export const authService = {
               </p>`;
 
     try {
-      nodemailerService.sendEmail(email, code, template);
+      await nodemailerService.sendEmail(email, code, template);
       console.log(`Sending email to ${email} with code: ${code}`);
     } catch (e) {
       console.error("Send email error", e); //залогировать ошибку при отправке сообщения
