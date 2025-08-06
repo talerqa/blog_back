@@ -42,8 +42,7 @@ export const authService = {
         // доп поля необходимые для подтверждения
         confirmationCode,
         expirationDate: add(new Date(), {
-          hours: 1,
-          minutes: 30
+          days: 1
         }),
         isConfirmed: false
       }
@@ -58,7 +57,7 @@ export const authService = {
               </p>`;
 
     try {
-      await nodemailerService.sendEmail(
+      nodemailerService.sendEmail(
         //отправить сообщение на почту юзера с кодом подтверждения
         newUser.email,
         newUser.emailConfirmation.confirmationCode,
@@ -96,7 +95,7 @@ export const authService = {
               </p>`;
 
     try {
-      await nodemailerService.sendEmail(email, code, template);
+      nodemailerService.sendEmail(email, code, template);
       console.log(`Sending email to ${email} with code: ${code}`);
     } catch (e) {
       console.error("Send email error", e); //залогировать ошибку при отправке сообщения
