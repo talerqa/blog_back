@@ -17,7 +17,7 @@ export const nodemailerService = {
       }
     });
 
-    let info = transporter.sendMail({
+    let info = await transporter.sendMail({
       from: `<${process.env.EMAIL}>`,
       to: email,
       subject: "Your code is here",
