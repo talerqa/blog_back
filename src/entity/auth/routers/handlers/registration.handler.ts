@@ -14,12 +14,15 @@ export const registrationHandler = async (req: Request, res: Response) => {
     }
 
     res.status(HttpStatus.NoContent).send();
+    return;
   } catch (e) {
     const err = e as Error;
     if (err.message === "wrongLogin") {
       res.status(HttpStatus.BadRequest).json({
         errorsMessages: [{ message: "login should be unique", field: "login" }]
       });
+
+      return;
     }
     if (err.message === "wrongEmail") {
       res.status(HttpStatus.BadRequest).json({
@@ -30,6 +33,7 @@ export const registrationHandler = async (req: Request, res: Response) => {
           }
         ]
       });
+      return;
     }
   }
 };

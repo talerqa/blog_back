@@ -7,7 +7,7 @@ export const idValidationUserEmail = body("email")
   .withMessage("email must be a string")
   .trim()
   .matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
-  .withMessage("login wil be pattern");
+  .withMessage("email wil be pattern");
 
 export const idValidationUserLogin = body("login")
   .exists()

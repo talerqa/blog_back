@@ -47,20 +47,20 @@ export const authService = {
         isConfirmed: false
       }
     };
-    const user = await mutationUsersRepositories.createUserWithEmailConfirm(
+    const user: any = await mutationUsersRepositories.createUserWithEmailConfirm(
       newUser
     );
 
     const template = `<h1>Thank for your registration</h1>
                <p>To finish registration please follow the link below:<br>
-                  <a href='https://somesite.com/confirm-email?code=${newUser.emailConfirmation.confirmationCode}'>complete registration</a>
+                  <a href='https://somesite.com/confirm-email?code=${user.emailConfirmation.confirmationCode}'>complete registration</a>
               </p>`;
 
     try {
       nodemailerService.sendEmail(
         //отправить сообщение на почту юзера с кодом подтверждения
-        newUser.email,
-        newUser.emailConfirmation.confirmationCode,
+        user.email,
+        user.emailConfirmation.confirmationCode,
         template
       );
     } catch (e) {

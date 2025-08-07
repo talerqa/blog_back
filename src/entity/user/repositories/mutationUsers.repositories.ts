@@ -4,6 +4,7 @@ import { CreateUserInputModel } from "../dto/createUserInputModel";
 import { User } from "../types/user";
 import { generatePassword } from "../../../core/utils/generatePassword";
 import { randomUUID } from "node:crypto";
+import { add } from "date-fns/add";
 
 export const mutationUsersRepositories = {
   async existUserOrEmail(login: string, email: string): Promise<boolean | any> {
@@ -44,7 +45,9 @@ export const mutationUsersRepositories = {
       createdAt,
       emailConfirmation: {
         confirmationCode: randomUUID(),
-        expirationDate: null,
+        expirationDate: add(new Date(), {
+          days: 1
+        }),
         isConfirmed: true
       }
     } as User | any);

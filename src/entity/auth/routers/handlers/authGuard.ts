@@ -14,6 +14,7 @@ export const authGuard = async (req: Request, res: Response, next: any) => {
 
     if (authType !== "Bearer" || !token) {
       res.status(HttpStatus.Unauthorized).send();
+      return;
     }
     const isVerify = jwt.verify(
       token as string,
@@ -22,19 +23,15 @@ export const authGuard = async (req: Request, res: Response, next: any) => {
 
     if (!isVerify) {
       res.status(HttpStatus.Unauthorized).send();
+      return;
     }
     const { userId } = isVerify as any;
 
     const user = await findUserQueryRepo(userId as string);
     if (!user) {
       res.status(HttpStatus.Unauthorized).send();
+      return;
     }
-
-    // res.status(HttpStatus.Ok).send({
-    //   email: user?.email,
-    //   login: user?.login,
-    //   userId: userId
-    // });
 
     req.headers = { userId };
     next();
