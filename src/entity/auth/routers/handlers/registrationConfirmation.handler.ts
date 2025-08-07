@@ -12,7 +12,6 @@ export const registrationConfirmationHandler = async (
     await authService.registrationConfirmation(code);
 
     res.status(HttpStatus.NoContent).send();
-    return;
   } catch (e) {
     const err = e as Error;
 

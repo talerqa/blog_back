@@ -53,14 +53,14 @@ export const authService = {
 
     const template = `<h1>Thank for your registration</h1>
                <p>To finish registration please follow the link below:<br>
-                  <a href='https://somesite.com/confirm-email?code=${user.emailConfirmation.confirmationCode}'>complete registration</a>
+                  <a href='https://somesite.com/confirm-email?code=${newUser.emailConfirmation.confirmationCode}'>complete registration</a>
               </p>`;
 
     try {
       nodemailerService.sendEmail(
         //отправить сообщение на почту юзера с кодом подтверждения
-        user.email,
-        user.emailConfirmation.confirmationCode,
+        newUser.email,
+        newUser.emailConfirmation.confirmationCode,
         template
       );
     } catch (e) {
@@ -98,7 +98,7 @@ export const authService = {
       nodemailerService.sendEmail(email, code, template);
       console.log(`Sending email to ${email} with code: ${code}`);
     } catch (e) {
-      console.error("Send email error", e); //залогировать ошибку при отправке сообщения
+      console.error("Send email error", e);
     }
 
     return findEmail;

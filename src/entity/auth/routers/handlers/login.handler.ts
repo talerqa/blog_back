@@ -12,12 +12,10 @@ export const loginHandler = async (
     const user = await authService.login(loginOrEmail, password);
 
     if (!user) {
-      res.status(HttpStatus.Unauthorized).send();
-      return;
+      return res.status(HttpStatus.Unauthorized).send();
     }
 
     res.status(HttpStatus.Ok).send({ accessToken: user });
-    return;
   } catch (e) {
     console.log(e);
   }
