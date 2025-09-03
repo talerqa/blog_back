@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { userService } from "../../application/user.service";
-import { HttpStatus } from "../../../../core/types/httpCodes";
+import { HttpStatus } from "../../../../core/const/httpCodes";
 
 export const deleteUserHandler = async (req: Request, res: Response) => {
   const id = req.params?.id as string;

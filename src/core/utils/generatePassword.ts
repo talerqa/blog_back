@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+import bcrypt from "bcrypt";
 
 export const generatePassword = async (password: string) => {
   const saltRounds = 10;

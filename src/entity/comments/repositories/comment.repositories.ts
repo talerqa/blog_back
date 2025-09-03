@@ -1,6 +1,6 @@
 import { Comment } from "../types/comment";
 import { CreateCommentInputModel } from "../dto/createCommentInputModel";
-import { findUserQueryRepo } from "../../user/repositories/findUserQueryRepo";
+import { findUserByIdQueryRepo } from "../../user/repositories/findUserByIdQueryRepo";
 import { commentCollection, postCollection } from "../../../db/mongo.db";
 import { ObjectId } from "mongodb";
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
@@ -25,7 +25,7 @@ export const commentRepository = {
     const post = await postCollection.findOne({ _id: new ObjectId(postId) });
 
     if (!post) {
-      return null;
+      throw new Error();
     }
 
     const skip = (+pageNumber - 1) * +pageSize;
@@ -67,7 +67,7 @@ export const commentRepository = {
   ): Promise<Comment | null | any> {
     const { postId, content, userId, createdAt } = dto;
 
-    const user = await findUserQueryRepo(userId);
+    const user = await findUserByIdQueryRepo(userId);
     const post = await postCollection.findOne({
       _id: new ObjectId(postId)
     });

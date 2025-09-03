@@ -1,7 +1,7 @@
 // @ts-ignore
 import request from "supertest";
 import { TESTING_PATH } from "../../core/paths/paths";
-import { HttpStatus } from "../../core/types/httpCodes";
+import { HttpStatus } from "../../core/const/httpCodes";
 import { Express } from "express";
 
 export async function clearDb(app: Express) {

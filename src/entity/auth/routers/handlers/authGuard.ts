@@ -1,41 +1,47 @@
-import { Request, Response } from "express";
-import { HttpStatus } from "../../../../core/types/httpCodes";
-import { findUserQueryRepo } from "../../../user/repositories/findUserQueryRepo";
+import { NextFunction, Request, Response } from "express";
+import { HttpStatus } from "../../../../core/const/httpCodes";
+import { findUserByIdQueryRepo } from "../../../user/repositories/findUserByIdQueryRepo";
 import jwt, { PublicKey, Secret } from "jsonwebtoken";
 
-export const authGuard = async (req: Request, res: Response, next: any) => {
+export const authGuard = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     const auth = req.headers["authorization"];
     if (!auth) {
       res.status(HttpStatus.Unauthorized).send();
+      return;
     }
-    const token = auth?.split(" ")[1];
-    const authType = auth?.split(" ")[0];
+
+    const [authType, token] = auth.split(" ");
 
     if (authType !== "Bearer" || !token) {
-      res.status(HttpStatus.Unauthorized).send();
-    }
-    const isVerify = jwt.verify(
-      token as string,
-      process.env.SECRET_KEY as Secret | PublicKey
-    );
-
-    if (!isVerify) {
-      res.status(HttpStatus.Unauthorized).send();
-    }
-    const { userId } = isVerify as any;
-
-    const user = await findUserQueryRepo(userId as string);
-    if (!user) {
       res.status(HttpStatus.Unauthorized).send();
       return;
     }
 
-    req.headers = { userId };
+    let decodedToken;
+    try {
+      decodedToken = jwt.verify(
+        token,
+        process.env.SECRET_KEY as Secret | PublicKey
+      );
+    } catch (err) {
+      res.status(HttpStatus.Unauthorized).send();
+      return;
+    }
+
+    const { userId }: any = decodedToken;
+    await findUserByIdQueryRepo(userId);
+
+    req.headers = { ...req.headers, userId };
     next();
-    return;
   } catch (e) {
-    console.log(e);
+    const err = e as Error;
+    console.log(err);
     res.status(HttpStatus.Unauthorized).send();
+    return;
   }
 };

@@ -1,19 +1,22 @@
 import { Request, Response } from "express";
-import { HttpStatus } from "../../../../core/types/httpCodes";
-import { findUserQueryRepo } from "../../../user/repositories/findUserQueryRepo";
+import { HttpStatus } from "../../../../core/const/httpCodes";
+import { findUserByIdQueryRepo } from "../../../user/repositories/findUserByIdQueryRepo";
 
-export const meHandler = async (req: Request, res: Response) => {
-  const userId = req?.headers.userId as string;
+export const meHandler = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req?.headers?.userId as string;
+    const user = await findUserByIdQueryRepo(userId);
 
-  const user = await findUserQueryRepo(userId);
+    res.status(HttpStatus.Ok).send({
+      email: user?.email,
+      login: user?.login,
+      userId
+    });
 
-  if (!user) {
+    return;
+  } catch (e) {
+    console.log(e);
     res.status(HttpStatus.Unauthorized).send();
+    return;
   }
-
-  res.status(HttpStatus.Ok).send({
-    email: user?.email,
-    login: user?.login,
-    userId: userId
-  });
 };

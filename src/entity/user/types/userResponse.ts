@@ -5,5 +5,5 @@ export type UserResponse = {
   page: number;
   pageSize: number;
   totalCount: number;
-  items: User[];
+  items: Omit<User, "password">[];
 };

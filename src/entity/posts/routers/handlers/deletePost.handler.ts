@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { postsService } from "../../application/posts.service";
-import { HttpStatus } from "../../../../core/types/httpCodes";
+import { postsService } from "../../services/posts.service";
+import { HttpStatus } from "../../../../core/const/httpCodes";
 
 export const deletePostHandler = async (req: Request, res: Response) => {
   const id = req.params?.id as string;

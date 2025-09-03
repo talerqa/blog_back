@@ -24,6 +24,7 @@ export const setupApp = (app: Express) => {
   app.use(USER_PATH, userRouter);
   app.use(AUTH_PATH, authRouter);
   app.use(COMMENTS_PATH, commentsRouter);
+
   setupSwagger(app);
   return app;
 };

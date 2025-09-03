@@ -1,13 +1,15 @@
-import { Collection, Db, MongoClient, ServerApiVersion } from "mongodb";
+import { Collection, Db, MongoClient } from "mongodb";
 import { Blog } from "../entity/blogs/types/blog";
 import { Post } from "../entity/posts/types/post";
 import { User } from "../entity/user/types/user";
 import { Comment } from "../entity/comments/types/comment";
-
-const BLOG_COLLECTION_NAME = "blog";
-const POST_COLLECTION_NAME = "post";
-const USER_COLLECTION_NAME = "user";
-const COMMENT_COLLECTION_NAME = "comment";
+import {
+  BLOG_COLLECTION_NAME,
+  COMMENT_COLLECTION_NAME,
+  NAME_DB,
+  POST_COLLECTION_NAME,
+  USER_COLLECTION_NAME
+} from "./collectionsName";
 
 export let client: MongoClient;
 export let blogCollection: Collection<Blog>;
@@ -24,21 +26,9 @@ export async function stopDb() {
 
 // Подключения к бд
 export const runDB = async (): Promise<void> => {
-  // LOCAL
-  // client = new MongoClient(process.env.MONGODB_LOCAL ?? "", {
-  // TEST
-  //client = new MongoClient("mongodb://localhost:27017", {
-  //INCUB
-  client = new MongoClient(process.env.MONGODB_URI ?? "", {
-    serverApi: {
-      version: ServerApiVersion.v1,
-      strict: true,
-      deprecationErrors: true
-    }
-  });
-  const db: Db = client.db("blog");
+  const client: MongoClient = new MongoClient("mongodb://localhost:27017");
 
-  //Инициализация коллекций
+  const db: Db = client.db(NAME_DB);
   blogCollection = db.collection<Blog>(BLOG_COLLECTION_NAME);
   postCollection = db.collection<Post>(POST_COLLECTION_NAME);
   userCollection = db.collection<User>(USER_COLLECTION_NAME);
@@ -49,6 +39,9 @@ export const runDB = async (): Promise<void> => {
     await db.command({ ping: 1 });
     console.log("✅ Connected to the database");
   } catch (e) {
-    await stopDb();
+    if (!client) {
+      throw new Error(`❌ Database not connected`);
+    }
+    await client.close();
   }
 };

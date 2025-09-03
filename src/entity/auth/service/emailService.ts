@@ -1,11 +1,7 @@
 import nodemailer from "nodemailer";
 
 export const nodemailerService = {
-  async sendEmail(
-    email: string,
-    code: string,
-    template: string
-  ): Promise<boolean> {
+  async sendEmail(email: string, template: string): Promise<boolean> {
     let transporter = nodemailer.createTransport({
       service: "Mail.ru",
       auth: {

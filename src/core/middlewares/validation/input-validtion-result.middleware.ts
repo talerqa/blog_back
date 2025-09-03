@@ -1,5 +1,5 @@
 import { ValidationError, validationResult } from "express-validator";
-import { HttpStatus } from "../../types/httpCodes";
+import { HttpStatus } from "../../const/httpCodes";
 import { NextFunction, Request, Response } from "express";
 
 const formatErrors = (error: ValidationError | any) => ({

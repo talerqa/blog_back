@@ -5,7 +5,7 @@ import { generateBasicAuthToken } from "../utils/generate-admin-auth-token";
 import { runDB, stopDb } from "../../db/mongo.db";
 import { clearDb } from "../utils/clearDb";
 import { BLOGS_PATH, USER_PATH } from "../../core/paths/paths";
-import { HttpStatus } from "../../core/types/httpCodes";
+import { HttpStatus } from "../../core/const/httpCodes";
 import { getUserDto } from "../utils/user/getUserDto";
 import { User } from "../../entity/user/types/user";
 import { findAllUserQueryRepo } from "../../entity/user/repositories/findAllUserQueryRepo";

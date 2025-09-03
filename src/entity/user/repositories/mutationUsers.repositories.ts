@@ -1,46 +1,23 @@
-import { ObjectId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 import { userCollection } from "../../../db/mongo.db";
 import { CreateUserInputModel } from "../dto/createUserInputModel";
 import { User } from "../types/user";
 import { generatePassword } from "../../../core/utils/generatePassword";
 import { randomUUID } from "node:crypto";
 import { add } from "date-fns/add";
+import { errorsName } from "../../../core/const/errorsName";
 
 export const mutationUsersRepositories = {
-  async existUserOrEmail(login: string, email: string): Promise<boolean | any> {
-    const userByLogin = await userCollection.findOne({ login });
-    if (userByLogin) {
-      throw new Error("wrongLogin");
-    }
-
-    const userByEmail = await userCollection.findOne({ email });
-    if (userByEmail) {
-      throw new Error("wrongEmail");
-    }
-  },
-
-  async createUser(dto: CreateUserInputModel): Promise<User | null> {
+  async createUser(
+    dto: CreateUserInputModel
+  ): Promise<Omit<User, "password" | "emailConfirmation"> | null> {
     const { login, email, password } = dto;
-
-    const wrongLogin = await userCollection.findOne({
-      login
-    });
-    const wrongEmail = await userCollection.findOne({
-      email
-    });
-
-    if (wrongLogin) {
-      throw new Error("wrongLogin");
-    }
-
-    if (wrongEmail) {
-      throw new Error("wrongEmail");
-    }
 
     const createdAt = new Date().toISOString();
     const passwordHash = await generatePassword(password);
-    const insertResult = await userCollection.insertOne({
-      ...dto,
+    const usersResult = await userCollection.insertOne({
+      login,
+      email,
       password: passwordHash,
       createdAt,
       emailConfirmation: {
@@ -50,8 +27,8 @@ export const mutationUsersRepositories = {
         }),
         isConfirmed: true
       }
-    } as User | any);
-    const id = insertResult.insertedId;
+    } as WithId<User>);
+    const id = usersResult.insertedId;
 
     const user = await userCollection.findOne({ _id: id });
 
@@ -67,12 +44,22 @@ export const mutationUsersRepositories = {
     };
   },
 
-  async createUserWithEmailConfirm(dto: any): Promise<User | null> {
+  async createUserWithConfirmByEmail(
+    user: Omit<User, "id">
+  ): Promise<WithId<User> | null> {
     const insertResult = await userCollection.insertOne({
-      ...dto
+      ...user
     } as User);
+
     const id = insertResult.insertedId.toString();
-    return userCollection.findOne({ _id: new ObjectId(id) });
+
+    const findUser = userCollection.findOne({ _id: new ObjectId(id) });
+
+    if (!findUser) {
+      throw Error(errorsName.not_found_user);
+    }
+
+    return findUser;
   },
 
   async deleteUserById(id: string): Promise<boolean> {
@@ -81,24 +68,30 @@ export const mutationUsersRepositories = {
     });
     return !!deletedCount;
   },
-  async findUserByEmail(email: string): Promise<any> {
-    return userCollection.findOne({
-      email
-    });
+
+  async updateConfirmCodeUser(id: string): Promise<boolean> {
+    const user = await userCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { "emailConfirmation.isConfirmed": true } }
+    );
+
+    return !(user.matchedCount < 1);
   },
-  async findUserByCodeConfirm(code: string): Promise<any> {
-    return userCollection.findOne({
-      "emailConfirmation.confirmationCode": code
-    });
-  },
-  async updateConfirmCodeUser(code: string): Promise<any> {
-    return userCollection.updateOne(
-      { "emailConfirmation.confirmationCode": code },
+  async updateEmailConfirmationUser(
+    id: string,
+    code: string,
+    newDate: string
+  ): Promise<boolean> {
+    const user = await userCollection.updateOne(
+      { _id: new ObjectId(id) },
       {
         $set: {
-          "emailConfirmation.isConfirmed": true
+          "emailConfirmation.expirationDate": newDate,
+          "emailConfirmation.confirmationCode": code
         }
       }
     );
+
+    return !(user.matchedCount < 1);
   }
 };

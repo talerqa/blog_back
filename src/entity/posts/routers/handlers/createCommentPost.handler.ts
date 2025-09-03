@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { HttpStatus } from "../../../../core/types/httpCodes";
+import { HttpStatus } from "../../../../core/const/httpCodes";
 import { commentService } from "../../../comments/service/comment.service";
 
 export const createCommentPostHandler = async (req: Request, res: Response) => {

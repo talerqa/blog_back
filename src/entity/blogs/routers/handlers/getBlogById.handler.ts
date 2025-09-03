@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { HttpStatus } from "../../../../core/types/httpCodes";
+import { HttpStatus } from "../../../../core/const/httpCodes";
 import { findBlogById } from "../../repositories/findBlogByIdQueryRepo";
 
 export const getBlogByIdHandler = async (req: Request, res: Response) => {

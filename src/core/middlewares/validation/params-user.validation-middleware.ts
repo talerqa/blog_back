@@ -5,8 +5,7 @@ export const idValidationUserEmail = body("email")
   .withMessage("email is required")
   .isString()
   .withMessage("email must be a string")
-  .trim()
-  .matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
+  .isEmail()
   .withMessage("email wil be pattern");
 
 export const idValidationUserLogin = body("login")
@@ -18,7 +17,7 @@ export const idValidationUserLogin = body("login")
   .isLength({ min: 3 })
   .withMessage("login must not be empty")
   .isLength({ max: 10 })
-  .withMessage("password must max 10 lenght")
+  .withMessage("password must max 10 length")
   .matches("^[a-zA-Z0-9_-]*$")
   .withMessage("login wil be pattern");
 
@@ -38,4 +37,5 @@ export const idValidationCode = body("code")
   .withMessage("code is required")
   .isString()
   .withMessage("code must be a string")
-  .trim();
+  .trim()
+  .isUUID();

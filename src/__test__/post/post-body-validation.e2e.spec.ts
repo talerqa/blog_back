@@ -6,7 +6,7 @@ import { generateBasicAuthToken } from "../utils/generate-admin-auth-token";
 import { runDB, stopDb } from "../../db/mongo.db";
 import { clearDb } from "../utils/clearDb";
 import { BLOGS_PATH } from "../../core/paths/paths";
-import { HttpStatus } from "../../core/types/httpCodes";
+import { HttpStatus } from "../../core/const/httpCodes";
 import { SortFiledBlogs } from "../../core/types/sortFiledBlogs";
 import { SortDirection } from "../../core/types/sortDesc";
 import { findAllBlogsQueryRepo } from "../../entity/blogs/repositories/findAllBlogsQueryRepo";

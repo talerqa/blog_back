@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { PagingAndSortType } from "../../../../core/types/pagingAndSortType";
-import { HttpStatus } from "../../../../core/types/httpCodes";
+import { HttpStatus } from "../../../../core/const/httpCodes";
 import { findAllUserQueryRepo } from "../../repositories/findAllUserQueryRepo";
 
 export const getAllUsersHandler = async (req: Request, res: Response) => {

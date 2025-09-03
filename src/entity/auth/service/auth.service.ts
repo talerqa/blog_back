@@ -4,23 +4,14 @@ import { generatePassword } from "../../../core/utils/generatePassword";
 import { randomUUID } from "node:crypto";
 import { add } from "date-fns/add";
 import { nodemailerService } from "./emailService";
-
-export const emailExamples = {
-  registrationEmail(code: string) {
-    return `<h1>Thank for your registration</h1>
-               <p>To finish registration please follow the link below:<br>
-                  <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
-              </p>`;
-  }
-  // passwordRecoveryEmail(code: string) {
-  //   return `<h1>Password recovery</h1>
-  //       <p>To finish password recovery please follow the link below:
-  //           <a href='https://somesite.com/password-recovery?recoveryCode=${code}'>recovery
-  // password</a> </p>`; }
-};
+import { usersRepositories } from "../../user/repositories/users.repositories";
+import { emailExamples } from "../../../core/const/template";
+import { User } from "../../user/types/user";
+import { UUID } from "crypto";
+import { errorsName } from "../../../core/const/errorsName";
 
 export const authService = {
-  async login(loginOrEmail: string, password: string): Promise<boolean | null> {
+  async login(loginOrEmail: string, password: string): Promise<string> {
     return userService.login(loginOrEmail, password);
   },
 
@@ -28,101 +19,65 @@ export const authService = {
     login: string,
     pass: string,
     email: string
-  ): Promise<any | null> {
-    await mutationUsersRepositories.existUserOrEmail(login, email);
+  ): Promise<void> {
+    await usersRepositories.isExistUserWithLoginOrEmail(login, email);
 
     const passwordHash = await generatePassword(pass);
-    const confirmationCode = randomUUID();
-    const newUser: any = {
+    const code: UUID = randomUUID();
+    const newUser: Omit<User, "id"> = {
       login,
       email,
       password: passwordHash,
       createdAt: new Date(),
       emailConfirmation: {
-        // доп поля необходимые для подтверждения
-        confirmationCode,
+        confirmationCode: code,
         expirationDate: add(new Date(), {
           days: 1
         }),
         isConfirmed: false
       }
     };
-    const user: any = await mutationUsersRepositories.createUserWithEmailConfirm(
-      newUser
-    );
 
-    const template = `<h1>Thank for your registration</h1>
-               <p>To finish registration please follow the link below:<br>
-                  <a href='https://somesite.com/confirm-email?code=${newUser.emailConfirmation.confirmationCode}'>complete registration</a>
-              </p>`;
+    await mutationUsersRepositories.createUserWithConfirmByEmail(newUser);
 
     try {
-      nodemailerService.sendEmail(
-        //отправить сообщение на почту юзера с кодом подтверждения
-        newUser.email,
-        newUser.emailConfirmation.confirmationCode,
-        template
-      );
+      nodemailerService.sendEmail(email, emailExamples.registrationEmail(code));
     } catch (e) {
       console.error("Send email error", e); //залогировать ошибку при отправке сообщения
     }
-    return user;
   },
 
-  async resending(email: any) {
-    const findEmail: any = await mutationUsersRepositories.findUserByEmail(
-      email
+  async resending(email: string) {
+    const user = await usersRepositories.findUserByEmail(email);
+
+    if (user?.emailConfirmation?.isConfirmed) {
+      throw new Error(errorsName.wrong_email);
+    }
+
+    const code = randomUUID();
+    const newDate = add(new Date(), {
+      days: 1
+    }).toISOString();
+
+    await mutationUsersRepositories.updateEmailConfirmationUser(
+      user._id.toString(),
+      code,
+      newDate
     );
 
-    if (!findEmail) {
-      throw new Error("wrongEmail");
-    }
-
-    if (findEmail?.emailConfirmation?.isConfirmed) {
-      throw new Error("wrongEmail");
-    }
-
-    // const now = new Date();
-    //
-    // if (findEmail?.emailConfirmation.expirationDate < now) {
-    //   throw new Error("wrongEmail");
-    // }
-    const code = randomUUID();
-
-    const template = `<h1>Thank for your registration</h1>
-               <p>To finish registration please follow the link below:<br>
-                  <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
-              </p>`;
-
     try {
-      nodemailerService.sendEmail(email, code, template);
-      console.log(`Sending email to ${email} with code: ${code}`);
+      nodemailerService.sendEmail(email, emailExamples.registrationEmail(code));
     } catch (e) {
       console.error("Send email error", e);
     }
-
-    return findEmail;
   },
   async registrationConfirmation(code: string) {
-    const correctEmail: any = await mutationUsersRepositories.findUserByCodeConfirm(
-      code
+    const user = await usersRepositories.findUserByCodeConfirm(code);
+
+    const isConfirm = await mutationUsersRepositories.updateConfirmCodeUser(
+      user._id.toString()
     );
-    if (!correctEmail) {
-      throw new Error("codeError");
-    }
 
-    if (correctEmail?.emailConfirmation.isConfirmed) {
-      throw new Error("codeError");
-    }
-
-    const now = new Date();
-
-    if (correctEmail?.emailConfirmation.expirationDate < now) {
-      throw new Error("codeError");
-    }
-
-    const newUser = await mutationUsersRepositories.updateConfirmCodeUser(code);
-
-    return !(newUser.matchedCount < 1);
+    return isConfirm;
   }
 };

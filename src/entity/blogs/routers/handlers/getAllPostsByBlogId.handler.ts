@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { HttpStatus } from "../../../../core/types/httpCodes";
+import { HttpStatus } from "../../../../core/const/httpCodes";
 import { PagingAndSortType } from "../../../../core/types/pagingAndSortType";
 import { findPostsByBlogId } from "../../repositories/findPostsByBlogIdQueryRepo";
 

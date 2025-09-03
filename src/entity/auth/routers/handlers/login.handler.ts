@@ -1,22 +1,21 @@
 import { Request, Response } from "express";
-import { HttpStatus } from "../../../../core/types/httpCodes";
+import { HttpStatus } from "../../../../core/const/httpCodes";
 import { authService } from "../../service/auth.service";
 
 export const loginHandler = async (
   req: Request,
   res: Response
-): Promise<any> => {
+): Promise<void> => {
   try {
     const { loginOrEmail, password } = req.body;
 
-    const user = await authService.login(loginOrEmail, password);
+    const accessToken = await authService.login(loginOrEmail, password);
 
-    if (!user) {
-      return res.status(HttpStatus.Unauthorized).send();
-    }
-
-    res.status(HttpStatus.Ok).send({ accessToken: user });
+    res.status(HttpStatus.Ok).send({ accessToken });
+    return;
   } catch (e) {
     console.log(e);
+    res.status(HttpStatus.Unauthorized).send();
+    return;
   }
 };

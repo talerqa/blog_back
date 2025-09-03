@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { HttpStatus } from "../../../core/types/httpCodes";
+import { HttpStatus } from "../../../core/const/httpCodes";
 import { testRepository } from "../repositories/test.repositories";
 
 export const testingRouter = Router({});
