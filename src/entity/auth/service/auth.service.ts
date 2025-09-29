@@ -32,7 +32,7 @@ export const authService = {
       emailConfirmation: {
         confirmationCode: code,
         expirationDate: add(new Date(), {
-          days: 1
+          seconds: 10
         }),
         isConfirmed: false
       }
@@ -46,7 +46,6 @@ export const authService = {
       console.error("Send email error", e); //залогировать ошибку при отправке сообщения
     }
   },
-
   async resending(email: string) {
     const user = await usersRepositories.findUserByEmail(email);
 
@@ -79,5 +78,34 @@ export const authService = {
     );
 
     return isConfirm;
+  },
+  async refreshToken(userId: string) {
+    return userService.refreshToken(userId);
+    // return jwt.sign(
+    //   {
+    //     userId: user._id.toString()
+    //   },
+    //   process.env.SECRET_KEY as Secret | PrivateKey,
+    //   { expiresIn: "1h" }
+    // );
+    // if (user?.emailConfirmation?.isConfirmed) {
+    //   throw new Error(errorsName.wrong_email);
+    // }
+    //
+    // const code = randomUUID();
+    // const newDate = add(new Date(), {
+    //   days: 1
+    // }).toISOString();
+    //
+    // await mutationUsersRepositories.updateEmailConfirmationUser(
+    //   user._id.toString(),
+    //   code,
+    //   newDate
+    // );
+    // try {
+    //   nodemailerService.sendEmail(email, emailExamples.registrationEmail(code));
+    // } catch (e) {
+    //   console.error("Send email error", e);
+    // }
   }
 };

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
 import { authService } from "../../service/auth.service";
-import { errorsName } from "../../../../core/const/errorsName";
+import { errorMap, errorsName } from "../../../../core/const/errorsName";
 
 export const registrationConfirmationHandler = async (
   req: Request,
@@ -20,19 +20,13 @@ export const registrationConfirmationHandler = async (
       return;
     }
 
-    if (err.message === errorsName.confirm_code) {
-      res
-        .status(HttpStatus.BadRequest)
-        .json({
-          errorsMessages: [
-            {
-              message: "code error",
-              field: "code"
-            }
-          ]
-        })
-        .end();
+    const errorResponse = errorMap[err.message];
+    if (errorResponse) {
+      res.status(HttpStatus.BadRequest).json({
+        errorsMessages: [errorResponse]
+      });
       return;
     }
+    return;
   }
 };

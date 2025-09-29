@@ -5,7 +5,7 @@ import {
   idValidationPassword
 } from "../../../core/middlewares/validation/params-auth.validation-middleware";
 import { loginHandler } from "./handlers/login.handler";
-import { authGuard } from "./handlers/authGuard";
+import { authCookieGuard, authGuard } from "./handlers/authGuard";
 import { meHandler } from "./handlers/me.handler";
 import { registrationHandler } from "./handlers/registration.handler";
 import {
@@ -16,6 +16,8 @@ import {
 } from "../../../core/middlewares/validation/params-user.validation-middleware";
 import { registrationEmailResendingHandler } from "./handlers/registrationEmailResending.handler";
 import { registrationConfirmationHandler } from "./handlers/registrationConfirmation.handler";
+import { refreshTokenHandler } from "./handlers/refreshToken.handler";
+import { logoutHandler } from "./handlers/logout.handler";
 
 export const authRouter = Router({});
 
@@ -26,6 +28,9 @@ authRouter.post(
   inputValidationResultMiddleware,
   loginHandler
 );
+
+authRouter.post("/refresh-token", authCookieGuard, refreshTokenHandler);
+authRouter.post("/logout", authCookieGuard, logoutHandler);
 
 authRouter.post(
   "/registration-confirmation",

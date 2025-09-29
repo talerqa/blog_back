@@ -9,8 +9,17 @@ export const loginHandler = async (
   try {
     const { loginOrEmail, password } = req.body;
 
-    const accessToken = await authService.login(loginOrEmail, password);
-
+    const { accessToken, refreshToken } = await authService.login(
+      loginOrEmail,
+      password
+    );
+    //refresh_cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 20 * 1000
+    });
+    //
     res.status(HttpStatus.Ok).send({ accessToken });
     return;
   } catch (e) {

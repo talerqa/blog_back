@@ -14,9 +14,11 @@ import { postsRouter } from "./entity/posts/routers/posts.routers";
 import { userRouter } from "./entity/user/routers/user.routers";
 import { authRouter } from "./entity/auth/routers/authRouter";
 import { commentsRouter } from "./entity/comments/routers/comments.routers";
+import cookieParser from "cookie-parser";
 
 export const setupApp = (app: Express) => {
   app.use(express.json());
+  app.use(cookieParser());
 
   app.use(BLOGS_PATH, blogsRouter);
   app.use(POSTS_PATH, postsRouter);

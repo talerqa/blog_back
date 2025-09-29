@@ -10,15 +10,16 @@ export const registrationHandler = async (req: Request, res: Response) => {
 
     res.status(HttpStatus.NoContent).send();
     return;
-  } catch (err) {
+  } catch (e) {
+    const err = e as Error;
     const errorResponse = errorMap[err.message];
     if (errorResponse) {
-      return res.status(HttpStatus.BadRequest).json({
+      res.status(HttpStatus.BadRequest).json({
         errorsMessages: [errorResponse]
       });
+      return;
     }
 
-    // необработанные ошибки
-    return res.sendStatus(HttpStatus.InternalServerError);
+    return;
   }
 };

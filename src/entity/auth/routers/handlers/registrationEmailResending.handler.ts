@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
 import { authService } from "../../service/auth.service";
-import { errorsName } from "../../../../core/const/errorsName";
+import { errorMap } from "../../../../core/const/errorsName";
 
 export const registrationEmailResendingHandler = async (
   req: Request,
@@ -14,20 +14,15 @@ export const registrationEmailResendingHandler = async (
     return;
   } catch (e) {
     const err = e as Error;
+    const errorResponse = errorMap[err.message];
 
-    if (err.message === errorsName.wrong_email) {
-      res
-        .status(HttpStatus.BadRequest)
-        .json({
-          errorsMessages: [
-            {
-              message: "error",
-              field: "email"
-            }
-          ]
-        })
-        .end();
+    if (errorResponse) {
+      res.status(HttpStatus.BadRequest).json({
+        errorsMessages: [errorResponse]
+      });
       return;
     }
+
+    return;
   }
 };

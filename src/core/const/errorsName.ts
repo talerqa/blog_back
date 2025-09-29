@@ -16,5 +16,9 @@ export const errorMap: Record<string, { message: string; field: string }> = {
   [errorsName.not_found_user]: {
     message: "email should be unique",
     field: "email"
+  },
+  [errorsName.confirm_code]: {
+    message: "code error",
+    field: "code"
   }
 };

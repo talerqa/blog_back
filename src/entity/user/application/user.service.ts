@@ -16,19 +16,40 @@ export const userService = {
       throw new Error("not found user");
     }
 
-    const isMatch = comparePassword(password, user.password as string);
+    const isMatch = await comparePassword(password, user.password as string);
 
     if (!isMatch) {
       throw new Error("login/email or password not match");
     }
 
-    return jwt.sign(
+    const accessToken = jwt.sign(
       {
         userId: user._id.toString()
       },
       process.env.SECRET_KEY as Secret | PrivateKey,
-      { expiresIn: "1h" }
+      { expiresIn: "10000" }
     );
+
+    const refreshToken = jwt.sign(
+      {
+        userId: user._id.toString()
+      },
+      process.env.SECRET_KEY as Secret | PrivateKey,
+      { expiresIn: "20000" }
+    );
+
+    return {
+      refreshToken,
+      accessToken
+    };
+
+    // return jwt.sign(
+    //   {
+    //     userId: user._id.toString()
+    //   },
+    //   process.env.SECRET_KEY as Secret | PrivateKey,
+    //   { expiresIn: "1h" }
+    // );
   },
 
   async createUser(
@@ -48,5 +69,28 @@ export const userService = {
 
   async deleteUserById(id: string): Promise<boolean> {
     return mutationUsersRepositories.deleteUserById(id);
+  },
+
+  async refreshToken(userId: string) {
+    const accessToken = jwt.sign(
+      {
+        userId: userId.toString()
+      },
+      process.env.SECRET_KEY as Secret | PrivateKey,
+      { expiresIn: "10000" }
+    );
+
+    const refreshToken = jwt.sign(
+      {
+        userId: userId.toString()
+      },
+      process.env.SECRET_KEY as Secret | PrivateKey,
+      { expiresIn: "20000" }
+    );
+    console.log(refreshToken);
+    return {
+      refreshToken,
+      accessToken
+    };
   }
 };
