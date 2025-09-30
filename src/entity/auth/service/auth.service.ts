@@ -11,7 +11,13 @@ import { UUID } from "crypto";
 import { errorsName } from "../../../core/const/errorsName";
 
 export const authService = {
-  async login(loginOrEmail: string, password: string): Promise<string> {
+  async login(
+    loginOrEmail: string,
+    password: string
+  ): Promise<{
+    refreshToken: string;
+    accessToken: string;
+  }> {
     return userService.login(loginOrEmail, password);
   },
 
@@ -73,39 +79,11 @@ export const authService = {
   async registrationConfirmation(code: string) {
     const user = await usersRepositories.findUserByCodeConfirm(code);
 
-    const isConfirm = await mutationUsersRepositories.updateConfirmCodeUser(
+    return await mutationUsersRepositories.updateConfirmCodeUser(
       user._id.toString()
     );
-
-    return isConfirm;
   },
   async refreshToken(userId: string) {
     return userService.refreshToken(userId);
-    // return jwt.sign(
-    //   {
-    //     userId: user._id.toString()
-    //   },
-    //   process.env.SECRET_KEY as Secret | PrivateKey,
-    //   { expiresIn: "1h" }
-    // );
-    // if (user?.emailConfirmation?.isConfirmed) {
-    //   throw new Error(errorsName.wrong_email);
-    // }
-    //
-    // const code = randomUUID();
-    // const newDate = add(new Date(), {
-    //   days: 1
-    // }).toISOString();
-    //
-    // await mutationUsersRepositories.updateEmailConfirmationUser(
-    //   user._id.toString(),
-    //   code,
-    //   newDate
-    // );
-    // try {
-    //   nodemailerService.sendEmail(email, emailExamples.registrationEmail(code));
-    // } catch (e) {
-    //   console.error("Send email error", e);
-    // }
   }
 };

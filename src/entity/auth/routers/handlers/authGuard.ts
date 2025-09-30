@@ -1,8 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
 import { findUserByIdQueryRepo } from "../../../user/repositories/findUserByIdQueryRepo";
-import jwt, { PublicKey, Secret } from "jsonwebtoken";
 import { tokenCollection } from "../../../../db/mongo.db";
+import { jwtService } from "../../../../core/utils/jwtUtils";
+
+const unauthorized = (res: Response) => {
+  res.status(HttpStatus.Unauthorized).send();
+};
 
 export const authGuard = async (
   req: Request,
@@ -12,94 +16,72 @@ export const authGuard = async (
   try {
     const auth = req.headers["authorization"];
     if (!auth) {
-      res.status(HttpStatus.Unauthorized).send();
-      return;
+      return unauthorized(res);
     }
 
     const [authType, token] = auth.split(" ");
 
     if (authType !== "Bearer" || !token) {
-      res.status(HttpStatus.Unauthorized).send();
-      return;
+      return unauthorized(res);
     }
 
-    let decodedToken;
+    let verifyToken;
     try {
-      decodedToken = jwt.verify(
-        token,
-        process.env.SECRET_KEY as Secret | PublicKey
-      );
+      verifyToken = jwtService.verify(token);
     } catch (err) {
-      res.status(HttpStatus.Unauthorized).send();
-      return;
+      return unauthorized(res);
     }
-    console.log(1);
-    const { userId }: any = decodedToken;
-    const tokenDecoded = decodedToken;
+    const { userId } = verifyToken;
     await findUserByIdQueryRepo(userId);
 
-    req.headers = { ...req.headers, userId, tokenDecoded };
+    req.headers = { ...req.headers, userId, tokenDecoded: verifyToken };
     next();
   } catch (e) {
     const err = e as Error;
-
-    res.status(HttpStatus.Unauthorized).send();
-    return;
+    return unauthorized(res);
   }
 };
 
-export const authCookieGuard = async (
+export const cookieGuard = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const auth = req.headers["authorization"];
     const cookies = req.cookies.refreshToken;
 
     if (!cookies) {
-      res.status(HttpStatus.Unauthorized).send();
-      return;
+      return unauthorized(res);
     }
 
-    let tokenDecoded;
+    let decodedToken;
     try {
-      tokenDecoded = jwt.decode(cookies);
+      decodedToken = jwtService.decode(cookies);
+      jwtService.verify(cookies);
     } catch (err) {
-      res.status(HttpStatus.Unauthorized).send();
-      return;
+      return unauthorized(res);
     }
 
-    try {
-      jwt.verify(cookies, process.env.SECRET_KEY as Secret | PublicKey);
-    } catch (err) {
-      res.status(HttpStatus.Unauthorized).send();
-      return;
-    }
-
-    const { userId, exp }: any = tokenDecoded;
+    const { userId, exp } = decodedToken;
 
     await findUserByIdQueryRepo(userId);
     const now = Math.floor(Date.now() / 1000);
 
-    if (now >= exp) {
+    if (exp && now >= exp) {
       await tokenCollection.insertOne({ token: cookies });
-      res.status(HttpStatus.Unauthorized).send();
-      return;
+      return unauthorized(res);
     }
 
     const exists = await tokenCollection.findOne({ token: cookies });
+
     if (exists) {
-      res.status(HttpStatus.Unauthorized).send();
-      return;
+      return unauthorized(res);
     }
 
-    req.headers = { ...req.headers, userId, tokenDecoded };
+    req.headers = { ...req.headers, userId, tokenDecoded: decodedToken };
     next();
   } catch (e) {
     const err = e as Error;
-
-    res.status(HttpStatus.Unauthorized).send();
-    return;
+    return unauthorized(res);
   }
 };

@@ -5,7 +5,7 @@ import {
   idValidationPassword
 } from "../../../core/middlewares/validation/params-auth.validation-middleware";
 import { loginHandler } from "./handlers/login.handler";
-import { authCookieGuard, authGuard } from "./handlers/authGuard";
+import { cookieGuard, authGuard } from "./handlers/authGuard";
 import { meHandler } from "./handlers/me.handler";
 import { registrationHandler } from "./handlers/registration.handler";
 import {
@@ -29,8 +29,9 @@ authRouter.post(
   loginHandler
 );
 
-authRouter.post("/refresh-token", authCookieGuard, refreshTokenHandler);
-authRouter.post("/logout", authCookieGuard, logoutHandler);
+authRouter.post("/refresh-token", cookieGuard, refreshTokenHandler);
+
+authRouter.post("/logout", cookieGuard, logoutHandler);
 
 authRouter.post(
   "/registration-confirmation",

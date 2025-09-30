@@ -9,7 +9,6 @@ import {
   NAME_DB,
   POST_COLLECTION_NAME,
   TOKEN_COLLECTION_NAME,
-  TOKEN_NAME,
   USER_COLLECTION_NAME
 } from "./collectionsName";
 
@@ -17,7 +16,7 @@ export let client: MongoClient;
 export let blogCollection: Collection<Blog>;
 export let postCollection: Collection<Post>;
 export let userCollection: Collection<User>;
-export let tokenCollection: Collection<string>;
+export let tokenCollection: Collection<{ token: string }>;
 export let commentCollection: Collection<Comment>;
 
 export async function stopDb() {
@@ -35,7 +34,7 @@ export const runDB = async (): Promise<void> => {
   blogCollection = db.collection<Blog>(BLOG_COLLECTION_NAME);
   postCollection = db.collection<Post>(POST_COLLECTION_NAME);
   userCollection = db.collection<User>(USER_COLLECTION_NAME);
-  tokenCollection = db.collection<any>(TOKEN_COLLECTION_NAME);
+  tokenCollection = db.collection<{ token: string }>(TOKEN_COLLECTION_NAME);
   commentCollection = db.collection<Comment>(COMMENT_COLLECTION_NAME);
 
   try {

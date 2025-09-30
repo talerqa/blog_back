@@ -7,19 +7,15 @@ export const logoutHandler = async (
   res: Response
 ): Promise<void> => {
   try {
-    // const token = req?.headers?.tokenDecoded as string;
-    // jwt.decode(token);
+    const oldRefreshToken = req.cookies.refreshToken;
 
-    const oldRefreshToken = req.cookies.refreshToken; // Получаем старый токен
-
-    // Добавляем старый токен в черный список
     if (oldRefreshToken) {
       await tokenCollection.insertOne({ token: oldRefreshToken });
     }
+
     res.status(HttpStatus.NoContent).send();
     return;
   } catch (e) {
-    // console.log(e);
     res.status(HttpStatus.Unauthorized).send();
     return;
   }

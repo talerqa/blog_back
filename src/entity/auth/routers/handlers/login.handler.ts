@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
 import { authService } from "../../service/auth.service";
+import { config } from "../../../../core/const/config";
 
 export const loginHandler = async (
   req: Request,
@@ -13,17 +14,11 @@ export const loginHandler = async (
       loginOrEmail,
       password
     );
-    //refresh_cookie
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      maxAge: 20 * 1000
-    });
-    //
+
+    res.cookie("refreshToken", refreshToken, config.refreshTokenOptions);
     res.status(HttpStatus.Ok).send({ accessToken });
     return;
   } catch (e) {
-    console.log(e);
     res.status(HttpStatus.Unauthorized).send();
     return;
   }
