@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
-import { tokenCollection } from "../../../../db/mongo.db";
+import { securityCollection, tokenCollection } from "../../../../db/mongo.db";
+import { jwtService } from "../../../../core/utils/jwtUtils";
 
 export const logoutHandler = async (
   req: Request,
@@ -12,6 +13,22 @@ export const logoutHandler = async (
     if (oldRefreshToken) {
       await tokenCollection.insertOne({ token: oldRefreshToken });
     }
+    const { userId, exp, deviceId, title, ip } = jwtService.decode(
+      oldRefreshToken
+    );
+    const session = await securityCollection.findOne({
+      deviceId: deviceId,
+      id: userId
+    });
+
+    if (!session) {
+      res.status(HttpStatus.Unauthorized).send();
+    }
+
+    await securityCollection.deleteOne({
+      deviceId: deviceId,
+      id: userId
+    });
 
     res.status(HttpStatus.NoContent).send();
     return;

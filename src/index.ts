@@ -12,7 +12,7 @@ const bootstrap = async () => {
   const PORT = process.env.PORT || 5001;
 
   await runDB();
-
+  app.set("trust proxy", true);
   app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}`);
   });

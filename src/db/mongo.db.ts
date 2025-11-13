@@ -8,9 +8,11 @@ import {
   COMMENT_COLLECTION_NAME,
   NAME_DB,
   POST_COLLECTION_NAME,
+  SESSIONS_COLLECTION_NAME,
   TOKEN_COLLECTION_NAME,
   USER_COLLECTION_NAME
 } from "./collectionsName";
+import { Security } from "../entity/security/types/security";
 
 export let client: MongoClient;
 export let blogCollection: Collection<Blog>;
@@ -18,6 +20,7 @@ export let postCollection: Collection<Post>;
 export let userCollection: Collection<User>;
 export let tokenCollection: Collection<{ token: string }>;
 export let commentCollection: Collection<Comment>;
+export let securityCollection: Collection<Security>;
 
 export async function stopDb() {
   if (!client) {
@@ -36,6 +39,7 @@ export const runDB = async (): Promise<void> => {
   userCollection = db.collection<User>(USER_COLLECTION_NAME);
   tokenCollection = db.collection<{ token: string }>(TOKEN_COLLECTION_NAME);
   commentCollection = db.collection<Comment>(COMMENT_COLLECTION_NAME);
+  securityCollection = db.collection<Security>(SESSIONS_COLLECTION_NAME);
 
   try {
     await client.connect();

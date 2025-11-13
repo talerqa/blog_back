@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
 import { findUserByIdQueryRepo } from "../../../user/repositories/findUserByIdQueryRepo";
-import { tokenCollection } from "../../../../db/mongo.db";
+import { securityCollection, tokenCollection } from "../../../../db/mongo.db";
 import { jwtService } from "../../../../core/utils/jwtUtils";
 
 const unauthorized = (res: Response) => {
@@ -15,6 +15,7 @@ export const authGuard = async (
 ): Promise<void> => {
   try {
     const auth = req.headers["authorization"];
+
     if (!auth) {
       return unauthorized(res);
     }
@@ -31,10 +32,18 @@ export const authGuard = async (
     } catch (err) {
       return unauthorized(res);
     }
-    const { userId } = verifyToken;
+    const { userId, exp, deviceId, title, ip } = verifyToken;
     await findUserByIdQueryRepo(userId);
 
-    req.headers = { ...req.headers, userId, tokenDecoded: verifyToken };
+    req.headers = {
+      ...req.headers,
+      userId,
+      expDate: exp,
+      deviceId,
+      title,
+      ip,
+      tokenDecoded: verifyToken
+    };
     next();
   } catch (e) {
     const err = e as Error;
@@ -62,7 +71,7 @@ export const cookieGuard = async (
       return unauthorized(res);
     }
 
-    const { userId, exp } = decodedToken;
+    const { userId, exp, deviceId, title, ip } = decodedToken;
 
     await findUserByIdQueryRepo(userId);
     const now = Math.floor(Date.now() / 1000);
@@ -78,7 +87,15 @@ export const cookieGuard = async (
       return unauthorized(res);
     }
 
-    req.headers = { ...req.headers, userId, tokenDecoded: decodedToken };
+    req.headers = {
+      ...req.headers,
+      userId,
+      expDate: exp,
+      deviceId,
+      title,
+      ip,
+      tokenDecoded: decodedToken
+    };
     next();
   } catch (e) {
     const err = e as Error;

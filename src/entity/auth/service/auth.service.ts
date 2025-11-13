@@ -13,12 +13,16 @@ import { errorsName } from "../../../core/const/errorsName";
 export const authService = {
   async login(
     loginOrEmail: string,
-    password: string
+    password: string,
+    body: { title: string; ip: string }
   ): Promise<{
     refreshToken: string;
     accessToken: string;
   }> {
-    return userService.login(loginOrEmail, password);
+    const deviceId = randomUUID();
+    const body1 = { ...body, deviceId };
+
+    return userService.login(loginOrEmail, password, body1);
   },
 
   async registerUser(
@@ -83,7 +87,7 @@ export const authService = {
       user._id.toString()
     );
   },
-  async refreshToken(userId: string) {
-    return userService.refreshToken(userId);
+  async refreshToken(userId: string, body: any) {
+    return userService.refreshToken(userId, body);
   }
 };

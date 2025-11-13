@@ -1,15 +1,22 @@
 import jwt, {JwtPayload, PrivateKey, PublicKey, Secret} from "jsonwebtoken";
 import type {StringValue} from "ms";
+import {randomUUID} from "node:crypto";
 
 export interface MyJwtPayload extends JwtPayload {
   userId: string;
 }
 
 export const jwtService = {
-  sing: (id: string, timeExpired: StringValue | number) => {
+  sing: (id: string, timeExpired: StringValue | any, body: any) => {
+
+    const {title, ip, deviceId} = body
+
     return jwt.sign(
       {
-        userId: id
+        userId: id,
+        deviceId,
+        ip,
+        title
       },
       process.env.SECRET_KEY as Secret | PrivateKey,
       {expiresIn: timeExpired}

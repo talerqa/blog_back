@@ -1,14 +1,29 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
 import { authService } from "../../service/auth.service";
-import { errorMap } from "../../../../core/const/errorsName";
+import { errorMap, errorsName } from "../../../../core/const/errorsName";
 import { tokenCollection } from "../../../../db/mongo.db";
 
 export const refreshTokenHandler = async (req: Request, res: Response) => {
   try {
     const userId = req?.headers?.userId as string;
+    const expDate = req?.headers?.expDate as string;
+    const deviceId = req?.headers?.deviceId as string;
+    const title = req?.headers?.title as string;
+    let ip = req.ip as string;
+    if (ip === "::1") {
+      ip = "127.0.0.1";
+    }
+    const body = {
+      expDate,
+      deviceId,
+      title,
+      ip
+    };
+
     const { refreshToken, accessToken } = await authService.refreshToken(
-      userId
+      userId,
+      body
     );
 
     const oldRefreshToken = req.cookies.refreshToken; // Получаем старый токен
@@ -35,6 +50,10 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
       res.status(HttpStatus.BadRequest).json({
         errorsMessages: [errorResponse]
       });
+      return;
+    }
+    if (err.message === errorsName.not_found_session) {
+      res.status(HttpStatus.Unauthorized).send();
       return;
     }
 

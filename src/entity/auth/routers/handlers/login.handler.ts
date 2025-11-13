@@ -9,10 +9,21 @@ export const loginHandler = async (
 ): Promise<void> => {
   try {
     const { loginOrEmail, password } = req.body;
+    const title = req.headers["user-agent"] ?? ("untitled" as string);
+    let ip = req.ip as string;
+    if (ip === "::1") {
+      ip = "127.0.0.1";
+    }
+
+    const body: { title: string; ip: string } = {
+      title,
+      ip
+    };
 
     const { accessToken, refreshToken } = await authService.login(
       loginOrEmail,
-      password
+      password,
+      body
     );
 
     res.cookie("refreshToken", refreshToken, config.refreshTokenOptions);
