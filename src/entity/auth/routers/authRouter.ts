@@ -5,7 +5,7 @@ import {
   idValidationPassword
 } from "../../../core/middlewares/validation/params-auth.validation-middleware";
 import { loginHandler } from "./handlers/login.handler";
-import { cookieGuard, authGuard } from "./handlers/authGuard";
+import { authGuard, cookieGuard } from "./handlers/authGuard";
 import { meHandler } from "./handlers/me.handler";
 import { registrationHandler } from "./handlers/registration.handler";
 import {
@@ -18,6 +18,7 @@ import { registrationEmailResendingHandler } from "./handlers/registrationEmailR
 import { registrationConfirmationHandler } from "./handlers/registrationConfirmation.handler";
 import { refreshTokenHandler } from "./handlers/refreshToken.handler";
 import { logoutHandler } from "./handlers/logout.handler";
+import { isRateLimit } from "../../../core/middlewares/isAuth.guard-middleware";
 
 export const authRouter = Router({});
 
@@ -35,6 +36,7 @@ authRouter.post("/logout", cookieGuard, logoutHandler);
 
 authRouter.post(
   "/registration-confirmation",
+  isRateLimit,
   idValidationCode,
   inputValidationResultMiddleware,
   registrationConfirmationHandler
@@ -52,6 +54,7 @@ authRouter.post(
   "/registration-email-resending",
   idValidationUserEmail,
   inputValidationResultMiddleware,
+  isRateLimit,
   registrationEmailResendingHandler
 );
 

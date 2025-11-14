@@ -25,14 +25,15 @@ export const usersRepositories = {
     const user = await userCollection.findOne({
       "emailConfirmation.confirmationCode": code
     });
+
     if (!user) {
       throw new Error(errorsName.confirm_code);
     }
     if (user?.emailConfirmation?.isConfirmed) {
       throw new Error(errorsName.confirm_code);
     }
-    const now = new Date();
-    if (user?.emailConfirmation.expirationDate < now) {
+    const now = new Date().toISOString();
+    if (user?.emailConfirmation?.expirationDate < now) {
       throw new Error(errorsName.confirm_code);
     }
 
@@ -45,7 +46,7 @@ export const usersRepositories = {
       throw new Error(errorsName.wrong_email);
     }
 
-    const now = new Date();
+    const now = new Date().toISOString();
     if (user?.emailConfirmation.expirationDate < now) {
       throw new Error(errorsName.confirm_code);
     }

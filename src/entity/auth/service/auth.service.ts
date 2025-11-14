@@ -42,7 +42,7 @@ export const authService = {
       emailConfirmation: {
         confirmationCode: code,
         expirationDate: add(new Date(), {
-          seconds: 10
+          hours: 1
         }),
         isConfirmed: false
       }
@@ -65,7 +65,7 @@ export const authService = {
 
     const code = randomUUID();
     const newDate = add(new Date(), {
-      days: 1
+      hours: 1
     }).toISOString();
 
     await mutationUsersRepositories.updateEmailConfirmationUser(
@@ -83,9 +83,7 @@ export const authService = {
   async registrationConfirmation(code: string) {
     const user = await usersRepositories.findUserByCodeConfirm(code);
 
-    return await mutationUsersRepositories.updateConfirmCodeUser(
-      user._id.toString()
-    );
+    return mutationUsersRepositories.updateConfirmCodeUser(user._id.toString());
   },
   async refreshToken(userId: string, body: any) {
     return userService.refreshToken(userId, body);

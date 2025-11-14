@@ -8,11 +8,13 @@ import {
   COMMENT_COLLECTION_NAME,
   NAME_DB,
   POST_COLLECTION_NAME,
+  RATE_LIMIT_COLLECTION_NAME,
   SESSIONS_COLLECTION_NAME,
   TOKEN_COLLECTION_NAME,
   USER_COLLECTION_NAME
 } from "./collectionsName";
 import { Security } from "../entity/security/types/security";
+import { RateLimit } from "../entity/rateLimit/types/rateLimit";
 
 export let client: MongoClient;
 export let blogCollection: Collection<Blog>;
@@ -21,6 +23,7 @@ export let userCollection: Collection<User>;
 export let tokenCollection: Collection<{ token: string }>;
 export let commentCollection: Collection<Comment>;
 export let securityCollection: Collection<Security>;
+export let rateLimitCollection: Collection<RateLimit>;
 
 export async function stopDb() {
   if (!client) {
@@ -40,6 +43,7 @@ export const runDB = async (): Promise<void> => {
   tokenCollection = db.collection<{ token: string }>(TOKEN_COLLECTION_NAME);
   commentCollection = db.collection<Comment>(COMMENT_COLLECTION_NAME);
   securityCollection = db.collection<Security>(SESSIONS_COLLECTION_NAME);
+  rateLimitCollection = db.collection<RateLimit>(RATE_LIMIT_COLLECTION_NAME);
 
   try {
     await client.connect();

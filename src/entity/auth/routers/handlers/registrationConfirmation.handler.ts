@@ -15,7 +15,7 @@ export const registrationConfirmationHandler = async (
   } catch (e) {
     const err = e as Error;
 
-    if (err.message === errorsName.not_found_user) {
+    if (err.message === errorsName.confirm_code) {
       res.status(HttpStatus.BadRequest).send();
       return;
     }
