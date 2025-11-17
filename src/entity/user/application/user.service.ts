@@ -7,6 +7,7 @@ import { usersRepositories } from "../repositories/users.repositories";
 import { jwtService } from "../../../core/utils/jwtUtils";
 import { config } from "../../../core/const/config";
 import { securityRepository } from "../../security/repositories/security.repositories";
+import { CreateSessionModel } from "../../security/dto/createSessionModel";
 
 export const userService = {
   async login(
@@ -52,15 +53,13 @@ export const userService = {
 
     const date = new Date(exp * 1000); // timestamp в секундах → переводим в миллисекунды
     const lastActiveDate = date.toISOString();
-    const dto = {
+    const dto: CreateSessionModel = {
       userId,
       title,
       ip,
       lastActiveDate,
       deviceId
     };
-    // Проверку на то что уже залогинен???
-    //Cоздаем сессию
     await securityRepository.createSession(dto);
 
     return {

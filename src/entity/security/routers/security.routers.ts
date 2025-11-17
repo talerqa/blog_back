@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { getSessionDevicesHandler } from "./handlers/getSessionDevicesHandler";
-import { authGuard, cookieGuard } from "../../auth/routers/handlers/authGuard";
+import { cookieGuard } from "../../auth/routers/handlers/authGuard";
 import { removeOtherSessionDevicesHandler } from "./handlers/removeOtherSessionDevicesHandler";
 import { removeCurrentSessionDevicesHandler } from "./handlers/removeCurrentSessionDevicesHandler";
 
@@ -19,10 +19,3 @@ sessionsRouter.delete(
   cookieGuard,
   removeCurrentSessionDevicesHandler
 );
-
-// securityRouter.get(
-//   "/:id",
-//   idValidationParamId,
-//   inputValidationResultMiddleware,
-//   getPostByIdHandler
-// );

@@ -18,7 +18,7 @@ import { registrationEmailResendingHandler } from "./handlers/registrationEmailR
 import { registrationConfirmationHandler } from "./handlers/registrationConfirmation.handler";
 import { refreshTokenHandler } from "./handlers/refreshToken.handler";
 import { logoutHandler } from "./handlers/logout.handler";
-import { isRateLimit } from "../../../core/middlewares/isAuth.guard-middleware";
+import { isRateLimit } from "../../../core/middlewares/isRateLimit.guard-middleware";
 
 export const authRouter = Router({});
 
@@ -27,6 +27,7 @@ authRouter.post(
   idValidationLoginOrEmail,
   idValidationPassword,
   inputValidationResultMiddleware,
+  isRateLimit,
   loginHandler
 );
 
@@ -48,6 +49,7 @@ authRouter.post(
   idValidationUserEmail,
   idValidationUserPassword,
   inputValidationResultMiddleware,
+  isRateLimit,
   registrationHandler
 );
 authRouter.post(

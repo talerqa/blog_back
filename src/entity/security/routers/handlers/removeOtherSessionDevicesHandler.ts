@@ -7,23 +7,12 @@ export const removeOtherSessionDevicesHandler = async (
   req: Request,
   res: Response
 ) => {
-  const {
-    userId,
-    expDate,
-    deviceId,
-    title,
-    ip,
-    tokenDecoded
-  } = req?.headers as string;
-  const body: {
-    userId: string;
-    expDate: string;
-    deviceId: string;
-    title: string;
-    ip: string;
-  } = { userId, expDate, deviceId, title, ip };
+  const { userId, deviceId, tokenDecoded } = req?.headers as string;
 
-  const sessionDevices = await sessionsService.removeOtherSessionDevice(body);
+  const sessionDevices = await sessionsService.removeOtherSessionDevice(
+    userId,
+    deviceId
+  );
   await tokenCollection.insertOne({ token: tokenDecoded });
   if (!sessionDevices) {
     res.status(HttpStatus.Unauthorized).send();

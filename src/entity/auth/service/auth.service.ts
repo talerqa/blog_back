@@ -53,7 +53,7 @@ export const authService = {
     try {
       nodemailerService.sendEmail(email, emailExamples.registrationEmail(code));
     } catch (e) {
-      console.error("Send email error", e); //залогировать ошибку при отправке сообщения
+      console.error("Send email error", e);
     }
   },
   async resending(email: string) {
