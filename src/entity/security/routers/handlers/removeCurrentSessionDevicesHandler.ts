@@ -9,7 +9,10 @@ export const removeCurrentSessionDevicesHandler = async (
   res: Response
 ) => {
   try {
-    const { userId, tokenDecoded } = req?.headers as string;
+    const { userId, tokenDecoded } = req?.headers as {
+      userId: string;
+      tokenDecoded: string;
+    };
     const deviceId = req?.params?.deviceId as string;
 
     const session = await sessionsService.removeCurrentSessionDevice(

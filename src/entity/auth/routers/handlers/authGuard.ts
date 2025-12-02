@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
 import { findUserByIdQueryRepo } from "../../../user/repositories/findUserByIdQueryRepo";
-import { securityCollection, tokenCollection } from "../../../../db/mongo.db";
+import { tokenCollection } from "../../../../db/mongo.db";
 import { jwtService } from "../../../../core/utils/jwtUtils";
+import { JwtPayload } from "jsonwebtoken";
 
 const unauthorized = (res: Response) => {
   res.status(HttpStatus.Unauthorized).send();
@@ -26,7 +27,7 @@ export const authGuard = async (
       return unauthorized(res);
     }
 
-    let verifyToken;
+    let verifyToken: any;
     try {
       verifyToken = jwtService.verify(token);
     } catch (err) {
@@ -52,7 +53,7 @@ export const authGuard = async (
 };
 
 export const cookieGuard = async (
-  req: Request,
+  req: Request & any,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -90,11 +91,11 @@ export const cookieGuard = async (
     req.headers = {
       ...req.headers,
       userId,
-      expDate: exp,
       deviceId,
       title,
       ip,
-      tokenDecoded: decodedToken
+      tokenDecoded: decodedToken,
+      expDate: exp
     };
     next();
   } catch (e) {

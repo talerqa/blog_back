@@ -7,7 +7,11 @@ export const removeOtherSessionDevicesHandler = async (
   req: Request,
   res: Response
 ) => {
-  const { userId, deviceId, tokenDecoded } = req?.headers as string;
+  const { userId, deviceId, tokenDecoded } = req?.headers as {
+    userId: string;
+    deviceId: string;
+    tokenDecoded: string;
+  };
 
   const sessionDevices = await sessionsService.removeOtherSessionDevice(
     userId,

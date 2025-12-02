@@ -6,10 +6,6 @@ import { CommentResponse } from "../types/commentResponse";
 import { UpdateCommentInputModel } from "../dto/updateCommentInputModel";
 
 export const commentService = {
-  // async findAllPosts(query: PagingAndSortType): Promise<PostResponse> {
-  //   return postsRepository.findAllPosts(query);
-  // },
-  //
   async findCommentsByPostId(
     query: PagingAndSortType,
     postId: string

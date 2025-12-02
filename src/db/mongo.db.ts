@@ -15,12 +15,13 @@ import {
 } from "./collectionsName";
 import { Security } from "../entity/security/types/security";
 import { RateLimit } from "../entity/rateLimit/types/rateLimit";
+import { Token } from "../entity/auth/types/token";
 
 export let client: MongoClient;
 export let blogCollection: Collection<Blog>;
 export let postCollection: Collection<Post>;
 export let userCollection: Collection<User>;
-export let tokenCollection: Collection<{ token: string }>;
+export let tokenCollection: Collection<Token>;
 export let commentCollection: Collection<Comment>;
 export let securityCollection: Collection<Security>;
 export let rateLimitCollection: Collection<RateLimit>;
@@ -40,7 +41,7 @@ export const runDB = async (): Promise<void> => {
   blogCollection = db.collection<Blog>(BLOG_COLLECTION_NAME);
   postCollection = db.collection<Post>(POST_COLLECTION_NAME);
   userCollection = db.collection<User>(USER_COLLECTION_NAME);
-  tokenCollection = db.collection<{ token: string }>(TOKEN_COLLECTION_NAME);
+  tokenCollection = db.collection<Token>(TOKEN_COLLECTION_NAME);
   commentCollection = db.collection<Comment>(COMMENT_COLLECTION_NAME);
   securityCollection = db.collection<Security>(SESSIONS_COLLECTION_NAME);
   rateLimitCollection = db.collection<RateLimit>(RATE_LIMIT_COLLECTION_NAME);
