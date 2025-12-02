@@ -3,7 +3,7 @@ import { mapToSecurityPaging } from "../../../core/utils/mappers/mapToSecurityPa
 import { errorsName } from "../../../core/const/errorsName";
 import { CreateSessionModel } from "../dto/createSessionModel";
 
-export const securityRepository = {
+export class SecurityRepository {
   async getCurrentSessionDevice(userId: string) {
     const sessions = await securityCollection
       .find({
@@ -12,7 +12,7 @@ export const securityRepository = {
       .toArray();
 
     return mapToSecurityPaging(sessions);
-  },
+  }
 
   async removeOtherSessionDevice(userId: string, deviceId: string) {
     const { deletedCount } = await securityCollection.deleteMany({
@@ -20,7 +20,7 @@ export const securityRepository = {
       deviceId: { $ne: deviceId }
     });
     return !!deletedCount;
-  },
+  }
 
   async removeCurrentSessionDevice(userId: string, deviceId: string) {
     const isFound = await securityCollection.findOne({
@@ -37,7 +37,7 @@ export const securityRepository = {
     });
 
     return !!deletedCount;
-  },
+  }
 
   async createSession(dto: CreateSessionModel): Promise<undefined> {
     const { userId, title, ip, lastActiveDate, deviceId } = dto;
@@ -52,4 +52,4 @@ export const securityRepository = {
     await securityCollection.insertOne({ ...data });
     return;
   }
-};
+}

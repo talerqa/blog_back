@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
-import { authService } from "../../service/auth.service";
 import { config } from "../../../../core/const/config";
+import { authService } from "../../compositionRoot";
 
 export const loginHandler = async (req: Request, res: Response) => {
   try {

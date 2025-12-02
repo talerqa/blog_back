@@ -1,9 +1,9 @@
-import { userCollection } from "../../../db/mongo.db";
 import { User } from "../types/user";
 import { WithId } from "mongodb";
 import { errorsName } from "../../../core/const/errorsName";
+import { userCollection } from "../../../db/mongo.db";
 
-export const usersRepositories = {
+export class UsersRepositories {
   async isExistUserWithLoginOrEmail(
     login: string,
     email: string
@@ -20,7 +20,8 @@ export const usersRepositories = {
     if (user.email === email) {
       throw new Error(errorsName.wrong_email);
     }
-  },
+  }
+
   async findUserByCodeConfirm(code: string): Promise<WithId<User>> {
     const user = await userCollection.findOne({
       "emailConfirmation.confirmationCode": code
@@ -38,7 +39,8 @@ export const usersRepositories = {
     }
 
     return user;
-  },
+  }
+
   async findUserByEmail(email: string): Promise<WithId<User>> {
     const user = await userCollection.findOne({ email });
 
@@ -53,4 +55,4 @@ export const usersRepositories = {
 
     return user;
   }
-};
+}

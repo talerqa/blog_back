@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { userService } from "../../application/user.service";
 import { HttpStatus } from "../../../../core/const/httpCodes";
 import { errorsName } from "../../../../core/const/errorsName";
+import { userService } from "../../compositionRoot";
 
 export const createUserHandler = async (req: Request, res: Response) => {
   try {

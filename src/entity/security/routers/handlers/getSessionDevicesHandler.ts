@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
-import { sessionsService } from "../../application/sessions.service";
+import { sessionsService } from "../../compositionRoot";
 
 export const getSessionDevicesHandler = async (req: Request, res: Response) => {
   const { userId } = req?.headers as string;

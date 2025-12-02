@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { postsService } from "../../services/posts.service";
 import { PagingAndSortType } from "../../../../core/types/pagingAndSortType";
 import { HttpStatus } from "../../../../core/const/httpCodes";
+import { postsService } from "../../compositionRoot";
 
 export const getAllPostsHandler = async (req: Request, res: Response) => {
   const query = req.query;

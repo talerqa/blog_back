@@ -1,15 +1,17 @@
-import { securityRepository } from "../repositories/security.repositories";
+import { SecurityRepository } from "../repositories/security.repositories";
 
-export const sessionsService = {
+export class SessionsService {
+  constructor(private securityRepository: SecurityRepository) {}
+
   async getCurrentSessionDevice(userId: string) {
-    return securityRepository.getCurrentSessionDevice(userId);
-  },
+    return this.securityRepository.getCurrentSessionDevice(userId);
+  }
 
   async removeOtherSessionDevice(userId: string, deviceId: string) {
-    return securityRepository.removeOtherSessionDevice(userId, deviceId);
-  },
+    return this.securityRepository.removeOtherSessionDevice(userId, deviceId);
+  }
 
   async removeCurrentSessionDevice(userId: string, deviceId: string) {
-    return securityRepository.removeCurrentSessionDevice(userId, deviceId);
+    return this.securityRepository.removeCurrentSessionDevice(userId, deviceId);
   }
-};
+}

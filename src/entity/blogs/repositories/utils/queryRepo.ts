@@ -4,8 +4,8 @@ import { PagingAndSortType } from "../../../../core/types/pagingAndSortType";
 import { WithId } from "mongodb";
 import { Blog } from "../../types/blog";
 
-export const queryBlogRepo = {
-  getAllBlogs: async function(
+export class QueryBlogRepo {
+  async getAllBlogs(
     query: PagingAndSortType
   ): Promise<{
     searchNameTerm: string | undefined;
@@ -43,9 +43,9 @@ export const queryBlogRepo = {
       skip,
       filter
     };
-  },
+  }
 
-  getBlogById: async function(blog: WithId<Blog>) {
+  async getBlogById(blog: WithId<Blog>) {
     return {
       id: blog._id.toString(),
       name: blog.name,
@@ -55,4 +55,6 @@ export const queryBlogRepo = {
       isMembership: blog.isMembership
     };
   }
-};
+}
+
+export const queryBlogRepo = new QueryBlogRepo();

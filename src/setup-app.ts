@@ -12,11 +12,11 @@ import {
 import { setupSwagger } from "./core/swagger/setup-swagger";
 import { testingRouter } from "./__test__/utils/routers/test.routers";
 import { postsRouter } from "./entity/posts/routers/posts.routers";
-import { userRouter } from "./entity/user/routers/user.routers";
 import { authRouter } from "./entity/auth/routers/authRouter";
 import { commentsRouter } from "./entity/comments/routers/comments.routers";
 import cookieParser from "cookie-parser";
 import { sessionsRouter } from "./entity/security/routers/security.routers";
+import { userRouter } from "./entity/user/routers/user.routers";
 
 export const setupApp = (app: Express) => {
   app.use(express.json());

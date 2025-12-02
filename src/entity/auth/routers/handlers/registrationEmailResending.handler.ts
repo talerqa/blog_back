@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
-import { authService } from "../../service/auth.service";
 import { errorMap } from "../../../../core/const/errorsName";
+import { authService } from "../../compositionRoot";
 
 export const registrationEmailResendingHandler = async (
   req: Request,

@@ -1,7 +1,7 @@
 import { Blog } from "../../types/blog";
 
-export const mutationBlogRepo = {
-  createBlog: async function(body: {
+export class MutationBlogRepo {
+  async createBlog(body: {
     createdAt: string;
     websiteUrl: string;
     name: string;
@@ -20,4 +20,4 @@ export const mutationBlogRepo = {
       isMembership: isMembership ?? false
     };
   }
-};
+}

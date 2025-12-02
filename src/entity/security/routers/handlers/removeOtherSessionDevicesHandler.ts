@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
-import { sessionsService } from "../../application/sessions.service";
 import { tokenCollection } from "../../../../db/mongo.db";
+import { sessionsService } from "../../compositionRoot";
 
 export const removeOtherSessionDevicesHandler = async (
   req: Request,

@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-export const nodemailerService = {
+export class NodemailerService {
   async sendEmail(email: string, template: string): Promise<boolean> {
     let transporter = nodemailer.createTransport({
       service: "Mail.ru",
@@ -19,4 +19,4 @@ export const nodemailerService = {
 
     return !!info;
   }
-};
+}

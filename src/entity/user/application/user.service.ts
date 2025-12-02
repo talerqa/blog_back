@@ -1,15 +1,22 @@
-import { mutationUsersRepositories } from "../repositories/mutationUsers.repositories";
 import { CreateUserInputModel } from "../dto/createUserInputModel";
 import { User } from "../types/user";
-import { securityCollection, userCollection } from "../../../db/mongo.db";
-import { comparePassword } from "../../../core/utils/comparePassword";
-import { usersRepositories } from "../repositories/users.repositories";
 import { jwtService } from "../../../core/utils/jwtUtils";
 import { config } from "../../../core/const/config";
-import { securityRepository } from "../../security/repositories/security.repositories";
 import { CreateSessionModel } from "../../security/dto/createSessionModel";
+import { MutationUsersRepositories } from "../repositories/mutationUsers.repositories";
+import { UsersRepositories } from "../repositories/usersRepositories";
+import { securityCollection, userCollection } from "../../../db/mongo.db";
+import { SecurityRepository } from "../../security/repositories/security.repositories";
+import { PasswordService } from "../../../core/utils/passUtils";
 
-export const userService = {
+export class UserService {
+  constructor(
+    private usersRepositories: UsersRepositories,
+    private mutationUsersRepositories: MutationUsersRepositories,
+    private securityRepository: SecurityRepository,
+    private passwordService: PasswordService
+  ) {}
+
   async login(
     loginOrEmail: string,
     password: string,
@@ -19,6 +26,7 @@ export const userService = {
     accessToken: string;
   }> {
     const { title, ip } = body;
+
     const user = await userCollection.findOne({
       $or: [{ login: loginOrEmail }, { email: loginOrEmail }]
     });
@@ -27,7 +35,10 @@ export const userService = {
       throw new Error("not found user");
     }
 
-    const isMatch = await comparePassword(password, user.password as string);
+    const isMatch = await this.passwordService.comparePassword(
+      password,
+      user.password as string
+    );
 
     if (!isMatch) {
       throw new Error("login/email or password not match");
@@ -60,26 +71,26 @@ export const userService = {
       lastActiveDate,
       deviceId
     };
-    await securityRepository.createSession(dto);
+    await this.securityRepository.createSession(dto);
 
     return {
       refreshToken,
       accessToken
     };
-  },
+  }
 
   async createUser(
     dto: CreateUserInputModel
   ): Promise<Omit<User, "password" | "emailConfirmation"> | null> {
     const { email, password, login } = dto;
 
-    await usersRepositories.isExistUserWithLoginOrEmail(login, email);
-    return mutationUsersRepositories.createUser(dto);
-  },
+    await this.usersRepositories.isExistUserWithLoginOrEmail(login, email);
+    return this.mutationUsersRepositories.createUser(dto);
+  }
 
   async deleteUserById(id: string): Promise<boolean> {
-    return mutationUsersRepositories.deleteUserById(id);
-  },
+    return this.mutationUsersRepositories.deleteUserById(id);
+  }
 
   async refreshToken(userId: string, body: any) {
     const { expDate, deviceId, title, ip } = body;
@@ -121,4 +132,4 @@ export const userService = {
       accessToken
     };
   }
-};
+}

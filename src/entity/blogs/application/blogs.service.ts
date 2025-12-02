@@ -2,10 +2,15 @@ import { Blog } from "../types/blog";
 import { CreateBlogInputModel } from "../dto/createBlogsInputModel";
 import { UpdateBlogInputModel } from "../dto/updateBlogsInputModel";
 import { Post } from "../../posts/types/post";
-import { postsRepository } from "../../posts/repositories/posts.repositories";
-import { blogsRepository } from "../repositories/mutationBlogs.repositories";
+import { PostsRepository } from "../../posts/repositories/posts.repositories";
+import { BlogsRepository } from "../repositories/mutationBlogs.repositories";
 
-export const blogsService = {
+export class BlogsService {
+  constructor(
+    private blogsRepository: BlogsRepository,
+    private postsRepository: PostsRepository
+  ) {}
+
   async createBlog(dto: CreateBlogInputModel): Promise<Blog | null> {
     const body: CreateBlogInputModel = {
       description: dto.description,
@@ -15,8 +20,8 @@ export const blogsService = {
       isMembership: false
     };
 
-    return blogsRepository.createBlog(body);
-  },
+    return this.blogsRepository.createBlog(body);
+  }
 
   async updateBlog(id: string, body: UpdateBlogInputModel): Promise<boolean> {
     const { description, name, websiteUrl }: UpdateBlogInputModel = body;
@@ -27,12 +32,12 @@ export const blogsService = {
       websiteUrl
     };
 
-    return blogsRepository.updateBlog(id, dto);
-  },
+    return this.blogsRepository.updateBlog(id, dto);
+  }
 
   async deleteBlogById(id: string): Promise<boolean> {
-    return blogsRepository.deleteBlogById(id);
-  },
+    return this.blogsRepository.deleteBlogById(id);
+  }
 
   async createPostByBlogId(
     id: string,
@@ -48,6 +53,6 @@ export const blogsService = {
       createdAt: new Date().toISOString()
     };
 
-    return postsRepository.createPostBlogId(id, dto);
+    return this.postsRepository.createPostBlogId(id, dto);
   }
-};
+}

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { blogsService } from "../../application/blogs.service";
 import { HttpStatus } from "../../../../core/const/httpCodes";
+import { blogsService } from "../../compositionRoot";
 
 export const updateBlogHandler = async (req: Request, res: Response) => {
   const id = req.params?.id as string;

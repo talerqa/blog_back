@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
-import { authService } from "../../service/auth.service";
 import { errorMap, errorsName } from "../../../../core/const/errorsName";
 import { tokenCollection } from "../../../../db/mongo.db";
+import { authService } from "../../compositionRoot";
 
 export const refreshTokenHandler = async (req: Request, res: Response) => {
   try {

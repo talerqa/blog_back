@@ -10,7 +10,7 @@ import { IMetaDataBlog } from "../../blogs/types/IMetaDataBlog";
 import { mapToPostPaging } from "../../../core/utils/mappers/mapToPostPaging";
 import { SortFiledPost } from "../../../core/types/sortFiledBlogs";
 
-export const postsRepository = {
+export class PostsRepository {
   async findAllPosts(query: PagingAndSortType): Promise<PostResponse> {
     const {
       pageNumber = 1,
@@ -36,7 +36,7 @@ export const postsRepository = {
     };
 
     return mapToPostPaging(posts, metaData);
-  },
+  }
 
   async findPostById(id: string): Promise<Post | null> {
     const post = await postCollection.findOne({ _id: new ObjectId(id) });
@@ -54,7 +54,7 @@ export const postsRepository = {
       blogName: post.blogName,
       createdAt: post.createdAt
     };
-  },
+  }
 
   async createPost(dto: CreateBlogInputModel): Promise<Post | null> {
     const { title, shortDescription, content, blogId, createdAt } = dto;
@@ -91,7 +91,7 @@ export const postsRepository = {
       blogName: newPost.blogName,
       createdAt: newPost.createdAt
     };
-  },
+  }
 
   async updatePost(id: string, dto: UpdatePostInputModel): Promise<boolean> {
     const blog = await postCollection.updateOne(
@@ -107,14 +107,14 @@ export const postsRepository = {
     );
 
     return !(blog.matchedCount < 1);
-  },
+  }
 
   async deletePostById(id: string): Promise<boolean> {
     const { deletedCount } = await postCollection.deleteOne({
       _id: new ObjectId(id)
     });
     return !!deletedCount;
-  },
+  }
 
   async createPostBlogId(
     id: string,
@@ -153,4 +153,4 @@ export const postsRepository = {
       createdAt: newPost.createdAt
     };
   }
-};
+}

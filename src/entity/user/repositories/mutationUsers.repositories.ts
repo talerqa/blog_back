@@ -2,19 +2,21 @@ import { ObjectId, WithId } from "mongodb";
 import { userCollection } from "../../../db/mongo.db";
 import { CreateUserInputModel } from "../dto/createUserInputModel";
 import { User } from "../types/user";
-import { generatePassword } from "../../../core/utils/generatePassword";
 import { randomUUID } from "node:crypto";
 import { add } from "date-fns/add";
 import { errorsName } from "../../../core/const/errorsName";
+import { PasswordService } from "../../../core/utils/passUtils";
 
-export const mutationUsersRepositories = {
+export class MutationUsersRepositories {
+  constructor(private passwordService: PasswordService) {}
+
   async createUser(
     dto: CreateUserInputModel
   ): Promise<Omit<User, "password" | "emailConfirmation"> | null> {
     const { login, email, password } = dto;
 
     const createdAt = new Date().toISOString();
-    const passwordHash = await generatePassword(password);
+    const passwordHash = await this.passwordService.generatePassword(password);
     const usersResult = await userCollection.insertOne({
       login,
       email,
@@ -42,7 +44,7 @@ export const mutationUsersRepositories = {
       createdAt,
       login: user.login
     };
-  },
+  }
 
   async createUserWithConfirmByEmail(
     user: Omit<User, "id">
@@ -60,14 +62,14 @@ export const mutationUsersRepositories = {
     }
 
     return findUser;
-  },
+  }
 
   async deleteUserById(id: string): Promise<boolean> {
     const { deletedCount } = await userCollection.deleteOne({
       _id: new ObjectId(id)
     });
     return !!deletedCount;
-  },
+  }
 
   async updateConfirmCodeUser(id: string): Promise<boolean> {
     const user = await userCollection.updateOne(
@@ -76,7 +78,8 @@ export const mutationUsersRepositories = {
     );
 
     return !(user.matchedCount < 1);
-  },
+  }
+
   async updateEmailConfirmationUser(
     id: string,
     code: string,
@@ -94,4 +97,4 @@ export const mutationUsersRepositories = {
 
     return !(user.matchedCount < 1);
   }
-};
+}
