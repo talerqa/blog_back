@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { HttpStatus } from "../../../../core/const/httpCodes";
-import { findUserByIdQueryRepo } from "../../../user/repositories/findUserByIdQueryRepo";
-import { tokenCollection } from "../../../../db/mongo.db";
-import { jwtService } from "../../../../core/utils/jwtUtils";
-import { JwtPayload } from "jsonwebtoken";
+import { HttpStatus } from "../const/httpCodes";
+import { findUserByIdQueryRepo } from "../../entity/user/repositories/findUserByIdQueryRepo";
+import { tokenCollection } from "../../db/mongo.db";
+import { jwtService } from "../utils/jwtUtils";
 
 const unauthorized = (res: Response) => {
   res.status(HttpStatus.Unauthorized).send();

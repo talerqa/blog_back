@@ -7,10 +7,10 @@ import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 import { SortFiledComment } from "../../../core/types/sortFiledBlogs";
 import { SortDirection } from "../../../core/types/sortDesc";
 import { IMetaData } from "../../user/types/IMetaData";
-import { mapToCommentsPaging } from "../../../core/utils/mappers/mapToCommentsPaging";
 import { UpdateCommentInputModel } from "../dto/updateCommentInputModel";
+import { mapperPaging } from "../../../core/utils/mapperPaging";
 
-export const commentRepository = {
+export class CommentRepository {
   async findCommentsByPostId(
     query: PagingAndSortType,
     postId: string
@@ -44,8 +44,8 @@ export const commentRepository = {
       totalCount: +totalCount
     };
 
-    return mapToCommentsPaging(posts, metaData);
-  },
+    return mapperPaging.mapToCommentsPaging(posts, metaData);
+  }
 
   async findCommentById(id: string): Promise<Comment | any> {
     const comment = await commentCollection.findOne({ _id: new ObjectId(id) });
@@ -60,7 +60,7 @@ export const commentRepository = {
       commentatorInfo: comment.commentatorInfo,
       createdAt: comment.createdAt
     };
-  },
+  }
 
   async createComment(
     dto: CreateCommentInputModel
@@ -96,7 +96,7 @@ export const commentRepository = {
       commentatorInfo: newComment.commentatorInfo,
       createdAt: newComment.createdAt
     };
-  },
+  }
 
   async updateComment(
     id: string,
@@ -123,8 +123,8 @@ export const commentRepository = {
     );
 
     return !(commentUpdate.matchedCount < 1);
-  },
-  //
+  }
+
   async deleteCommentById(id: string, userId: string): Promise<boolean | null> {
     const comment = await commentCollection.findOne({ _id: new ObjectId(id) });
 
@@ -141,42 +141,4 @@ export const commentRepository = {
     });
     return !!deletedCount;
   }
-  //
-  // async createPostBlogId(
-  //   id: string,
-  //   dto: CreateBlogInputModel
-  // ): Promise<Comment | null> {
-  //   const { title, shortDescription, content, blogId, createdAt } = dto;
-  //
-  //   const blog = await blogCollection.findOne({ _id: new ObjectId(id) });
-  //
-  //   if (!blog) {
-  //     return null;
-  //   }
-  //
-  //   const newPost = {
-  //     createdAt,
-  //     title,
-  //     shortDescription,
-  //     content,
-  //     blogId,
-  //     blogName: blog.name
-  //   };
-  //
-  //   const insertResult = await postCollection.insertOne({
-  //     _id: undefined,
-  //     id: "",
-  //     ...newPost
-  //   });
-  //
-  //   return {
-  //     id: insertResult.insertedId.toString(),
-  //     title: newPost.title,
-  //     shortDescription: newPost.shortDescription,
-  //     content: newPost.content,
-  //     blogId: id,
-  //     blogName: newPost.blogName,
-  //     createdAt: newPost.createdAt
-  //   };
-  // }
-};
+}

@@ -39,3 +39,11 @@ export const idValidationCode = body("code")
   .withMessage("code must be a string")
   .trim()
   .isUUID();
+
+export const idValidationRecoveryCode = body("recoveryCode")
+  .exists()
+  .withMessage("code is required")
+  .isString()
+  .withMessage("code must be a string")
+  .trim()
+  .isUUID();

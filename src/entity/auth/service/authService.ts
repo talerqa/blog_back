@@ -53,6 +53,9 @@ export class AuthService {
           hours: 1
         }),
         isConfirmed: false
+      },
+      passwordRecovery: {
+        recoveryCode: ""
       }
     };
 
@@ -69,7 +72,7 @@ export class AuthService {
   }
 
   async resending(email: string) {
-    const user = await this.usersRepositories.findUserByEmail(email);
+    const user = await this.usersRepositories.findUserByEmailWithChecked(email);
 
     if (user?.emailConfirmation?.isConfirmed) {
       throw new Error(errorsName.wrong_email);
@@ -106,5 +109,45 @@ export class AuthService {
 
   async refreshToken(userId: string, body: any) {
     return this.userService.refreshToken(userId, body);
+  }
+
+  async passRecovery(email: string) {
+    const user = await this.usersRepositories.findUserByEmail(email);
+
+    if (!user) {
+      return;
+    }
+
+    const code = randomUUID();
+
+    await this.mutationUsersRepositories.updatePasswordUser(
+      user._id.toString(),
+      code
+    );
+
+    try {
+      this.nodemailerService.sendEmail(
+        email,
+        emailExamples.passwordRecoveryEmail(code)
+      );
+    } catch (e) {
+      console.error("Send email error", e);
+    }
+  }
+
+  async newPassRecovery(recoveryCode: string, password: string) {
+    const user = await this.usersRepositories.findUserByCodePasswordRecovery(
+      recoveryCode
+    );
+
+    if (!user) {
+      throw new Error(errorsName.wrong_code_or_pass);
+    }
+    const passwordHash = await this.passwordService.generatePassword(password);
+
+    return await this.mutationUsersRepositories.updateUserPassword(
+      user._id.toString(),
+      passwordHash
+    );
   }
 }

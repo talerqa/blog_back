@@ -1,7 +1,7 @@
 import { securityCollection } from "../../../db/mongo.db";
-import { mapToSecurityPaging } from "../../../core/utils/mappers/mapToSecurityPaging";
 import { errorsName } from "../../../core/const/errorsName";
 import { CreateSessionModel } from "../dto/createSessionModel";
+import { mapperPaging } from "../../../core/utils/mapperPaging";
 
 export class SecurityRepository {
   async getCurrentSessionDevice(userId: string) {
@@ -11,7 +11,7 @@ export class SecurityRepository {
       })
       .toArray();
 
-    return mapToSecurityPaging(sessions);
+    return mapperPaging.mapToSecurityPaging(sessions);
   }
 
   async removeOtherSessionDevice(userId: string, deviceId: string) {

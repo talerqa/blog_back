@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { getSessionDevicesHandler } from "./handlers/getSessionDevicesHandler";
-import { cookieGuard } from "../../auth/routers/handlers/authGuard";
+import { cookieGuard } from "../../../core/guards/authGuard";
 import { removeOtherSessionDevicesHandler } from "./handlers/removeOtherSessionDevicesHandler";
 import { removeCurrentSessionDevicesHandler } from "./handlers/removeCurrentSessionDevicesHandler";
 

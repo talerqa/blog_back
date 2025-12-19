@@ -8,7 +8,7 @@ import { inputValidationResultMiddleware } from "../../../core/middlewares/valid
 import { getCommentByIdHandler } from "./handlers/getCommentById.handler";
 import { updateCommentHandler } from "./handlers/updateComment.handler";
 import { deleteCommentHandler } from "./handlers/deleteComment.handler";
-import { authGuard } from "../../auth/routers/handlers/authGuard";
+import { authGuard } from "../../../core/guards/authGuard";
 
 export const commentsRouter = Router({});
 

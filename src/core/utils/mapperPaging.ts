@@ -1,0 +1,112 @@
+import { WithId } from "mongodb";
+import { Blog } from "../../entity/blogs/types/blog";
+import { IMetaDataBlog } from "../../entity/blogs/types/IMetaDataBlog";
+import { BlogResponse } from "../../entity/blogs/types/blogResponse";
+import { Comment } from "../../entity/comments/types/comment";
+import { IMetaData } from "../../entity/user/types/IMetaData";
+import { CommentResponse } from "../../entity/comments/types/commentResponse";
+import { Post } from "../../entity/posts/types/post";
+import { PostResponse } from "../../entity/blogs/types/postResponse";
+import { Security } from "../../entity/security/types/security";
+import { SecurityResponse } from "../../entity/security/types/securityResponse";
+import { User } from "../../entity/user/types/user";
+import { UserResponse } from "../../entity/user/types/userResponse";
+
+export class MapperPaging {
+  mapToBlogPaging(
+    blogs: WithId<Blog>[],
+    metaData: IMetaDataBlog
+  ): BlogResponse {
+    const items = blogs.map((blog: WithId<Blog>) => {
+      return {
+        id: blog._id.toString(),
+        name: blog.name,
+        description: blog.description,
+        websiteUrl: blog.websiteUrl,
+        createdAt: blog.createdAt,
+        isMembership: blog.isMembership ?? false
+      };
+    });
+    return {
+      items,
+      page: metaData.page,
+      pagesCount: metaData.pagesCount,
+      pageSize: metaData.pageSize,
+      totalCount: metaData.totalCount
+    };
+  }
+
+  mapToCommentsPaging = (
+    post: WithId<Comment>[],
+    metaData: IMetaData
+  ): CommentResponse => {
+    const items = post.map((post: WithId<Comment>) => {
+      return {
+        id: post._id.toString(),
+        content: post.content,
+        commentatorInfo: post.commentatorInfo,
+        createdAt: post.createdAt
+      };
+    });
+
+    return {
+      items,
+      ...metaData
+    };
+  };
+
+  mapToPostPaging(post: WithId<Post>[], metaData: IMetaDataBlog): PostResponse {
+    const items = post.map((post: WithId<Post>) => {
+      return {
+        id: post._id.toString(),
+        title: post.title,
+        shortDescription: post.shortDescription,
+        content: post.content,
+        blogId: post.blogId,
+        blogName: post.blogName,
+        createdAt: post.createdAt
+      };
+    });
+
+    return {
+      items,
+      ...metaData
+    };
+  }
+
+  mapToSecurityPaging(sessions: Security[]): SecurityResponse[] {
+    return sessions.map(session => {
+      return {
+        ip: session.ip,
+        title: session.title,
+        lastActiveDate: session.lastActiveDate,
+        deviceId: session.deviceId
+      };
+    });
+  }
+
+  mapToUserPaging(
+    users: WithId<Omit<User, "password">>[],
+    metaData: IMetaDataBlog
+  ): UserResponse {
+    const items = users.map(blog => {
+      return {
+        id: blog._id.toString(),
+        login: blog.login,
+        email: blog.email,
+        createdAt: blog.createdAt,
+        emailConfirmation: blog.emailConfirmation
+      };
+    });
+
+    return {
+      items,
+      page: metaData.page,
+      pagesCount: metaData.pagesCount,
+      pageSize: metaData.pageSize,
+      totalCount: metaData.totalCount
+    };
+  }
+}
+
+export const mapperPaging = new MapperPaging();

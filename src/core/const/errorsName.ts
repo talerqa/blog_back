@@ -4,7 +4,8 @@ export const errorsName = {
   confirm_code: "confirm_code",
   not_found_user: "not_found_user",
   not_found_deviceId: "not_found_deviceId",
-  not_found_session: "not_found_session"
+  not_found_session: "not_found_session",
+  wrong_code_or_pass: "wrong_code_or_pass"
 };
 export const errorMap: Record<string, { message: string; field: string }> = {
   [errorsName.wrong_login]: {
@@ -25,6 +26,10 @@ export const errorMap: Record<string, { message: string; field: string }> = {
   },
   [errorsName.not_found_deviceId]: {
     message: "code error",
+    field: "code"
+  },
+  [errorsName.wrong_code_or_pass]: {
+    message: "wrong_code_or_pass ",
     field: "code"
   }
 };

@@ -5,7 +5,9 @@ type EmailConfirmation = {
   expirationDate: string | Date;
   isConfirmed: boolean;
 };
-
+type PasswordRecovery = {
+  recoveryCode: UUID | string;
+};
 export type User = {
   id: string;
   login: string;
@@ -13,4 +15,5 @@ export type User = {
   password: string;
   createdAt: string | Date;
   emailConfirmation: EmailConfirmation;
+  passwordRecovery: PasswordRecovery;
 };

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { commentService } from "../../service/comment.service";
 import { HttpStatus } from "../../../../core/const/httpCodes";
+import { commentService } from "../../compositionRoot";
 
 export const getCommentByIdHandler = async (req: Request, res: Response) => {
   const id = req.params?.id as string;

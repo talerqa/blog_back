@@ -41,7 +41,7 @@ export class UsersRepositories {
     return user;
   }
 
-  async findUserByEmail(email: string): Promise<WithId<User>> {
+  async findUserByEmailWithChecked(email: string): Promise<WithId<User>> {
     const user = await userCollection.findOne({ email });
 
     if (!user) {
@@ -50,6 +50,21 @@ export class UsersRepositories {
 
     const now = new Date().toISOString();
     if (user?.emailConfirmation.expirationDate < now) {
+      throw new Error(errorsName.confirm_code);
+    }
+
+    return user;
+  }
+  async findUserByEmail(email: string): Promise<WithId<User>> {
+    return userCollection.findOne({ email });
+  }
+
+  async findUserByCodePasswordRecovery(code: string): Promise<WithId<User>> {
+    const user = await userCollection.findOne({
+      "passwordRecovery.recoveryCode": code
+    });
+
+    if (!user) {
       throw new Error(errorsName.confirm_code);
     }
 

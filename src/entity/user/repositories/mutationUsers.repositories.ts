@@ -97,4 +97,30 @@ export class MutationUsersRepositories {
 
     return !(user.matchedCount < 1);
   }
+
+  async updatePasswordUser(id: string, code: string): Promise<boolean> {
+    const user = await userCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          "passwordRecovery.recoveryCode": code
+        }
+      }
+    );
+
+    return !(user.matchedCount < 1);
+  }
+
+  async updateUserPassword(id: string, password: string): Promise<boolean> {
+    const user = await userCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          password: password
+        }
+      }
+    );
+
+    return !(user.matchedCount < 1);
+  }
 }

@@ -4,8 +4,8 @@ import { IMetaDataBlog } from "../types/IMetaDataBlog";
 import { PostResponse } from "../types/postResponse";
 import { SortFiledBlogs } from "../../../core/types/sortFiledBlogs";
 import { SortDirection } from "../../../core/types/sortDesc";
-import { mapToPostPaging } from "../../../core/utils/mappers/mapToPostPaging";
 import { findBlogById } from "./findBlogByIdQueryRepo";
+import { mapperPaging } from "../../../core/utils/mapperPaging";
 
 export const findPostsByBlogId = async (
   blogId: string,
@@ -46,5 +46,5 @@ export const findPostsByBlogId = async (
     totalCount
   };
 
-  return mapToPostPaging(postsById, metaData);
+  return mapperPaging.mapToPostPaging(postsById, metaData);
 };

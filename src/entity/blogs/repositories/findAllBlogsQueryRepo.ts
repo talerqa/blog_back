@@ -3,7 +3,7 @@ import { BlogResponse } from "../types/blogResponse";
 import { queryBlogRepo } from "./utils/queryRepo";
 import { blogCollection } from "../../../db/mongo.db";
 import { IMetaDataBlog } from "../types/IMetaDataBlog";
-import { mapToBlogPaging } from "../../../core/utils/mappers/mapToBlogPaging";
+import { mapperPaging } from "../../../core/utils/mapperPaging";
 
 export const findAllBlogsQueryRepo = async (
   query: PagingAndSortType
@@ -33,5 +33,5 @@ export const findAllBlogsQueryRepo = async (
     totalCount
   };
 
-  return mapToBlogPaging(blogs, metaData);
+  return mapperPaging.mapToBlogPaging(blogs, metaData);
 };

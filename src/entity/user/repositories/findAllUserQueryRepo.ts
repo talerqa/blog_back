@@ -3,7 +3,7 @@ import { queryUserRepo } from "./utils/queryRepo";
 import { userCollection } from "../../../db/mongo.db";
 import { IMetaData } from "../types/IMetaData";
 import { UserResponse } from "../types/userResponse";
-import { mapToUserPaging } from "../../../core/utils/mappers/mapToUserPaging";
+import { mapperPaging } from "../../../core/utils/mapperPaging";
 
 export const findAllUserQueryRepo = async (
   query: PagingAndSortType
@@ -33,5 +33,5 @@ export const findAllUserQueryRepo = async (
     totalCount
   };
 
-  return mapToUserPaging(users, metaData);
+  return mapperPaging.mapToUserPaging(users, metaData);
 };

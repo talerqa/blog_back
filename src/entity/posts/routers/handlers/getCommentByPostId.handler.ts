@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
 import { PagingAndSortType } from "../../../../core/types/pagingAndSortType";
-import { commentService } from "../../../comments/service/comment.service";
+import { commentService } from "../../../comments/compositionRoot";
 
 export const getCommentByPostIdHandler = async (
   req: Request,

@@ -17,3 +17,13 @@ export const idValidationPassword = body("password")
   .trim()
   .isLength({ min: 1 })
   .withMessage("password must not be empty");
+
+export const idValidationNewPassword = body("newPassword")
+  .exists()
+  .withMessage("password is required")
+  .isString()
+  .withMessage("password must be a string")
+  .trim()
+  .isLength({ min: 6 })
+  .isLength({ max: 20 })
+  .withMessage("password must not be empty");

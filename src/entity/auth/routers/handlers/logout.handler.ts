@@ -13,9 +13,7 @@ export const logoutHandler = async (
     if (oldRefreshToken) {
       await tokenCollection.insertOne({ token: oldRefreshToken });
     }
-    const { userId, exp, deviceId, title, ip } = jwtService.decode(
-      oldRefreshToken
-    );
+    const { userId, deviceId } = jwtService.decode(oldRefreshToken);
     const session = await securityCollection.findOne({
       deviceId: deviceId,
       id: userId

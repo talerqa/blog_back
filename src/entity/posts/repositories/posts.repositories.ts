@@ -7,8 +7,8 @@ import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 import { PostResponse } from "../../blogs/types/postResponse";
 import { SortDirection } from "../../../core/types/sortDesc";
 import { IMetaDataBlog } from "../../blogs/types/IMetaDataBlog";
-import { mapToPostPaging } from "../../../core/utils/mappers/mapToPostPaging";
 import { SortFiledPost } from "../../../core/types/sortFiledBlogs";
+import { mapperPaging } from "../../../core/utils/mapperPaging";
 
 export class PostsRepository {
   async findAllPosts(query: PagingAndSortType): Promise<PostResponse> {
@@ -35,7 +35,7 @@ export class PostsRepository {
       totalCount: +totalCount
     };
 
-    return mapToPostPaging(posts, metaData);
+    return mapperPaging.mapToPostPaging(posts, metaData);
   }
 
   async findPostById(id: string): Promise<Post | null> {

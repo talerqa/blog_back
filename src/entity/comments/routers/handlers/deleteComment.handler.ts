@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { commentService } from "../../service/comment.service";
 import { HttpStatus } from "../../../../core/const/httpCodes";
+import { commentService } from "../../compositionRoot";
 
 export const deleteCommentHandler = async (req: Request, res: Response) => {
   try {

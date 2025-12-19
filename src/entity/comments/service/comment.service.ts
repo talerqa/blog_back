@@ -1,21 +1,23 @@
 import { Comment } from "../types/comment";
 import { CreateCommentInputModel } from "../dto/createCommentInputModel";
-import { commentRepository } from "../repositories/comment.repositories";
+import { CommentRepository } from "../repositories/comment.repositories";
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 import { CommentResponse } from "../types/commentResponse";
 import { UpdateCommentInputModel } from "../dto/updateCommentInputModel";
 
-export const commentService = {
+export class CommentService {
+  constructor(private commentRepository: CommentRepository) {}
+
   async findCommentsByPostId(
     query: PagingAndSortType,
     postId: string
   ): Promise<CommentResponse | null> {
-    return commentRepository.findCommentsByPostId(query, postId);
-  },
+    return this.commentRepository.findCommentsByPostId(query, postId);
+  }
 
   async findCommentById(id: string): Promise<Comment | null> {
-    return commentRepository.findCommentById(id);
-  },
+    return this.commentRepository.findCommentById(id);
+  }
 
   async createComment(body: CreateCommentInputModel): Promise<Comment | null> {
     const { content, postId, userId } = body;
@@ -27,8 +29,8 @@ export const commentService = {
       createdAt: new Date().toISOString()
     };
 
-    return commentRepository.createComment(dto);
-  },
+    return this.commentRepository.createComment(dto);
+  }
 
   async updateComment(
     id: string,
@@ -41,10 +43,10 @@ export const commentService = {
       content
     };
 
-    return commentRepository.updateComment(id, userId, dto);
-  },
+    return this.commentRepository.updateComment(id, userId, dto);
+  }
 
   async deleteCommentById(id: string, userId: string): Promise<boolean | null> {
-    return commentRepository.deleteCommentById(id, userId);
+    return this.commentRepository.deleteCommentById(id, userId);
   }
-};
+}

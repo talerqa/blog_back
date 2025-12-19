@@ -18,7 +18,7 @@ import { getPostByIdHandler } from "./handlers/getPostById.handler";
 import { createPostHandler } from "./handlers/createPost.handler";
 import { updatePostHandler } from "./handlers/updatePost.handler";
 import { deletePostHandler } from "./handlers/deletePost.handler";
-import { authGuard } from "../../auth/routers/handlers/authGuard";
+import { authGuard } from "../../../core/guards/authGuard";
 import { createCommentPostHandler } from "./handlers/createCommentPost.handler";
 import { getCommentByPostIdHandler } from "./handlers/getCommentByPostId.handler";
 
