@@ -9,11 +9,13 @@ export const getCommentByPostIdHandler = async (
 ) => {
   try {
     const postId = req.params?.postId as string;
+    const userId = req.headers?.userId as string;
 
     const query = req.query;
     const post = await commentService.findCommentsByPostId(
       (query as unknown) as PagingAndSortType,
-      postId
+      postId,
+      userId
     );
 
     res.status(HttpStatus.Ok).send(post);

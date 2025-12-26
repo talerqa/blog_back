@@ -79,3 +79,13 @@ export const idValidationContentComment = body("content")
   .trim()
   .isLength({ min: 20, max: 300 })
   .withMessage("content must not be empty");
+
+export const idValidationLikeComment = body("likeStatus")
+  .exists()
+  .withMessage("likeStatus is required")
+  .isString()
+  .withMessage("likeStatus must be a string")
+  .trim()
+  .withMessage("content must not be empty")
+  .isIn(["None", "Like", "Dislike"])
+  .withMessage('likeStatus must be one of "None", "Like", "Dislike"');

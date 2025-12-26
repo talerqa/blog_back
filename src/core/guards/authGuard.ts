@@ -102,3 +102,66 @@ export const cookieGuard = async (
     return unauthorized(res);
   }
 };
+
+export const isAuthUserGuard = async (
+  req: Request & any,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const auth = req.headers["authorization"];
+
+    if (!auth) {
+      req.headers = {
+        ...req.headers,
+        userId: null
+      };
+      next();
+      return;
+    }
+
+    const [authType, token] = auth.split(" ");
+
+    if (authType !== "Bearer" || !token) {
+      req.headers = {
+        ...req.headers,
+        userId: null
+      };
+      next();
+      return;
+    }
+
+    let verifyToken: any;
+    try {
+      verifyToken = jwtService.verify(token);
+    } catch (err) {
+      req.headers = {
+        ...req.headers,
+        userId: null
+      };
+      next();
+      return;
+    }
+    const { userId, exp, deviceId, title, ip } = verifyToken;
+    await findUserByIdQueryRepo(userId);
+
+    req.headers = {
+      ...req.headers,
+      userId,
+      expDate: exp,
+      deviceId,
+      title,
+      ip,
+      tokenDecoded: verifyToken
+    };
+    next();
+  } catch (e) {
+    const err = e as Error;
+    req.headers = {
+      ...req.headers,
+      userId: null
+    };
+    next();
+    return;
+  }
+};

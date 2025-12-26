@@ -16,6 +16,7 @@ import {
 import { Security } from "../entity/security/types/security";
 import { RateLimit } from "../entity/rateLimit/types/rateLimit";
 import { Token } from "../entity/auth/types/token";
+import mongoose from "mongoose";
 
 export let client: MongoClient;
 export let blogCollection: Collection<Blog>;
@@ -47,6 +48,7 @@ export const runDB = async (): Promise<void> => {
   rateLimitCollection = db.collection<RateLimit>(RATE_LIMIT_COLLECTION_NAME);
 
   try {
+    await mongoose.connect("mongodb://localhost:27017");
     await client.connect();
     await db.command({ ping: 1 });
     console.log("✅ Connected to the database");

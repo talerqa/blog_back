@@ -18,7 +18,7 @@ import { getPostByIdHandler } from "./handlers/getPostById.handler";
 import { createPostHandler } from "./handlers/createPost.handler";
 import { updatePostHandler } from "./handlers/updatePost.handler";
 import { deletePostHandler } from "./handlers/deletePost.handler";
-import { authGuard } from "../../../core/guards/authGuard";
+import { authGuard, isAuthUserGuard } from "../../../core/guards/authGuard";
 import { createCommentPostHandler } from "./handlers/createCommentPost.handler";
 import { getCommentByPostIdHandler } from "./handlers/getCommentByPostId.handler";
 
@@ -82,6 +82,7 @@ postsRouter.post(
 
 postsRouter.get(
   "/:postId/comments",
+  isAuthUserGuard,
   idValidationPostId,
   inputValidationResultMiddleware,
   getCommentByPostIdHandler

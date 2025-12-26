@@ -13,7 +13,8 @@ import { mapperPaging } from "../../../core/utils/mapperPaging";
 export class CommentRepository {
   async findCommentsByPostId(
     query: PagingAndSortType,
-    postId: string
+    postId: string,
+    userId: string
   ): Promise<any> {
     const {
       pageNumber = 1,
@@ -35,6 +36,7 @@ export class CommentRepository {
       .skip(skip)
       .limit(+pageSize)
       .toArray();
+
     const totalCount = await commentCollection.countDocuments({ postId });
 
     const metaData: IMetaData = {
@@ -44,21 +46,38 @@ export class CommentRepository {
       totalCount: +totalCount
     };
 
-    return mapperPaging.mapToCommentsPaging(posts, metaData);
+    return mapperPaging.mapToCommentsPaging(posts, metaData, userId);
   }
 
-  async findCommentById(id: string): Promise<Comment | any> {
+  async findCommentById(id: string, userId: string): Promise<Comment | any> {
     const comment = await commentCollection.findOne({ _id: new ObjectId(id) });
 
     if (!comment) {
       return null;
     }
+    const likesCount = comment.likesInfo?.likesCount?.length || 0;
+    const dislikesCount = comment.likesInfo?.dislikesCount?.length || 0;
+
+    // Проверяем статус пользователя
+    const myStatus:
+      | "Like"
+      | "Dislike"
+      | "None" = comment.likesInfo?.likesCount?.includes(userId)
+      ? "Like"
+      : comment.likesInfo?.dislikesCount?.includes(userId)
+      ? "Dislike"
+      : "None";
 
     return {
       id: comment._id.toString(),
       content: comment.content,
       commentatorInfo: comment.commentatorInfo,
-      createdAt: comment.createdAt
+      createdAt: comment.createdAt,
+      likesInfo: {
+        likesCount,
+        dislikesCount,
+        myStatus: myStatus
+      }
     };
   }
 
@@ -83,7 +102,12 @@ export class CommentRepository {
       },
       postId,
       content,
-      createdAt
+      createdAt,
+      likesInfo: {
+        likesCount: [],
+        dislikesCount: [],
+        myStatus: "None"
+      }
     };
 
     const insertResult = await commentCollection.insertOne({
@@ -94,7 +118,12 @@ export class CommentRepository {
       id: insertResult.insertedId.toString(),
       content: newComment.content,
       commentatorInfo: newComment.commentatorInfo,
-      createdAt: newComment.createdAt
+      createdAt: newComment.createdAt,
+      likesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: "None"
+      }
     };
   }
 
@@ -123,6 +152,72 @@ export class CommentRepository {
     );
 
     return !(commentUpdate.matchedCount < 1);
+  }
+
+  async updateLikeComment(
+    id: string,
+    userId: string,
+    likeStatus: string
+  ): Promise<boolean | null> {
+    const comment = await commentCollection.findOne({ _id: new ObjectId(id) });
+
+    if (!comment) {
+      return null;
+    }
+
+    if (likeStatus === "Like") {
+      await commentCollection.updateOne({ _id: new ObjectId(id) }, [
+        {
+          $set: {
+            // "likesInfo.myStatus": likeStatus,
+            // добавляем userId в лайки, если его еще нет
+            "likesInfo.likesCount": {
+              $setUnion: ["$likesInfo.likesCount", [userId]]
+            },
+            // удаляем userId из дизлайков
+            "likesInfo.dislikesCount": {
+              $setDifference: ["$likesInfo.dislikesCount", [userId]]
+            }
+          }
+        }
+      ]);
+    }
+
+    if (likeStatus === "Dislike") {
+      await commentCollection.updateOne({ _id: new ObjectId(id) }, [
+        {
+          $set: {
+            // "likesInfo.myStatus": likeStatus,
+            // добавляем userId в дизлайки, если его еще нет
+            "likesInfo.dislikesCount": {
+              $setUnion: ["$likesInfo.dislikesCount", [userId]]
+            },
+            // удаляем userId из лайков
+            "likesInfo.likesCount": {
+              $setDifference: ["$likesInfo.likesCount", [userId]]
+            }
+          }
+        }
+      ]);
+    }
+
+    if (likeStatus === "None") {
+      await commentCollection.updateOne({ _id: new ObjectId(id) }, [
+        {
+          $set: {
+            // "likesInfo.myStatus": likeStatus,
+            "likesInfo.likesCount": {
+              $setDifference: ["$likesInfo.likesCount", [userId]]
+            },
+            "likesInfo.dislikesCount": {
+              $setDifference: ["$likesInfo.dislikesCount", [userId]]
+            }
+          }
+        }
+      ]);
+    }
+
+    return true;
   }
 
   async deleteCommentById(id: string, userId: string): Promise<boolean | null> {

@@ -10,13 +10,14 @@ export class CommentService {
 
   async findCommentsByPostId(
     query: PagingAndSortType,
-    postId: string
+    postId: string,
+    userId: string
   ): Promise<CommentResponse | null> {
-    return this.commentRepository.findCommentsByPostId(query, postId);
+    return this.commentRepository.findCommentsByPostId(query, postId, userId);
   }
 
-  async findCommentById(id: string): Promise<Comment | null> {
-    return this.commentRepository.findCommentById(id);
+  async findCommentById(id: string, userId: string): Promise<Comment | null> {
+    return this.commentRepository.findCommentById(id, userId);
   }
 
   async createComment(body: CreateCommentInputModel): Promise<Comment | null> {
@@ -44,6 +45,14 @@ export class CommentService {
     };
 
     return this.commentRepository.updateComment(id, userId, dto);
+  }
+
+  async updateLikeComments(
+    id: string,
+    userId: string,
+    likeStatus: string
+  ): Promise<boolean | null> {
+    return this.commentRepository.updateLikeComment(id, userId, likeStatus);
   }
 
   async deleteCommentById(id: string, userId: string): Promise<boolean | null> {

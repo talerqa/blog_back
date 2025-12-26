@@ -2,18 +2,21 @@ import { Router } from "express";
 import {
   idValidationCommentId,
   idValidationContentComment,
+  idValidationLikeComment,
   idValidationParamId
 } from "../../../core/middlewares/validation/params-post.validation-middleware";
 import { inputValidationResultMiddleware } from "../../../core/middlewares/validation/input-validtion-result.middleware";
 import { getCommentByIdHandler } from "./handlers/getCommentById.handler";
 import { updateCommentHandler } from "./handlers/updateComment.handler";
 import { deleteCommentHandler } from "./handlers/deleteComment.handler";
-import { authGuard } from "../../../core/guards/authGuard";
+import { authGuard, isAuthUserGuard } from "../../../core/guards/authGuard";
+import { updateLikeCommentsHandler } from "./handlers/updateLikeComments.handler";
 
 export const commentsRouter = Router({});
 
 commentsRouter.get(
   "/:id",
+  isAuthUserGuard,
   idValidationParamId,
   inputValidationResultMiddleware,
   getCommentByIdHandler
@@ -26,6 +29,15 @@ commentsRouter.put(
   idValidationContentComment,
   inputValidationResultMiddleware,
   updateCommentHandler
+);
+
+commentsRouter.put(
+  "/:commentId/like-status",
+  authGuard,
+  idValidationCommentId,
+  idValidationLikeComment,
+  inputValidationResultMiddleware,
+  updateLikeCommentsHandler
 );
 
 commentsRouter.delete(

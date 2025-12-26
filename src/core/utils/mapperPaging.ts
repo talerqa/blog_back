@@ -38,14 +38,33 @@ export class MapperPaging {
 
   mapToCommentsPaging = (
     post: WithId<Comment>[],
-    metaData: IMetaData
+    metaData: IMetaData,
+    userId
   ): CommentResponse => {
     const items = post.map((post: WithId<Comment>) => {
+      const likesCount = post.likesInfo?.likesCount?.length || 0;
+      const dislikesCount = post.likesInfo?.dislikesCount?.length || 0;
+
+      // Проверяем статус пользователя
+      const myStatus:
+        | "Like"
+        | "Dislike"
+        | "None" = post.likesInfo?.likesCount?.includes(userId)
+        ? "Like"
+        : post.likesInfo?.dislikesCount?.includes(userId)
+        ? "Dislike"
+        : "None";
+
       return {
         id: post._id.toString(),
         content: post.content,
         commentatorInfo: post.commentatorInfo,
-        createdAt: post.createdAt
+        createdAt: post.createdAt,
+        likesInfo: {
+          likesCount,
+          dislikesCount,
+          myStatus: myStatus
+        }
       };
     });
 
