@@ -3,6 +3,7 @@ import {
   idValidationBLogIdPost,
   idValidationContentComment,
   idValidationContentPost,
+  idValidationLikePost,
   idValidationParamId,
   idValidationPostId,
   idValidationShortDescriptionPost,
@@ -21,17 +22,20 @@ import { deletePostHandler } from "./handlers/deletePost.handler";
 import { authGuard, isAuthUserGuard } from "../../../core/guards/authGuard";
 import { createCommentPostHandler } from "./handlers/createCommentPost.handler";
 import { getCommentByPostIdHandler } from "./handlers/getCommentByPostId.handler";
+import { updateLikePostsHandler } from "./handlers/updateLikePosts.handler";
 
 export const postsRouter = Router({});
 
 postsRouter.get(
   "",
   paginationAndSortingValidation(SortFiledBlogs),
+  isAuthUserGuard,
   getAllPostsHandler
 );
 
 postsRouter.get(
   "/:id",
+  isAuthUserGuard,
   idValidationParamId,
   inputValidationResultMiddleware,
   getPostByIdHandler
@@ -86,4 +90,13 @@ postsRouter.get(
   idValidationPostId,
   inputValidationResultMiddleware,
   getCommentByPostIdHandler
+);
+
+postsRouter.put(
+  "/:postId/like-status",
+  authGuard,
+  idValidationPostId,
+  idValidationLikePost,
+  inputValidationResultMiddleware,
+  updateLikePostsHandler
 );

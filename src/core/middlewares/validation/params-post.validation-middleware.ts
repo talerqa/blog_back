@@ -89,3 +89,13 @@ export const idValidationLikeComment = body("likeStatus")
   .withMessage("content must not be empty")
   .isIn(["None", "Like", "Dislike"])
   .withMessage('likeStatus must be one of "None", "Like", "Dislike"');
+
+export const idValidationLikePost = body("likeStatus")
+  .exists()
+  .withMessage("likeStatus is required")
+  .isString()
+  .withMessage("likeStatus must be a string")
+  .trim()
+  .withMessage("content must not be empty")
+  .isIn(["None", "Like", "Dislike"])
+  .withMessage('likeStatus must be one of "None", "Like", "Dislike"');

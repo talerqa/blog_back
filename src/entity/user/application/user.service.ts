@@ -81,7 +81,10 @@ export class UserService {
 
   async createUser(
     dto: CreateUserInputModel
-  ): Promise<Omit<User, "password" | "emailConfirmation"> | null> {
+  ): Promise<Omit<
+    User,
+    "password" | "emailConfirmation" | "passwordRecovery"
+  > | null> {
     const { email, password, login } = dto;
 
     await this.usersRepositories.isExistUserWithLoginOrEmail(login, email);

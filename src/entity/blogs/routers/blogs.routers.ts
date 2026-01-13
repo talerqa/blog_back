@@ -25,6 +25,7 @@ import { updateBlogHandler } from "./handlers/updateBlog.handler";
 import { deleteBlogHandler } from "./handlers/deleteBlog.handler";
 import { getAllPostsByBlogIdHandler } from "./handlers/getAllPostsByBlogId.handler";
 import { createPostByBlogIdHandler } from "./handlers/createPostByBlogId.handler";
+import { isAuthUserGuard } from "../../../core/guards/authGuard";
 
 export const blogsRouter = Router({});
 
@@ -73,6 +74,7 @@ blogsRouter.delete(
 blogsRouter.get(
   "/:blogId/posts",
   paginationAndSortingValidation(SortFiledPost),
+  isAuthUserGuard,
   idValidationParamBlogId,
   inputValidationResultMiddleware,
   getAllPostsByBlogIdHandler

@@ -4,7 +4,8 @@ import { postsService } from "../../compositionRoot";
 
 export const getPostByIdHandler = async (req: Request, res: Response) => {
   const id = req.params?.id as string;
-  const blog = await postsService.findPostById(id);
+  const userId = req?.headers?.userId as string;
+  const blog = await postsService.findPostById(id, userId);
 
   if (!blog) {
     res.status(HttpStatus.NotFound).send();

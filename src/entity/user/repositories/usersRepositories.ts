@@ -55,7 +55,7 @@ export class UsersRepositories {
 
     return user;
   }
-  async findUserByEmail(email: string): Promise<WithId<User>> {
+  async findUserByEmail(email: string): Promise<WithId<User> | null> {
     return userCollection.findOne({ email });
   }
 

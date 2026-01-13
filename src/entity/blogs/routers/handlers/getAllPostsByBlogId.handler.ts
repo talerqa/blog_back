@@ -8,10 +8,12 @@ export const getAllPostsByBlogIdHandler = async (
   res: Response
 ) => {
   const id = req.params?.blogId as string;
+  const userId = req.headers?.userId as string;
   const query = req.query;
   const posts = await findPostsByBlogId(
     id,
-    (query as unknown) as PagingAndSortType
+    (query as unknown) as PagingAndSortType,
+    userId
   );
 
   if (!posts) {

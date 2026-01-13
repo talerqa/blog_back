@@ -9,7 +9,8 @@ import { mapperPaging } from "../../../core/utils/mapperPaging";
 
 export const findPostsByBlogId = async (
   blogId: string,
-  query: PagingAndSortType
+  query: PagingAndSortType,
+  userId: string
 ): Promise<PostResponse | null> => {
   const {
     pageNumber = 1,
@@ -46,5 +47,5 @@ export const findPostsByBlogId = async (
     totalCount
   };
 
-  return mapperPaging.mapToPostPaging(postsById, metaData);
+  return mapperPaging.mapToPostPaging(postsById, metaData, userId);
 };

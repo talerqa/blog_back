@@ -8,12 +8,15 @@ import { PostsRepository } from "../repositories/posts.repositories";
 export class PostsService {
   constructor(private postsRepository: PostsRepository) {}
 
-  async findAllPosts(query: PagingAndSortType): Promise<PostResponse> {
-    return this.postsRepository.findAllPosts(query);
+  async findAllPosts(
+    query: PagingAndSortType,
+    userId: string
+  ): Promise<PostResponse> {
+    return this.postsRepository.findAllPosts(query, userId);
   }
 
-  async findPostById(id: string): Promise<Post | null> {
-    return this.postsRepository.findPostById(id);
+  async findPostById(id: string, userId: string): Promise<Post | null> {
+    return this.postsRepository.findPostById(id, userId);
   }
 
   async createPost(body: CreateBlogInputModel): Promise<Post | null> {
@@ -45,5 +48,13 @@ export class PostsService {
 
   async deletePostById(id: string): Promise<boolean> {
     return this.postsRepository.deletePostById(id);
+  }
+
+  async updateLikeComments(
+    id: string,
+    userId: string,
+    likeStatus: string
+  ): Promise<boolean | null> {
+    return this.postsRepository.updateLikeComment(id, userId, likeStatus);
   }
 }

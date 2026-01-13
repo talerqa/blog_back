@@ -39,7 +39,7 @@ export class MapperPaging {
   mapToCommentsPaging = (
     post: WithId<Comment>[],
     metaData: IMetaData,
-    userId
+    userId: string
   ): CommentResponse => {
     const items = post.map((post: WithId<Comment>) => {
       const likesCount = post.likesInfo?.likesCount?.length || 0;
@@ -74,8 +74,37 @@ export class MapperPaging {
     };
   };
 
-  mapToPostPaging(post: WithId<Post>[], metaData: IMetaDataBlog): PostResponse {
+  mapToPostPaging(
+    post: WithId<Post>[],
+    metaData: IMetaDataBlog,
+    userId: string
+  ): PostResponse {
     const items = post.map((post: WithId<Post>) => {
+      const likesCount = post.extendedLikesInfo?.likesCount?.length || 0;
+      const dislikesCount = post.extendedLikesInfo?.dislikesCount?.length || 0;
+
+      const lastTreeLikes = post.extendedLikesInfo?.likesCount
+        ?.sort(
+          (a, b) =>
+            new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime()
+        ) // сортировка
+        // по дате
+        .slice(0, 3); // берём последние 3 по времени
+
+      // Проверяем статус пользователя
+      const myStatus:
+        | "Like"
+        | "Dislike"
+        | "None" = post.extendedLikesInfo?.likesCount?.some(
+        like => like.userId === userId
+      )
+        ? "Like"
+        : post.extendedLikesInfo?.dislikesCount?.some(
+            dislike => dislike.userId === userId
+          )
+        ? "Dislike"
+        : "None";
+
       return {
         id: post._id.toString(),
         title: post.title,
@@ -83,7 +112,13 @@ export class MapperPaging {
         content: post.content,
         blogId: post.blogId,
         blogName: post.blogName,
-        createdAt: post.createdAt
+        createdAt: post.createdAt,
+        extendedLikesInfo: {
+          likesCount,
+          dislikesCount,
+          myStatus: myStatus,
+          newestLikes: lastTreeLikes
+        }
       };
     });
 

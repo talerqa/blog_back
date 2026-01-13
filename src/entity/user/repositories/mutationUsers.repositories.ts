@@ -12,7 +12,10 @@ export class MutationUsersRepositories {
 
   async createUser(
     dto: CreateUserInputModel
-  ): Promise<Omit<User, "password" | "emailConfirmation"> | null> {
+  ): Promise<Omit<
+    User,
+    "password" | "emailConfirmation" | "passwordRecovery"
+  > | null> {
     const { login, email, password } = dto;
 
     const createdAt = new Date().toISOString();
