@@ -1,18 +1,15 @@
 import { CreateBlogInputModel } from "../dto/createPostsInputModel";
 import { UpdatePostInputModel } from "../dto/updatePostsInputModel";
-import {
-  blogCollection,
-  postCollection,
-  userCollection
-} from "../../../db/mongo.db";
+import { postCollection, userCollection } from "../../../db/mongo.db";
 import { ObjectId } from "mongodb";
-import { NewestLikesType, Post } from "../types/post";
+import { Post } from "../types/post";
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 import { PostResponse } from "../../blogs/types/postResponse";
 import { SortDirection } from "../../../core/types/sortDesc";
 import { IMetaDataBlog } from "../../blogs/types/IMetaDataBlog";
 import { SortFiledPost } from "../../../core/types/sortFiledBlogs";
 import { mapperPaging } from "../../../core/utils/mapperPaging";
+import { BlogDocument, BlogModel } from "../../blogs/domain/dto/blog.entity";
 
 export class PostsRepository {
   async findAllPosts(
@@ -95,9 +92,7 @@ export class PostsRepository {
   async createPost(dto: CreateBlogInputModel): Promise<Post | null | any> {
     const { title, shortDescription, content, blogId, createdAt } = dto;
 
-    const blog = await blogCollection.findOne({
-      _id: new ObjectId(blogId)
-    });
+    const blog = await BlogModel.findById(blogId).exec();
 
     if (!blog) {
       return null;
@@ -109,7 +104,7 @@ export class PostsRepository {
       shortDescription,
       content,
       blogId,
-      blogName: blog.name,
+      blogName: blog.name as string,
       createdAt,
       extendedLikesInfo: {
         likesCount: [],
@@ -136,13 +131,7 @@ export class PostsRepository {
         likesCount: 0,
         dislikesCount: 0,
         myStatus: "None",
-        newestLikes: [
-          // {
-          //   addedAt: new Date().toISOString(),
-          //   userId: "",
-          //   login: ""
-          // }
-        ]
+        newestLikes: []
       }
     };
   }
@@ -176,7 +165,7 @@ export class PostsRepository {
   ): Promise<Post | null | any> {
     const { title, shortDescription, content, blogId, createdAt } = dto;
 
-    const blog = await blogCollection.findOne({ _id: new ObjectId(id) });
+    const blog = (await BlogModel.findById(id).exec()) as BlogDocument;
 
     if (!blog) {
       return null;

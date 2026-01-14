@@ -1,7 +1,6 @@
 import { SortFiledBlogs } from "../../../../core/types/sortFiledBlogs";
 import { SortDirection } from "../../../../core/types/sortDesc";
 import { PagingAndSortType } from "../../../../core/types/pagingAndSortType";
-import { WithId } from "mongodb";
 import { Blog } from "../../types/blog";
 
 export class QueryBlogRepo {
@@ -45,9 +44,9 @@ export class QueryBlogRepo {
     };
   }
 
-  async getBlogById(blog: WithId<Blog>) {
+  async getBlogById(blog: Blog): Promise<Blog> {
     return {
-      id: blog._id.toString(),
+      id: blog.id,
       name: blog.name,
       description: blog.description,
       websiteUrl: blog.websiteUrl,

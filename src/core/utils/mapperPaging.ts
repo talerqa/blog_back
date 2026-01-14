@@ -11,15 +11,16 @@ import { Security } from "../../entity/security/types/security";
 import { SecurityResponse } from "../../entity/security/types/securityResponse";
 import { User } from "../../entity/user/types/user";
 import { UserResponse } from "../../entity/user/types/userResponse";
+import { BlogDocument } from "../../entity/blogs/domain/dto/blog.entity";
 
 export class MapperPaging {
   mapToBlogPaging(
-    blogs: WithId<Blog>[],
+    blogs: BlogDocument[],
     metaData: IMetaDataBlog
   ): BlogResponse {
-    const items = blogs.map((blog: WithId<Blog>) => {
+    const items = blogs.map((blog: BlogDocument) => {
       return {
-        id: blog._id.toString(),
+        id: blog._id,
         name: blog.name,
         description: blog.description,
         websiteUrl: blog.websiteUrl,
@@ -27,8 +28,9 @@ export class MapperPaging {
         isMembership: blog.isMembership ?? false
       };
     });
+
     return {
-      items,
+      items: items as Blog[],
       page: metaData.page,
       pagesCount: metaData.pagesCount,
       pageSize: metaData.pageSize,

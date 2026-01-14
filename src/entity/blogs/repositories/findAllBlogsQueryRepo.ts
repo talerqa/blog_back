@@ -1,9 +1,9 @@
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 import { BlogResponse } from "../types/blogResponse";
 import { queryBlogRepo } from "./utils/queryRepo";
-import { blogCollection } from "../../../db/mongo.db";
 import { IMetaDataBlog } from "../types/IMetaDataBlog";
 import { mapperPaging } from "../../../core/utils/mapperPaging";
+import { BlogModel } from "../domain/dto/blog.entity";
 
 export const findAllBlogsQueryRepo = async (
   query: PagingAndSortType
@@ -17,14 +17,13 @@ export const findAllBlogsQueryRepo = async (
     skip
   } = await queryBlogRepo.getAllBlogs(query);
 
-  const blogs = await blogCollection
-    .find(filter)
+  const blogs = await BlogModel.find(filter)
     .sort({ [sortBy]: sortDirection })
     .skip(skip)
     .limit(pageSize)
-    .toArray();
+    .exec();
 
-  const totalCount = await blogCollection.countDocuments(filter);
+  const totalCount = await BlogModel.countDocuments(filter).exec();
 
   const metaData: IMetaDataBlog = {
     pagesCount: Math.ceil(totalCount / pageSize),

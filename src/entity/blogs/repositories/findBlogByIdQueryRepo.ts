@@ -1,14 +1,13 @@
 import { Blog } from "../types/blog";
-import { blogCollection } from "../../../db/mongo.db";
-import { ObjectId } from "mongodb";
 import { queryBlogRepo } from "./utils/queryRepo";
+import { BlogModel } from "../domain/dto/blog.entity";
 
 export const findBlogById = async (id: string): Promise<Blog | null> => {
-  const blog = await blogCollection.findOne({ _id: new ObjectId(id) });
+  const blog = await BlogModel.findById(id).exec();
 
   if (!blog) {
     return null;
   }
 
-  return queryBlogRepo.getBlogById(blog);
+  return queryBlogRepo.getBlogById(blog as Blog);
 };

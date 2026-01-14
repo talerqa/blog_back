@@ -19,7 +19,7 @@ import { Token } from "../entity/auth/types/token";
 import mongoose from "mongoose";
 
 export let client: MongoClient;
-export let blogCollection: Collection<Blog>;
+// export let blogCollection: Collection<Blog>;
 export let postCollection: Collection<Post>;
 export let userCollection: Collection<User>;
 export let tokenCollection: Collection<Token>;
@@ -39,7 +39,7 @@ export const runDB = async (): Promise<void> => {
   const client: MongoClient = new MongoClient("mongodb://localhost:27017");
 
   const db: Db = client.db(NAME_DB);
-  blogCollection = db.collection<Blog>(BLOG_COLLECTION_NAME);
+  // blogCollection = db.collection<Blog>(BLOG_COLLECTION_NAME);
   postCollection = db.collection<Post>(POST_COLLECTION_NAME);
   userCollection = db.collection<User>(USER_COLLECTION_NAME);
   tokenCollection = db.collection<Token>(TOKEN_COLLECTION_NAME);
@@ -48,7 +48,8 @@ export const runDB = async (): Promise<void> => {
   rateLimitCollection = db.collection<RateLimit>(RATE_LIMIT_COLLECTION_NAME);
 
   try {
-    await mongoose.connect("mongodb://localhost:27017");
+    await mongoose.connect(`mongodb://localhost:27017/${NAME_DB}`);
+
     await client.connect();
     await db.command({ ping: 1 });
     console.log("✅ Connected to the database");
