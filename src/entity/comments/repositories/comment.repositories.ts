@@ -10,6 +10,7 @@ import { IMetaData } from "../../user/types/IMetaData";
 import { UpdateCommentInputModel } from "../dto/updateCommentInputModel";
 import { mapperPaging } from "../../../core/utils/mapperPaging";
 import { PostModel } from "../../posts/domain/dto/post.entity";
+import { CommentModel } from "../domain/dto/comment.entity";
 
 export class CommentRepository {
   async findCommentsByPostId(
@@ -31,14 +32,13 @@ export class CommentRepository {
     }
 
     const skip = (+pageNumber - 1) * +pageSize;
-    const posts = await commentCollection
-      .find({ postId })
+    const comments = (await CommentModel.find({ postId })
       .sort({ [sortBy]: sortDirection })
       .skip(skip)
       .limit(+pageSize)
-      .toArray();
+      .exec()) as Comment[];
 
-    const totalCount = await commentCollection.countDocuments({ postId });
+    const totalCount = await CommentModel.countDocuments({ postId }).exec();
 
     const metaData: IMetaData = {
       pagesCount: Math.ceil(+totalCount / +pageSize),
@@ -47,11 +47,11 @@ export class CommentRepository {
       totalCount: +totalCount
     };
 
-    return mapperPaging.mapToCommentsPaging(posts, metaData, userId);
+    return mapperPaging.mapToCommentsPaging(comments, metaData, userId);
   }
 
   async findCommentById(id: string, userId: string): Promise<Comment | any> {
-    const comment = await commentCollection.findOne({ _id: new ObjectId(id) });
+    const comment = (await CommentModel.findById(id)) as Comment;
 
     if (!comment) {
       return null;
@@ -70,7 +70,7 @@ export class CommentRepository {
       : "None";
 
     return {
-      id: comment._id.toString(),
+      id: comment.id,
       content: comment.content,
       commentatorInfo: comment.commentatorInfo,
       createdAt: comment.createdAt,
@@ -109,12 +109,13 @@ export class CommentRepository {
       }
     };
 
-    const insertResult = await commentCollection.insertOne({
-      ...newComment
+    const insertResult = await new CommentModel({
+      ...(newComment as Comment)
     });
+    await insertResult.save();
 
     return {
-      id: insertResult.insertedId.toString(),
+      id: insertResult._id,
       content: newComment.content,
       commentatorInfo: newComment.commentatorInfo,
       createdAt: newComment.createdAt,
@@ -131,7 +132,7 @@ export class CommentRepository {
     userId: string,
     dto: UpdateCommentInputModel
   ): Promise<boolean | null> {
-    const comment = await commentCollection.findOne({ _id: new ObjectId(id) });
+    const comment = (await CommentModel.findById(id)) as Comment;
 
     if (!comment) {
       return null;
@@ -141,16 +142,17 @@ export class CommentRepository {
       throw new Error("notUserComment");
     }
 
-    const commentUpdate = await commentCollection.updateOne(
-      { _id: new ObjectId(id) },
+    const commentUpdate = await CommentModel.findByIdAndUpdate(
+      id,
       {
         $set: {
           content: dto.content
         }
-      }
+      },
+      { new: true }
     );
 
-    return !(commentUpdate.matchedCount < 1);
+    return commentUpdate !== null;
   }
 
   async updateLikeComment(
@@ -158,7 +160,7 @@ export class CommentRepository {
     userId: string,
     likeStatus: string
   ): Promise<boolean | null> {
-    const comment = await commentCollection.findOne({ _id: new ObjectId(id) });
+    const comment = await CommentModel.findById(id);
 
     if (!comment) {
       return null;
@@ -220,8 +222,7 @@ export class CommentRepository {
   }
 
   async deleteCommentById(id: string, userId: string): Promise<boolean | null> {
-    const comment = await commentCollection.findOne({ _id: new ObjectId(id) });
-
+    const comment = (await CommentModel.findById(id)) as Comment;
     if (!comment) {
       return null;
     }
@@ -230,9 +231,7 @@ export class CommentRepository {
       throw new Error("notUserComment");
     }
 
-    const { deletedCount } = await commentCollection.deleteOne({
-      _id: new ObjectId(id)
-    });
-    return !!deletedCount;
+    const deletedPost = await CommentModel.findByIdAndDelete(id);
+    return deletedPost !== null;
   }
 }

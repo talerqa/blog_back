@@ -18,7 +18,7 @@ import mongoose from "mongoose";
 export let client: MongoClient;
 // export let blogCollection: Collection<Blog>;
 export let postCollection: Collection<Post>;
-export let userCollection: Collection<User>;
+// export let userCollection: Collection<User>;
 export let tokenCollection: Collection<Token>;
 export let commentCollection: Collection<Comment>;
 export let securityCollection: Collection<Security>;

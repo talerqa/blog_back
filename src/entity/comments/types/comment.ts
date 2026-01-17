@@ -12,6 +12,6 @@ export type Comment = {
 
 export type myStatusLikesInfo = "None" | "Like" | "Dislike";
 export type CommentatorInfo = {
-  userId: "string";
-  userLogin: "string";
+  userId: string;
+  userLogin: string;
 };

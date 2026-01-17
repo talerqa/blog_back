@@ -1,4 +1,3 @@
-import { WithId } from "mongodb";
 import { Blog } from "../../entity/blogs/types/blog";
 import { IMetaDataBlog } from "../../entity/blogs/types/IMetaDataBlog";
 import { BlogResponse } from "../../entity/blogs/types/blogResponse";
@@ -39,11 +38,11 @@ export class MapperPaging {
   }
 
   mapToCommentsPaging = (
-    post: WithId<Comment>[],
+    comment: Comment[],
     metaData: IMetaData,
     userId: string
   ): CommentResponse => {
-    const items = post.map((post: WithId<Comment>) => {
+    const items = comment.map((post: Comment) => {
       const likesCount = post.likesInfo?.likesCount?.length || 0;
       const dislikesCount = post.likesInfo?.dislikesCount?.length || 0;
 
@@ -58,7 +57,7 @@ export class MapperPaging {
         : "None";
 
       return {
-        id: post._id.toString(),
+        id: post.id,
         content: post.content,
         commentatorInfo: post.commentatorInfo,
         createdAt: post.createdAt,
