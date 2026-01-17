@@ -1,7 +1,7 @@
 import { Comment } from "../types/comment";
 import { CreateCommentInputModel } from "../dto/createCommentInputModel";
 import { findUserByIdQueryRepo } from "../../user/repositories/findUserByIdQueryRepo";
-import { commentCollection, postCollection } from "../../../db/mongo.db";
+import { commentCollection } from "../../../db/mongo.db";
 import { ObjectId } from "mongodb";
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 import { SortFiledComment } from "../../../core/types/sortFiledBlogs";
@@ -9,6 +9,7 @@ import { SortDirection } from "../../../core/types/sortDesc";
 import { IMetaData } from "../../user/types/IMetaData";
 import { UpdateCommentInputModel } from "../dto/updateCommentInputModel";
 import { mapperPaging } from "../../../core/utils/mapperPaging";
+import { PostModel } from "../../posts/domain/dto/post.entity";
 
 export class CommentRepository {
   async findCommentsByPostId(
@@ -23,7 +24,7 @@ export class CommentRepository {
       sortDirection = SortDirection.Desc
     } = query ?? {};
 
-    const post = await postCollection.findOne({ _id: new ObjectId(postId) });
+    const post = await PostModel.findById(postId).exec();
 
     if (!post) {
       throw new Error();
@@ -87,9 +88,7 @@ export class CommentRepository {
     const { postId, content, userId, createdAt } = dto;
 
     const user = await findUserByIdQueryRepo(userId);
-    const post = await postCollection.findOne({
-      _id: new ObjectId(postId)
-    });
+    const post = await PostModel.findById(postId).exec();
 
     if (!post) {
       throw new Error("postDontExist");

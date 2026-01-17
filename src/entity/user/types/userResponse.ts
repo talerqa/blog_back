@@ -5,5 +5,5 @@ export type UserResponse = {
   page: number;
   pageSize: number;
   totalCount: number;
-  items: Omit<User, "password">[];
+  items: Omit<User, "password" | "passwordRecovery">[];
 };

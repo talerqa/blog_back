@@ -1,9 +1,10 @@
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 import { queryUserRepo } from "./utils/queryRepo";
-import { userCollection } from "../../../db/mongo.db";
 import { IMetaData } from "../types/IMetaData";
 import { UserResponse } from "../types/userResponse";
 import { mapperPaging } from "../../../core/utils/mapperPaging";
+import { UserModel } from "../domain/dto/user.entity";
+import { User } from "../types/user";
 
 export const findAllUserQueryRepo = async (
   query: PagingAndSortType
@@ -17,14 +18,13 @@ export const findAllUserQueryRepo = async (
     skip
   } = await queryUserRepo.getAllUsers(query);
 
-  const users = await userCollection
-    .find(filter)
+  const users = (await UserModel.find(filter)
     .sort({ [sortBy]: sortDirection })
     .skip(skip)
     .limit(pageSize)
-    .toArray();
+    .exec()) as User[];
 
-  const totalCount = await userCollection.countDocuments(filter);
+  const totalCount = await UserModel.countDocuments(filter).exec();
 
   const metaData: IMetaData = {
     pagesCount: Math.ceil(totalCount / pageSize),

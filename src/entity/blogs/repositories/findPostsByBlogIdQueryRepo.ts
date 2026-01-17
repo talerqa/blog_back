@@ -1,11 +1,11 @@
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
-import { postCollection } from "../../../db/mongo.db";
 import { IMetaDataBlog } from "../types/IMetaDataBlog";
 import { PostResponse } from "../types/postResponse";
 import { SortFiledBlogs } from "../../../core/types/sortFiledBlogs";
 import { SortDirection } from "../../../core/types/sortDesc";
 import { findBlogById } from "./findBlogByIdQueryRepo";
 import { mapperPaging } from "../../../core/utils/mapperPaging";
+import { PostModel } from "../../posts/domain/dto/post.entity";
 
 export const findPostsByBlogId = async (
   blogId: string,
@@ -27,18 +27,17 @@ export const findPostsByBlogId = async (
     return null;
   }
 
-  const postsById = await postCollection
-    .find({ blogId })
+  const postsById = await PostModel.find({ blogId })
     .sort({ [sortBy]: sortDirection })
     .skip(skip)
     .limit(+pageSize)
-    .toArray();
+    .exec();
 
   if (!postsById) {
     return null;
   }
 
-  const totalCount = await postCollection.countDocuments({ blogId });
+  const totalCount = await PostModel.countDocuments({ blogId }).exec();
 
   const metaData: IMetaDataBlog = {
     pagesCount: Math.ceil(+totalCount / +pageSize),

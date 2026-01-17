@@ -1,16 +1,15 @@
 import { User } from "../types/user";
-import { WithId } from "mongodb";
 import { errorsName } from "../../../core/const/errorsName";
-import { userCollection } from "../../../db/mongo.db";
+import { UserModel } from "../domain/dto/user.entity";
 
 export class UsersRepositories {
   async isExistUserWithLoginOrEmail(
     login: string,
     email: string
   ): Promise<void> {
-    const user = await userCollection.findOne({
+    const user = (await UserModel.findOne({
       $or: [{ login }, { email }]
-    });
+    })) as User;
 
     if (!user) return;
 
@@ -22,10 +21,10 @@ export class UsersRepositories {
     }
   }
 
-  async findUserByCodeConfirm(code: string): Promise<WithId<User>> {
-    const user = await userCollection.findOne({
+  async findUserByCodeConfirm(code: string): Promise<User> {
+    const user = (await UserModel.findOne({
       "emailConfirmation.confirmationCode": code
-    });
+    })) as User;
 
     if (!user) {
       throw new Error(errorsName.confirm_code);
@@ -41,8 +40,8 @@ export class UsersRepositories {
     return user;
   }
 
-  async findUserByEmailWithChecked(email: string): Promise<WithId<User>> {
-    const user = await userCollection.findOne({ email });
+  async findUserByEmailWithChecked(email: string): Promise<User> {
+    const user = (await UserModel.findOne({ email })) as User;
 
     if (!user) {
       throw new Error(errorsName.wrong_email);
@@ -55,14 +54,15 @@ export class UsersRepositories {
 
     return user;
   }
-  async findUserByEmail(email: string): Promise<WithId<User> | null> {
-    return userCollection.findOne({ email });
+
+  async findUserByEmail(email: string): Promise<User | null> {
+    return (await UserModel.findOne({ email })) as User;
   }
 
-  async findUserByCodePasswordRecovery(code: string): Promise<WithId<User>> {
-    const user = await userCollection.findOne({
+  async findUserByCodePasswordRecovery(code: string): Promise<User> {
+    const user = (await UserModel.findOne({
       "passwordRecovery.recoveryCode": code
-    });
+    })) as User;
 
     if (!user) {
       throw new Error(errorsName.confirm_code);

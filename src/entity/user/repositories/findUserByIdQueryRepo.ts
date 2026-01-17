@@ -1,11 +1,10 @@
-import { userCollection } from "../../../db/mongo.db";
 import { User } from "../types/user";
-import { ObjectId } from "mongodb";
+import { UserModel } from "../domain/dto/user.entity";
 
 export const findUserByIdQueryRepo = async (
   userId: string
 ): Promise<User | null> => {
-  const user = await userCollection.findOne({ _id: new ObjectId(userId) });
+  const user = (await UserModel.findById(userId).exec()) as User;
 
   if (!user) {
     throw new Error("user not found");

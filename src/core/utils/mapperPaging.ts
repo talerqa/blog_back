@@ -5,13 +5,13 @@ import { BlogResponse } from "../../entity/blogs/types/blogResponse";
 import { Comment } from "../../entity/comments/types/comment";
 import { IMetaData } from "../../entity/user/types/IMetaData";
 import { CommentResponse } from "../../entity/comments/types/commentResponse";
-import { Post } from "../../entity/posts/types/post";
 import { PostResponse } from "../../entity/blogs/types/postResponse";
 import { Security } from "../../entity/security/types/security";
 import { SecurityResponse } from "../../entity/security/types/securityResponse";
 import { User } from "../../entity/user/types/user";
 import { UserResponse } from "../../entity/user/types/userResponse";
 import { BlogDocument } from "../../entity/blogs/domain/dto/blog.entity";
+import { PostDocument } from "../../entity/posts/domain/dto/post.entity";
 
 export class MapperPaging {
   mapToBlogPaging(
@@ -77,11 +77,11 @@ export class MapperPaging {
   };
 
   mapToPostPaging(
-    post: WithId<Post>[],
+    post: PostDocument[],
     metaData: IMetaDataBlog,
     userId: string
   ): PostResponse {
-    const items = post.map((post: WithId<Post>) => {
+    const items = post.map((post: PostDocument) => {
       const likesCount = post.extendedLikesInfo?.likesCount?.length || 0;
       const dislikesCount = post.extendedLikesInfo?.dislikesCount?.length || 0;
 
@@ -142,18 +142,20 @@ export class MapperPaging {
   }
 
   mapToUserPaging(
-    users: WithId<Omit<User, "password">>[],
+    users: Omit<User, "password">[],
     metaData: IMetaDataBlog
   ): UserResponse {
-    const items = users.map(blog => {
-      return {
-        id: blog._id.toString(),
-        login: blog.login,
-        email: blog.email,
-        createdAt: blog.createdAt,
-        emailConfirmation: blog.emailConfirmation
-      };
-    });
+    const items: Omit<User, "password" | "passwordRecovery">[] = users.map(
+      blog => {
+        return {
+          id: blog.id,
+          login: blog.login,
+          email: blog.email,
+          createdAt: blog.createdAt,
+          emailConfirmation: blog.emailConfirmation
+        };
+      }
+    );
 
     return {
       items,

@@ -1,6 +1,6 @@
 import { CreateBlogInputModel } from "../dto/createPostsInputModel";
 import { UpdatePostInputModel } from "../dto/updatePostsInputModel";
-import { postCollection, userCollection } from "../../../db/mongo.db";
+import { postCollection } from "../../../db/mongo.db";
 import { ObjectId } from "mongodb";
 import { Post } from "../types/post";
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
@@ -10,6 +10,9 @@ import { IMetaDataBlog } from "../../blogs/types/IMetaDataBlog";
 import { SortFiledPost } from "../../../core/types/sortFiledBlogs";
 import { mapperPaging } from "../../../core/utils/mapperPaging";
 import { BlogDocument, BlogModel } from "../../blogs/domain/dto/blog.entity";
+import { PostDocument, PostModel } from "../domain/dto/post.entity";
+import { UserModel } from "../../user/domain/dto/user.entity";
+import { User } from "../../user/types/user";
 
 export class PostsRepository {
   async findAllPosts(
@@ -24,13 +27,14 @@ export class PostsRepository {
     } = query ?? {};
 
     const skip = (+pageNumber - 1) * +pageSize;
-    const posts = await postCollection
-      .find()
+
+    const posts = await PostModel.find()
       .sort({ [sortBy]: sortDirection })
       .skip(skip)
       .limit(+pageSize)
-      .toArray();
-    const totalCount = await postCollection.countDocuments();
+      .exec();
+
+    const totalCount = await PostModel.countDocuments().exec();
 
     const metaData: IMetaDataBlog = {
       pagesCount: Math.ceil(+totalCount / +pageSize),
@@ -43,7 +47,7 @@ export class PostsRepository {
   }
 
   async findPostById(id: string, userId: string): Promise<Post | null | any> {
-    const post = await postCollection.findOne({ _id: new ObjectId(id) });
+    const post = (await PostModel.findById(id).exec()) as PostDocument;
 
     if (!post) {
       return null;
@@ -72,8 +76,10 @@ export class PostsRepository {
       ? "Dislike"
       : "None";
 
+    const postId = post._id;
+
     return {
-      id: post._id.toString(),
+      id: postId,
       title: post.title,
       shortDescription: post.shortDescription,
       content: post.content,
@@ -114,13 +120,14 @@ export class PostsRepository {
       }
     };
 
-    const insertResult: any = await postCollection.insertOne({
-      _id: undefined,
+    const insertResult: PostDocument = new PostModel({
+      // _id: undefined,
       ...newPost
     });
+    await insertResult.save();
 
     return {
-      id: insertResult.insertedId.toString(),
+      id: insertResult._id,
       title: newPost.title,
       shortDescription: newPost.shortDescription,
       content: newPost.content,
@@ -137,8 +144,8 @@ export class PostsRepository {
   }
 
   async updatePost(id: string, dto: UpdatePostInputModel): Promise<boolean> {
-    const blog = await postCollection.updateOne(
-      { _id: new ObjectId(id) },
+    const post = await PostModel.findByIdAndUpdate(
+      id,
       {
         $set: {
           title: dto.title,
@@ -146,17 +153,17 @@ export class PostsRepository {
           shortDescription: dto.shortDescription,
           blogId: dto.blogId
         }
-      }
+      },
+      { new: true }
     );
 
-    return !(blog.matchedCount < 1);
+    return post !== null;
   }
 
   async deletePostById(id: string): Promise<boolean> {
-    const { deletedCount } = await postCollection.deleteOne({
-      _id: new ObjectId(id)
-    });
-    return !!deletedCount;
+    const deletedPost = await PostModel.findByIdAndDelete(id);
+
+    return deletedPost !== null;
   }
 
   async createPostBlogId(
@@ -187,14 +194,15 @@ export class PostsRepository {
       }
     };
 
-    const insertResult = await postCollection.insertOne({
-      _id: undefined,
-
+    const createdPost = await new PostModel({
+      // _id: undefined,
       ...newPost
     });
 
+    await createdPost.save();
+
     return {
-      id: insertResult.insertedId.toString(),
+      id: createdPost._id,
       title: newPost.title,
       shortDescription: newPost.shortDescription,
       content: newPost.content,
@@ -205,13 +213,7 @@ export class PostsRepository {
         likesCount: 0,
         dislikesCount: 0,
         myStatus: "None",
-        newestLikes: [
-          // {
-          //   addedAt: new Date().toISOString(),
-          //   userId: "",
-          //   login: ""
-          // }
-        ]
+        newestLikes: []
       }
     };
   }
@@ -221,10 +223,11 @@ export class PostsRepository {
     userId: string,
     likeStatus: string
   ): Promise<boolean | null> {
-    const post = await postCollection.findOne({ _id: new ObjectId(id) });
+    const post = await PostModel.findById(id);
     if (!post) return null;
 
-    const user = await userCollection.findOne({ _id: new ObjectId(userId) });
+    const user = (await UserModel.findById(userId)) as User;
+
     const addedAt = new Date().toISOString();
 
     if (likeStatus === "Like") {
@@ -232,7 +235,6 @@ export class PostsRepository {
         {
           $set: {
             "extendedLikesInfo.likesCount": {
-              // удаляем старый лайк этого user, чтобы не было дубликатов
               $setUnion: [
                 {
                   $filter: {
@@ -245,7 +247,6 @@ export class PostsRepository {
               ]
             },
             "extendedLikesInfo.dislikesCount": {
-              // удаляем дизлайк, если был
               $filter: {
                 input: "$extendedLikesInfo.dislikesCount",
                 as: "d",

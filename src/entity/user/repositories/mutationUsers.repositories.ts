@@ -1,11 +1,10 @@
-import { ObjectId, WithId } from "mongodb";
-import { userCollection } from "../../../db/mongo.db";
 import { CreateUserInputModel } from "../dto/createUserInputModel";
 import { User } from "../types/user";
 import { randomUUID } from "node:crypto";
 import { add } from "date-fns/add";
 import { errorsName } from "../../../core/const/errorsName";
 import { PasswordService } from "../../../core/utils/passUtils";
+import { UserDocument, UserModel } from "../domain/dto/user.entity";
 
 export class MutationUsersRepositories {
   constructor(private passwordService: PasswordService) {}
@@ -20,7 +19,7 @@ export class MutationUsersRepositories {
 
     const createdAt = new Date().toISOString();
     const passwordHash = await this.passwordService.generatePassword(password);
-    const usersResult = await userCollection.insertOne({
+    const usersResult: UserDocument = await new UserModel({
       login,
       email,
       password: passwordHash,
@@ -32,17 +31,18 @@ export class MutationUsersRepositories {
         }),
         isConfirmed: true
       }
-    } as WithId<User>);
-    const id = usersResult.insertedId;
+    } as User);
+    await usersResult.save();
+    const id = usersResult._id;
 
-    const user = await userCollection.findOne({ _id: id });
+    const user = (await UserModel.findById(id)) as User;
 
     if (!user) {
       return null;
     }
 
     return {
-      id: user._id.toString(),
+      id: user.id,
       email: user.email,
       createdAt,
       login: user.login
@@ -51,14 +51,15 @@ export class MutationUsersRepositories {
 
   async createUserWithConfirmByEmail(
     user: Omit<User, "id">
-  ): Promise<WithId<User> | null> {
-    const insertResult = await userCollection.insertOne({
+  ): Promise<User | null> {
+    const insertResult: UserDocument = await new UserModel({
       ...user
     } as User);
+    await insertResult.save();
 
-    const id = insertResult.insertedId.toString();
+    const id = insertResult._id;
 
-    const findUser = userCollection.findOne({ _id: new ObjectId(id) });
+    const findUser = (await UserModel.findById(id)) as User;
 
     if (!findUser) {
       throw Error(errorsName.not_found_user);
@@ -68,19 +69,18 @@ export class MutationUsersRepositories {
   }
 
   async deleteUserById(id: string): Promise<boolean> {
-    const { deletedCount } = await userCollection.deleteOne({
-      _id: new ObjectId(id)
-    });
-    return !!deletedCount;
+    const deletedUser = await UserModel.findByIdAndDelete(id);
+    return deletedUser !== null;
   }
 
   async updateConfirmCodeUser(id: string): Promise<boolean> {
-    const user = await userCollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { "emailConfirmation.isConfirmed": true } }
+    const user = await UserModel.findByIdAndUpdate(
+      id,
+      { $set: { "emailConfirmation.isConfirmed": true } },
+      { new: true }
     );
 
-    return !(user.matchedCount < 1);
+    return user !== null;
   }
 
   async updateEmailConfirmationUser(
@@ -88,42 +88,44 @@ export class MutationUsersRepositories {
     code: string,
     newDate: string
   ): Promise<boolean> {
-    const user = await userCollection.updateOne(
-      { _id: new ObjectId(id) },
+    const user = await UserModel.findByIdAndUpdate(
+      id,
       {
         $set: {
           "emailConfirmation.expirationDate": newDate,
           "emailConfirmation.confirmationCode": code
         }
-      }
+      },
+      { new: true }
     );
 
-    return !(user.matchedCount < 1);
+    return user !== null;
   }
 
   async updatePasswordUser(id: string, code: string): Promise<boolean> {
-    const user = await userCollection.updateOne(
-      { _id: new ObjectId(id) },
+    const user = await UserModel.findByIdAndUpdate(
+      id,
       {
         $set: {
           "passwordRecovery.recoveryCode": code
         }
-      }
+      },
+      { new: true }
     );
-
-    return !(user.matchedCount < 1);
+    return user !== null;
   }
 
   async updateUserPassword(id: string, password: string): Promise<boolean> {
-    const user = await userCollection.updateOne(
-      { _id: new ObjectId(id) },
+    const user = await UserModel.findByIdAndUpdate(
+      id,
       {
         $set: {
           password: password
         }
-      }
+      },
+      { new: true }
     );
 
-    return !(user.matchedCount < 1);
+    return user !== null;
   }
 }

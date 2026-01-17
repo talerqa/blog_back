@@ -5,9 +5,10 @@ import { config } from "../../../core/const/config";
 import { CreateSessionModel } from "../../security/dto/createSessionModel";
 import { MutationUsersRepositories } from "../repositories/mutationUsers.repositories";
 import { UsersRepositories } from "../repositories/usersRepositories";
-import { securityCollection, userCollection } from "../../../db/mongo.db";
+import { securityCollection } from "../../../db/mongo.db";
 import { SecurityRepository } from "../../security/repositories/security.repositories";
 import { PasswordService } from "../../../core/utils/passUtils";
+import { UserModel } from "../domain/dto/user.entity";
 
 export class UserService {
   constructor(
@@ -27,9 +28,9 @@ export class UserService {
   }> {
     const { title, ip } = body;
 
-    const user = await userCollection.findOne({
+    const user = (await UserModel.findOne({
       $or: [{ login: loginOrEmail }, { email: loginOrEmail }]
-    });
+    }).exec()) as User;
 
     if (!user) {
       throw new Error("not found user");

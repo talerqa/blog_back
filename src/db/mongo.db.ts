@@ -1,17 +1,14 @@
 import { Collection, Db, MongoClient } from "mongodb";
-import { Blog } from "../entity/blogs/types/blog";
 import { Post } from "../entity/posts/types/post";
 import { User } from "../entity/user/types/user";
 import { Comment } from "../entity/comments/types/comment";
 import {
-  BLOG_COLLECTION_NAME,
   COMMENT_COLLECTION_NAME,
   NAME_DB,
   POST_COLLECTION_NAME,
   RATE_LIMIT_COLLECTION_NAME,
   SESSIONS_COLLECTION_NAME,
-  TOKEN_COLLECTION_NAME,
-  USER_COLLECTION_NAME
+  TOKEN_COLLECTION_NAME
 } from "./collectionsName";
 import { Security } from "../entity/security/types/security";
 import { RateLimit } from "../entity/rateLimit/types/rateLimit";
@@ -41,7 +38,7 @@ export const runDB = async (): Promise<void> => {
   const db: Db = client.db(NAME_DB);
   // blogCollection = db.collection<Blog>(BLOG_COLLECTION_NAME);
   postCollection = db.collection<Post>(POST_COLLECTION_NAME);
-  userCollection = db.collection<User>(USER_COLLECTION_NAME);
+  //userCollection = db.collection<User>(USER_COLLECTION_NAME);
   tokenCollection = db.collection<Token>(TOKEN_COLLECTION_NAME);
   commentCollection = db.collection<Comment>(COMMENT_COLLECTION_NAME);
   securityCollection = db.collection<Security>(SESSIONS_COLLECTION_NAME);
