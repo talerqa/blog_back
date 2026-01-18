@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
-import { tokenCollection } from "../../../../db/mongo.db";
 import { sessionsService } from "../../compositionRoot";
+import { TokenModel } from "../../../auth/domain/dto/token.entity";
 
 export const removeOtherSessionDevicesHandler = async (
   req: Request,
@@ -17,7 +17,8 @@ export const removeOtherSessionDevicesHandler = async (
     userId,
     deviceId
   );
-  await tokenCollection.insertOne({ token: tokenDecoded });
+  const token = await new TokenModel({ token: tokenDecoded });
+  await token.save();
   if (!sessionDevices) {
     res.status(HttpStatus.Unauthorized).send();
   }

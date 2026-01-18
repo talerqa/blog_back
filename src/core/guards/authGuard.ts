@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpStatus } from "../const/httpCodes";
 import { findUserByIdQueryRepo } from "../../entity/user/repositories/findUserByIdQueryRepo";
-import { tokenCollection } from "../../db/mongo.db";
 import { jwtService } from "../utils/jwtUtils";
+import { TokenModel } from "../../entity/auth/domain/dto/token.entity";
 
 const unauthorized = (res: Response) => {
   res.status(HttpStatus.Unauthorized).send();
@@ -77,11 +77,12 @@ export const cookieGuard = async (
     const now = Math.floor(Date.now() / 1000);
 
     if (exp && now >= exp) {
-      await tokenCollection.insertOne({ token: cookies });
+      const token = await new TokenModel({ token: cookies });
+      await token.save();
       return unauthorized(res);
     }
 
-    const exists = await tokenCollection.findOne({ token: cookies });
+    const exists = await TokenModel.findOne({ token: cookies });
 
     if (exists) {
       return unauthorized(res);

@@ -1,8 +1,6 @@
 import { Comment } from "../types/comment";
 import { CreateCommentInputModel } from "../dto/createCommentInputModel";
 import { findUserByIdQueryRepo } from "../../user/repositories/findUserByIdQueryRepo";
-import { commentCollection } from "../../../db/mongo.db";
-import { ObjectId } from "mongodb";
 import { PagingAndSortType } from "../../../core/types/pagingAndSortType";
 import { SortFiledComment } from "../../../core/types/sortFiledBlogs";
 import { SortDirection } from "../../../core/types/sortDesc";
@@ -166,47 +164,38 @@ export class CommentRepository {
       return null;
     }
 
+    let updatePipeline = [];
+
     if (likeStatus === "Like") {
-      await commentCollection.updateOne({ _id: new ObjectId(id) }, [
+      updatePipeline = [
         {
           $set: {
-            // "likesInfo.myStatus": likeStatus,
-            // добавляем userId в лайки, если его еще нет
             "likesInfo.likesCount": {
               $setUnion: ["$likesInfo.likesCount", [userId]]
             },
-            // удаляем userId из дизлайков
             "likesInfo.dislikesCount": {
               $setDifference: ["$likesInfo.dislikesCount", [userId]]
             }
           }
         }
-      ]);
-    }
-
-    if (likeStatus === "Dislike") {
-      await commentCollection.updateOne({ _id: new ObjectId(id) }, [
+      ];
+    } else if (likeStatus === "Dislike") {
+      updatePipeline = [
         {
           $set: {
-            // "likesInfo.myStatus": likeStatus,
-            // добавляем userId в дизлайки, если его еще нет
             "likesInfo.dislikesCount": {
               $setUnion: ["$likesInfo.dislikesCount", [userId]]
             },
-            // удаляем userId из лайков
             "likesInfo.likesCount": {
               $setDifference: ["$likesInfo.likesCount", [userId]]
             }
           }
         }
-      ]);
-    }
-
-    if (likeStatus === "None") {
-      await commentCollection.updateOne({ _id: new ObjectId(id) }, [
+      ];
+    } else if (likeStatus === "None") {
+      updatePipeline = [
         {
           $set: {
-            // "likesInfo.myStatus": likeStatus,
             "likesInfo.likesCount": {
               $setDifference: ["$likesInfo.likesCount", [userId]]
             },
@@ -215,7 +204,11 @@ export class CommentRepository {
             }
           }
         }
-      ]);
+      ];
+    }
+
+    if (updatePipeline.length > 0) {
+      await CommentModel.findByIdAndUpdate(id, updatePipeline, { new: true });
     }
 
     return true;

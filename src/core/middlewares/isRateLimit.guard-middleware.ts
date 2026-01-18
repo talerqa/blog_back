@@ -1,7 +1,7 @@
-import { rateLimitCollection } from "../../db/mongo.db";
 import { RateLimit } from "../../entity/rateLimit/types/rateLimit";
 import { config } from "../const/config";
 import { HttpStatus } from "../const/httpCodes";
+import { RateLimitModel } from "../../entity/rateLimit/domain/dto/rateLimit.entity";
 
 export const isRateLimit = async (req: any, res: any, next: any) => {
   let ip = req?.ip as string;
@@ -22,7 +22,7 @@ export const isRateLimit = async (req: any, res: any, next: any) => {
     date: { $gte: tenSecondsAgo }
   };
 
-  const count = await rateLimitCollection.countDocuments(filter);
+  const count = await RateLimitModel.countDocuments(filter).exec();
 
   if (count >= config.rateLimit) {
     return res.status(HttpStatus.TooManyRequest).send();
@@ -35,9 +35,9 @@ export const isRateLimit = async (req: any, res: any, next: any) => {
     },
     date
   };
-  await rateLimitCollection.insertOne({
+  const rateLimitEntity = await new RateLimitModel({
     ...rateLimit
   } as RateLimit);
-
+  await rateLimitEntity.save();
   next();
 };

@@ -11,7 +11,7 @@ import { SortFiledPost } from "../../../core/types/sortFiledBlogs";
 import { mapperPaging } from "../../../core/utils/mapperPaging";
 import { BlogDocument, BlogModel } from "../../blogs/domain/dto/blog.entity";
 import { PostDocument, PostModel } from "../domain/dto/post.entity";
-import { UserModel } from "../../user/domain/dto/user.entity";
+import { UserDocument, UserModel } from "../../user/domain/dto/user.entity";
 import { User } from "../../user/types/user";
 
 export class PostsRepository {

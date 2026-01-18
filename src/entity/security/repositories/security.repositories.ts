@@ -1,29 +1,29 @@
-import { securityCollection } from "../../../db/mongo.db";
 import { errorsName } from "../../../core/const/errorsName";
 import { CreateSessionModel } from "../dto/createSessionModel";
 import { mapperPaging } from "../../../core/utils/mapperPaging";
+import { SecurityModel } from "../domain/dto/security.entity";
+import { Security } from "../types/security";
 
 export class SecurityRepository {
   async getCurrentSessionDevice(userId: string) {
-    const sessions = await securityCollection
-      .find({
-        id: userId
-      })
-      .toArray();
+    const sessions = (await SecurityModel.find({
+      id: userId
+    }).exec()) as Security[];
 
     return mapperPaging.mapToSecurityPaging(sessions);
   }
 
   async removeOtherSessionDevice(userId: string, deviceId: string) {
-    const { deletedCount } = await securityCollection.deleteMany({
+    const { deletedCount } = await SecurityModel.deleteMany({
       id: userId,
       deviceId: { $ne: deviceId }
     });
+
     return !!deletedCount;
   }
 
   async removeCurrentSessionDevice(userId: string, deviceId: string) {
-    const isFound = await securityCollection.findOne({
+    const isFound = await SecurityModel.findOne({
       deviceId
     });
 
@@ -31,7 +31,7 @@ export class SecurityRepository {
       throw Error(errorsName.not_found_deviceId);
     }
 
-    const { deletedCount } = await securityCollection.deleteOne({
+    const { deletedCount } = await SecurityModel.deleteOne({
       deviceId,
       id: userId
     });
@@ -49,7 +49,8 @@ export class SecurityRepository {
       lastActiveDate,
       deviceId
     };
-    await securityCollection.insertOne({ ...data });
+    const security = await new SecurityModel({ ...data });
+    await security.save();
     return;
   }
 }

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
 import { errorsName } from "../../../../core/const/errorsName";
-import { tokenCollection } from "../../../../db/mongo.db";
 import { sessionsService } from "../../compositionRoot";
+import { TokenModel } from "../../../auth/domain/dto/token.entity";
 
 export const removeCurrentSessionDevicesHandler = async (
   req: Request,
@@ -23,7 +23,8 @@ export const removeCurrentSessionDevicesHandler = async (
       res.status(HttpStatus.Forbidden).send();
     }
 
-    await tokenCollection.insertOne({ token: tokenDecoded });
+    const token = await new TokenModel({ token: tokenDecoded });
+    await token.save();
 
     res.status(HttpStatus.NoContent).send();
   } catch (e) {

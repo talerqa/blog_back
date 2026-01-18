@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../../core/const/httpCodes";
 import { errorMap, errorsName } from "../../../../core/const/errorsName";
-import { tokenCollection } from "../../../../db/mongo.db";
 import { authService } from "../../compositionRoot";
+import { TokenModel } from "../../domain/dto/token.entity";
 
 export const refreshTokenHandler = async (req: Request, res: Response) => {
   try {
@@ -30,7 +30,8 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
 
     // Добавляем старый токен в черный список
     if (oldRefreshToken) {
-      await tokenCollection.insertOne({ token: oldRefreshToken });
+      const token = await new TokenModel.insertOne({ token: oldRefreshToken });
+      await token.save();
     }
 
     res.cookie("refreshToken", refreshToken, {

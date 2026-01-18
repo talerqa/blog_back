@@ -9,6 +9,7 @@ import { securityCollection } from "../../../db/mongo.db";
 import { SecurityRepository } from "../../security/repositories/security.repositories";
 import { PasswordService } from "../../../core/utils/passUtils";
 import { UserModel } from "../domain/dto/user.entity";
+import { SecurityModel } from "../../security/domain/dto/security.entity";
 
 export class UserService {
   constructor(
@@ -99,7 +100,7 @@ export class UserService {
   async refreshToken(userId: string, body: any) {
     const { expDate, deviceId, title, ip } = body;
 
-    const session = await securityCollection.findOne({
+    const session = await SecurityModel.findOne({
       deviceId: deviceId,
       id: userId
     });
@@ -110,13 +111,14 @@ export class UserService {
 
     if (expDate) {
       const expIso = new Date(expDate * 1000).toISOString();
-      await securityCollection.updateOne(
+      await SecurityModel.findOne(
         { deviceId: deviceId },
         {
           $set: {
             lastActiveDate: expIso
           }
-        }
+        },
+        { new: true }
       );
     }
 
